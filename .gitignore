@@ -11,5 +11,6 @@ ValveController-backups/
 
 # Firmware build output (ESP-IDF)
 build/
+sdkconfig
 sdkconfig.old
 managed_components/
