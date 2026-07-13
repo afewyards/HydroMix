@@ -1,0 +1,36 @@
+(version 1)
+
+# ValveController HV spacing rules. Later rules take precedence over earlier ones.
+# Baselines come from the net classes: HV internal 0.8mm (floor set by the
+# SOT-223 triac pad gap of exactly 0.80mm), HV_LOCAL internal 0.4mm (floor set
+# by the 0402 gate resistors RG3/RG4, pad gap ~0.48mm).
+
+# Full working voltage L<->N: 2.0mm under solder mask (IEC 60664-1 functional
+# clearance is 1.5mm at OVC II; the exposed connector pads have >=2.8mm built
+# into the footprints). Closest N pad to any other HV pad is 2.78mm (U1).
+(rule "mains_N_creepage"
+	(condition "A.NetName == 'MAINS_N' && (B.hasNetclass('HV') || B.hasNetclass('HV_LOCAL'))")
+	(constraint clearance (min 2.0mm)))
+
+# Across the fuse: full mains appears here when F2 opens. F2 pad gap is 4.5mm.
+(rule "fuse_L_to_LF"
+	(condition "A.NetName == 'MAINS_L' && B.NetName == 'MAINS_L_F'")
+	(constraint clearance (min 2.0mm)))
+
+# Unfused L vs valve outputs (opposite board corners; never legitimately close).
+(rule "mains_L_to_valve"
+	(condition "A.NetName == 'MAINS_L' && (B.NetName == 'VALVE_OPEN' || B.NetName == 'VALVE_CLOSE')")
+	(constraint clearance (min 2.0mm)))
+
+# Between the two valve lines: actuator split capacitor can raise the idle
+# terminal above mains. J2 gap is 7.8mm.
+(rule "valve_open_to_close"
+	(condition "A.NetName == 'VALVE_OPEN' && B.NetName == 'VALVE_CLOSE'")
+	(constraint clearance (min 2.0mm)))
+
+# Reinforced isolation, HV group to everything else (250Vrms, PD2).
+# Last rule = highest precedence. Package limit is the MOC3063 at 7.47mm
+# across its body; board placement gives 8.78mm between components.
+(rule "hv_lv_isolation"
+	(condition "(A.hasNetclass('HV') || A.hasNetclass('HV_LOCAL')) && !(B.hasNetclass('HV') || B.hasNetclass('HV_LOCAL'))")
+	(constraint clearance (min 6.4mm)))

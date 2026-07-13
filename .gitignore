@@ -1,0 +1,15 @@
+# KiCad regenerable / transient
+fp-info-cache
+_autosave-*
+*.lck
+*.kicad_prl
+.history/
+ValveController-backups/
+
+# macOS
+.DS_Store
+
+# Firmware build output (ESP-IDF)
+build/
+sdkconfig.old
+managed_components/
