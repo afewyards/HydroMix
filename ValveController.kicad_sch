@@ -6681,6 +6681,121 @@
 			)
 			(embedded_fonts no)
 		)
+	(symbol "power:PWR_FLAG"
+			(power global)
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 0)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "#FLG"
+				(at 0 1.905 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "PWR_FLAG"
+				(at 0 3.81 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Special symbol for telling ERC where power comes from"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "flag power"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "PWR_FLAG_0_0"
+				(pin power_out line
+					(at 0 0 90)
+					(length 0)
+					(name ""
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(symbol "PWR_FLAG_0_1"
+				(polyline
+					(pts
+						(xy 0 0) (xy 0 1.27) (xy -1.016 1.905) (xy 0 2.54) (xy 1.016 1.905) (xy 0 1.27)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 	)
 	(junction
 		(at 134.62 40.64)
@@ -6711,12 +6826,6 @@
 		(diameter 0)
 		(color 0 0 0 0)
 		(uuid "8747f3d4-1670-4ce7-8dc7-be49406eafcd")
-	)
-	(junction
-		(at 182.88 248.92)
-		(diameter 0)
-		(color 0 0 0 0)
-		(uuid "8977680a-644a-49a1-9bca-73fdd6c8082f")
 	)
 	(junction
 		(at 134.62 48.26)
@@ -6962,16 +7071,6 @@
 	)
 	(wire
 		(pts
-			(xy 182.88 248.92) (xy 182.88 251.46)
-		)
-		(stroke
-			(width 0)
-			(type default)
-		)
-		(uuid "ba6e1bd3-3590-402f-8872-9088e60d2ada")
-	)
-	(wire
-		(pts
 			(xy 182.88 231.14) (xy 182.88 236.22)
 		)
 		(stroke
@@ -7088,7 +7187,7 @@
 			)
 		)
 	)
-	(global_label "GND"
+	(global_label "LED_A"
 		(shape input)
 		(at 182.88 266.7 270)
 		(effects
@@ -7342,28 +7441,6 @@
 		(uuid "0efb508c-df47-4c89-8301-3a31edd2be7c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 55.88 26.67 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "DBG_RX"
-		(shape input)
-		(at 134.62 68.58 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "0f098381-4a43-4b16-b08e-0a3b58df2ba9")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 134.62 68.58 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -8606,7 +8683,7 @@
 			)
 		)
 	)
-	(global_label "STAT_LED"
+	(global_label "3V3"
 		(shape input)
 		(at 182.88 231.14 90)
 		(effects
@@ -9310,28 +9387,6 @@
 			)
 		)
 	)
-	(global_label "DBG_TX"
-		(shape input)
-		(at 134.62 66.04 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "ce5649fc-46c1-4aff-9030-f7028d152419")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 134.62 66.04 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
 	(global_label "GND"
 		(shape input)
 		(at 43.18 123.19 180)
@@ -9948,7 +10003,7 @@
 				)
 			)
 		)
-		(property "Value" "LED"
+		(property "Value" "LED (active-low)"
 			(at 182.88 264.54 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -9979,7 +10034,7 @@
 				)
 			)
 		)
-		(property "Description" ""
+		(property "Description" "Status LED, active-low (cathode to U5 GPIO15, anode via R4 to 3V3)"
 			(at 182.88 256.54 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15282,6 +15337,840 @@
 				(path "/996e7a69-443b-4feb-9505-1512f377356d"
 					(reference "Q4")
 					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 182.88 251.46) (xy 179.07 251.46)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "be735783-d542-443d-9c2e-5d0126d12bed")
+	)
+	(global_label "STAT_LED"
+		(shape input)
+		(at 179.07 251.46 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "6535899f-f12a-4476-97be-c7d35aeacf51")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 179.07 251.46 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "R_dev")
+		(at 60.96 142.24 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "93003826-5e3c-4110-8e89-78e12769693c")
+		(property "Reference" "R8"
+			(at 63.96 139.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 63.96 145.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 60.96 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 60.96 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "SSR_OPEN pull-down (idle-low; prevents floating gate at boot/reset)"
+			(at 60.96 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "AC0402FR-0710KL"
+			(at 60.96 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/AC0402FR-0710KL/5895030"
+			(at 60.96 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "93f88fc7-da56-4c7f-ad0a-69cef880d1b5")
+		)
+		(pin "2"
+			(uuid "6328c0cb-ed17-4910-b22f-1d89ba80c512")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "R8")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 60.96 137.16) (xy 60.96 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "b4a2b4fb-e251-4e94-9d8d-2a8e3d1f7a5c")
+	)
+	(global_label "SSR_OPEN"
+		(shape input)
+		(at 60.96 132.08 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "b35040e4-50ac-4268-ab36-b2b9831b0b4d")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 60.96 132.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 60.96 147.32) (xy 60.96 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "3490b65b-7333-4ef5-bc61-97f7485e0cb0")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 60.96 152.4 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "119e27d0-b122-480a-9100-d79b5026926f")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 60.96 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "R_dev")
+		(at 71.12 142.24 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "4ecf32b9-0ec8-4581-9851-d523d474ab75")
+		(property "Reference" "R9"
+			(at 74.12 139.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "10k"
+			(at 74.12 145.24 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Resistor_SMD:R_0402_1005Metric"
+			(at 71.12 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 71.12 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "SSR_CLOSE pull-down (idle-low; prevents floating gate at boot/reset)"
+			(at 71.12 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "AC0402FR-0710KL"
+			(at 71.12 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/AC0402FR-0710KL/5895030"
+			(at 71.12 142.24 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "2a078f50-67c5-4cf3-9321-a056088f64ca")
+		)
+		(pin "2"
+			(uuid "b470c1fc-6e29-4243-8f72-a4b2852f02b7")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "R9")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 71.12 137.16) (xy 71.12 132.08)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f798c10f-0f39-48b5-9d28-a5dc4de6b338")
+	)
+	(global_label "SSR_CLOSE"
+		(shape input)
+		(at 71.12 132.08 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2d698be5-83e0-4456-aa00-bdf0d6ac0836")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 71.12 132.08 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 71.12 147.32) (xy 71.12 152.4)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "03907bf1-ab62-4ff0-8c9a-b49283ac64b4")
+	)
+	(global_label "GND"
+		(shape input)
+		(at 71.12 152.4 270)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "37a99371-1e2a-4e6a-a20c-298b8a95f2cb")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 71.12 152.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(no_connect
+		(at 134.62 68.58)
+		(uuid "9f2399b3-bde0-42af-83b5-3e5293f6b181")
+	)
+	(no_connect
+		(at 134.62 66.04)
+		(uuid "5382728a-7489-4ab4-a302-4daa23724591")
+	)
+	(no_connect
+		(at 93.98 43.18)
+		(uuid "53bddace-ada4-4b7b-b5fe-e48e186a1c2c")
+	)
+	(no_connect
+		(at 93.98 45.72)
+		(uuid "042b7cdf-f00f-4cfb-952d-4e49ddc36060")
+	)
+	(no_connect
+		(at 93.98 48.26)
+		(uuid "86e76564-560c-46cd-a493-83036ad1da5e")
+	)
+	(no_connect
+		(at 93.98 50.8)
+		(uuid "2bab4ea0-6d44-4da5-a9eb-ef02e511dc2e")
+	)
+	(no_connect
+		(at 93.98 63.5)
+		(uuid "f2e7e2c4-b872-4b9e-af65-441ceb5353b9")
+	)
+	(no_connect
+		(at 93.98 78.74)
+		(uuid "0364f6d2-d22e-45c6-a838-589bf6eabac7")
+	)
+	(no_connect
+		(at 134.62 81.28)
+		(uuid "78a5ed76-3865-4d2b-8311-47c597f60512")
+	)
+	(no_connect
+		(at 134.62 78.74)
+		(uuid "f1686bf1-3d74-4ffb-ab7c-7cd5c99ac2cc")
+	)
+	(no_connect
+		(at 134.62 76.2)
+		(uuid "8a7e9b8d-f4a2-4433-8ff3-e849df86e3cc")
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 360.68 45.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5b0953f4-2abd-44ac-b82f-9c62b4786d10")
+		(property "Reference" "#FLG001"
+			(at 360.68 47.625 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 360.68 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 360.68 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 360.68 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 360.68 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "52054b2f-65a2-4f10-96e9-407e48993791")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "#FLG001")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 360.68 45.72) (xy 360.68 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "c2b79222-638c-407c-aecc-caddb1da543f")
+	)
+	(global_label "MAINS_L"
+		(shape input)
+		(at 360.68 40.64 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "9aefb52b-ed08-4bde-b9a7-f2e8f2db4df2")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 360.68 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 373.38 45.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "d3c0fe52-4a3b-45ee-8677-013141a23d89")
+		(property "Reference" "#FLG002"
+			(at 373.38 47.625 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 373.38 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 373.38 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 373.38 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 373.38 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "121fba44-b67d-4ca8-8ace-142400082277")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "#FLG002")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 373.38 45.72) (xy 373.38 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "f953540a-7a80-4b12-9a0a-38ee604de7ae")
+	)
+	(global_label "MAINS_N"
+		(shape input)
+		(at 373.38 40.64 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "2702a594-b42c-416d-817e-3738beac9a37")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 373.38 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 386.08 45.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "123ecfe5-d5a1-4169-8329-72358ef9d574")
+		(property "Reference" "#FLG003"
+			(at 386.08 47.625 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 386.08 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 386.08 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 386.08 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 386.08 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "854efbc1-487c-401d-8beb-2b03c7c132a4")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "#FLG003")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 386.08 45.72) (xy 386.08 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "1303e5cd-6d4c-4846-b978-a5ebc82162b4")
+	)
+	(global_label "5V"
+		(shape input)
+		(at 386.08 40.64 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "c514b179-79c2-419d-9436-3be4f58eb5bc")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 386.08 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "power:PWR_FLAG")
+		(at 398.78 45.72 0)
+		(unit 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(dnp no)
+		(uuid "5ed0a8f5-2b72-4ed8-bfbd-d478bb40b3c6")
+		(property "Reference" "#FLG004"
+			(at 398.78 47.625 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "PWR_FLAG"
+			(at 398.78 49.53 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" ""
+			(at 398.78 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" ""
+			(at 398.78 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "Special symbol for telling ERC where power comes from"
+			(at 398.78 45.72 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "73bb1a87-2510-4ed7-87a9-a9833cdd0a27")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "#FLG004")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(wire
+		(pts
+			(xy 398.78 45.72) (xy 398.78 40.64)
+		)
+		(stroke
+			(width 0)
+			(type default)
+		)
+		(uuid "03ff15db-16b1-4763-8e49-e6099b71cab7")
+	)
+	(global_label "MAINS_L_F"
+		(shape input)
+		(at 398.78 40.64 90)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "4d743b72-dfd8-466a-806d-d290c3529a2e")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 398.78 40.64 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
 				)
 			)
 		)
