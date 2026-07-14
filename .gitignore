@@ -4,6 +4,9 @@ _autosave-*
 *.lck
 *.kicad_prl
 .history/
+
+# Local manual backups (git history already preserves prior states)
+pcb/backups/
 ValveController-backups/
 
 # macOS

@@ -179,7 +179,7 @@
 		(uuid "44a1f023-a090-4a17-818f-62788abcb45e")
 	)
 	(embedded_fonts no)
-	(model "${KIPRJMOD}/TL9320AF400QG.STEP"
+	(model "${KIPRJMOD}/3dmodels/TL9320AF400QG.STEP"
 		(offset
 			(xyz 0 0 0)
 		)
