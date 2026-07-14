@@ -38,8 +38,8 @@ static void configure_reporting_on_join(void)
 __attribute__((weak)) void zigbee_on_join(void){}
 
 /* ZCL character strings are length-prefixed. */
-static char MFR[]   = "\006Kleist";
-static char MODEL[] = "\013ValveCtl-C6";
+static char MFR[]   = "\005Knife";
+static char MODEL[] = "\010HydroMix";
 
 /* ---- custom manufacturer cluster (tunables + status) ----
  * Backing storage for custom attributes must outlive build_endpoints(); the

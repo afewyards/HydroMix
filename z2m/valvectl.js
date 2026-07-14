@@ -18,7 +18,7 @@ const e = exposes.presets, ea = exposes.access;
 //   3. Host the resulting `.ota` file somewhere Z2M's process can read (local path or URL).
 //   4. Add an entry to Z2M's local OTA index file (referenced via `ota.zigbeeOTA` config or the
 //      Z2M `ota_index.json` mechanism per Z2M docs), one JSON object per firmware version:
-//        { "modelId": "ValveCtl-C6", "url": "<path-or-url-to-the-.ota-file>",
+//        { "modelId": "HydroMix", "url": "<path-or-url-to-the-.ota-file>",
 //          "fileVersion": <uint32, matches the version baked into the .ota image>,
 //          "imageType": 0x0001, "manufacturerCode": 0x1234 }
 //   5. Restart Z2M (or trigger a re-read of the index) so "Check for updates" picks it up.
@@ -115,9 +115,9 @@ const tzAnalogOutput = {
 };
 
 module.exports = [{
-    zigbeeModel: ['ValveCtl-C6'],
-    model: 'ValveCtl-C6',
-    vendor: 'Kleist',
+    zigbeeModel: ['HydroMix'],
+    model: 'HydroMix',
+    vendor: 'Knife',
     description: 'Hydronic 3-way mixing valve controller',
     fromZigbee: [fz.on_off, fz.temperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
     toZigbee: [tz.on_off, tz.thermostat_occupied_heating_setpoint,

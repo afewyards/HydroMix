@@ -152,7 +152,7 @@ Status LED (GPIO15, active-low) pattern priority, highest first:
 
 ## Zigbee endpoints
 
-Router role. Manufacturer `Kleist`, model `ValveCtl-C6`. Manufacturer code is
+Router role. Manufacturer `Knife`, model `HydroMix`. Manufacturer code is
 currently `VALVECTL_MFR_CODE 0x1234` — a **placeholder/test value**, not a
 real Zigbee Alliance-assigned code (see the plan's "Unresolved Q1").
 

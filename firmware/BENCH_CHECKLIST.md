@@ -250,8 +250,8 @@ pass.** USB-C power only for those steps. Scope or LED probes on GPIO2
 - [ ] **5.1** Copy `z2m/valvectl.js` into Z2M's `external_converters`
       directory (or reference it from `configuration.yaml`); restart Z2M.
 - [ ] **5.2** Flash the board (or power-cycle it). Short-press the button
-      (GPIO9) → confirm Z2M pairs the device, showing manufacturer `Kleist`
-      and model `ValveCtl-C6`, and exposes all entities from
+      (GPIO9) → confirm Z2M pairs the device, showing manufacturer `Knife`
+      and model `HydroMix`, and exposes all entities from
       `z2m/valvectl.js` (temps, `water_running`, `valve_position`, `mode`,
       the 10 tunables, `alarm`, `fault_bitmap`, `travel_since_resync`,
       `resync`).
