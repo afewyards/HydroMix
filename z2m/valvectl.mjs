@@ -1,6 +1,7 @@
-const fz = require('zigbee-herdsman-converters/converters/fromZigbee');
-const tz = require('zigbee-herdsman-converters/converters/toZigbee');
-const exposes = require('zigbee-herdsman-converters/lib/exposes');
+import * as fz from 'zigbee-herdsman-converters/converters/fromZigbee';
+import * as tz from 'zigbee-herdsman-converters/converters/toZigbee';
+import * as exposes from 'zigbee-herdsman-converters/lib/exposes';
+
 const e = exposes.presets, ea = exposes.access;
 
 // Ground truth cross-checked against firmware/main/zigbee.h + zigbee.c (eng-t12, Task 21-22),
@@ -114,7 +115,7 @@ const tzAnalogOutput = {
     },
 };
 
-module.exports = [{
+export default [{
     zigbeeModel: ['HydroMix'],
     model: 'HydroMix',
     vendor: 'Knife',

@@ -72,7 +72,7 @@ logic lives in `firmware/main/ota.c`:
 
 **Publishing an OTA update via Zigbee2MQTT:** there is no cloud OTA index entry
 for this private manufacturer code. The process (documented in comments at the
-top of `z2m/valvectl.js`) is: build `firmware/build/valvecontroller.bin` →
+top of `z2m/valvectl.mjs`) is: build `firmware/build/valvecontroller.bin` →
 wrap it into a Zigbee OTA image (`.ota`) with the ZCL OTA header (manufacturer
 code, image type, file version) → host the `.ota` file somewhere Z2M can read
 it → add an entry (`modelId`, `url`, `fileVersion`) to Z2M's local OTA index
@@ -169,7 +169,7 @@ real Zigbee Alliance-assigned code (see the plan's "Unresolved Q1").
 
 ## Zigbee2MQTT integration
 
-`z2m/valvectl.js` is the external converter. See the comments at the top of
+`z2m/valvectl.mjs` is the external converter. See the comments at the top of
 that file for the manual OTA-image publishing process referenced above.
 
 ## Host-side control-logic tests

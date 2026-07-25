@@ -247,12 +247,12 @@ pass.** USB-C power only for those steps. Scope or LED probes on GPIO2
 
 **Requires a running Zigbee2MQTT coordinator.** USB-C power is sufficient.
 
-- [ ] **5.1** Copy `z2m/valvectl.js` into Z2M's `external_converters`
+- [ ] **5.1** Copy `z2m/valvectl.mjs` into Z2M's `external_converters`
       directory (or reference it from `configuration.yaml`); restart Z2M.
 - [ ] **5.2** Flash the board (or power-cycle it). Short-press the button
       (GPIO9) → confirm Z2M pairs the device, showing manufacturer `Knife`
       and model `HydroMix`, and exposes all entities from
-      `z2m/valvectl.js` (temps, `water_running`, `valve_position`, `mode`,
+      `z2m/valvectl.mjs` (temps, `water_running`, `valve_position`, `mode`,
       the 10 tunables, `alarm`, `fault_bitmap`, `travel_since_resync`,
       `resync`).
 - [ ] **5.3** Confirm all 5 temperature entities update: change a probe by
@@ -296,7 +296,7 @@ pass.** USB-C power only for those steps. Scope or LED probes on GPIO2
       `0x1234` and image type `0x0001` (matching `VALVECTL_MFR_CODE` and the
       OTA cluster config in `zigbee.c`). Add an entry (`modelId`, `url`,
       `fileVersion`) to Z2M's local OTA index config — see the comments at
-      the top of `z2m/valvectl.js` for the exact mechanism.
+      the top of `z2m/valvectl.mjs` for the exact mechanism.
 - [ ] **6.2** In Z2M, trigger "Check for updates" then "Update" on the
       device. Confirm the transfer completes and the device reboots into
       the new OTA slot.

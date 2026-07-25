@@ -95,7 +95,7 @@ Router role · manufacturer `Knife` · model `HydroMix`.
   (`0xFC00`) exposing ~10 tunables, a self-clearing `resync`, and read-only alarm/fault bitmaps.
 - **EP2–EP6** — Temperature Measurement for supply, return, source, HX-A, HX-B.
 
-[`z2m/valvectl.js`](z2m/valvectl.js) is the external Zigbee2MQTT converter (friendly entity names,
+[`z2m/valvectl.mjs`](z2m/valvectl.mjs) is the external Zigbee2MQTT converter (friendly entity names,
 tunables as settings, alarms as binary sensors, OTA index). The manufacturer OTA-publishing steps
 are documented in the comment header of that file.
 
@@ -111,7 +111,7 @@ ValveController/
 │   ├── main/                   IDF glue (sensors, valve, zigbee, ota, ui, console)
 │   ├── components/ctrl_core/   pure-C control logic (host-testable)
 │   └── test_host/              Unity unit tests
-├── z2m/valvectl.js             Zigbee2MQTT external converter
+├── z2m/valvectl.mjs             Zigbee2MQTT external converter
 ├── docs/superpowers/           design spec + implementation plan
 └── board.step                  assembled-board 3D export
 ```
