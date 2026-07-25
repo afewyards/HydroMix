@@ -3,15 +3,18 @@
 #include "sensors_hw.h"
 #include "valve_hw.h"
 #include "config.h"
+#include "ota.h"
 #include "esp_log.h"
 #include "esp_timer.h"
+#include "esp_app_desc.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_zigbee_core.h"
 #include "zcl/esp_zigbee_zcl_common.h"
 #include "zcl/esp_zigbee_zcl_thermostat.h"
 
 static const char *TAG = "zigbee";
 static bool s_joined = false;
-static esp_timer_handle_t s_telemetry_timer;
 
 /* Steering never gives up: while unjoined we re-attempt on a backoff, so a
  * coordinator that is down, out of range, or not permitting join is recovered
@@ -24,7 +27,7 @@ static uint32_t s_retry_ms = STEER_RETRY_MIN_MS;
 static void configure_reporting_temp(uint8_t ep);
 static void configure_reporting_position(void);
 static void configure_reporting_bitmap(uint16_t attr_id);
-static void telemetry_timer_cb(void *arg);
+static void telemetry_task(void *arg);
 
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
 
@@ -122,6 +125,25 @@ static void add_temp_ep(esp_zb_ep_list_t *eps, uint8_t ep)
     esp_zb_ep_list_add_ep(eps, cl, epc);
 }
 
+/* ZCL OTA file version, derived from the project version (firmware/version.txt)
+ * and encoded as 0xMMmmpp00. A hardcoded constant makes every build advertise an
+ * identical version, so an OTA server can never tell images apart and updates can
+ * never apply. Falls back to 1.0.0 if the version string is not semver (e.g. the
+ * git-describe default when version.txt is absent). */
+static uint32_t ota_file_version(void)
+{
+    const esp_app_desc_t *d = esp_app_get_description();
+    uint32_t part[3] = {0, 0, 0};
+    int i = 0;
+    for (const char *p = (d ? d->version : ""); *p && i < 3; ++p) {
+        if (*p >= '0' && *p <= '9') part[i] = part[i] * 10u + (uint32_t)(*p - '0');
+        else if (*p == '.')         ++i;
+        else                        break;   /* stop at any non-semver suffix */
+    }
+    uint32_t v = ((part[0] & 0xFF) << 24) | ((part[1] & 0xFF) << 16) | ((part[2] & 0xFF) << 8);
+    return v ? v : 0x01000000;
+}
+
 static esp_zb_ep_list_t *build_endpoints(void)
 {
     esp_zb_ep_list_t *eps = esp_zb_ep_list_create();
@@ -155,12 +177,24 @@ static esp_zb_ep_list_t *build_endpoints(void)
     };
     esp_zb_cluster_list_add_analog_output_cluster(cl, esp_zb_analog_output_cluster_create(&aocfg), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
-    /* OTA upgrade client. */
+    /* OTA upgrade client. The CLIENT_DATA attribute is what actually arms the
+     * client state machine: without it the cluster is declared but never queries
+     * a server, so no image is ever offered. Transfer is handled by
+     * ota_zcl_handle() via ESP_ZB_CORE_OTA_UPGRADE_VALUE_CB_ID. */
     esp_zb_ota_cluster_cfg_t otacfg = {
         .ota_upgrade_manufacturer = VALVECTL_MFR_CODE, .ota_upgrade_image_type = 0x0001,
-        .ota_upgrade_file_version = 0x01000000,
+        .ota_upgrade_file_version = ota_file_version(),
+        .ota_upgrade_downloaded_file_ver = ota_file_version(),
     };
-    esp_zb_cluster_list_add_ota_cluster(cl, esp_zb_ota_cluster_create(&otacfg), ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
+    esp_zb_attribute_list_t *ota = esp_zb_ota_cluster_create(&otacfg);
+    /* static: the stack keeps a pointer to this, and build_endpoints() returns. */
+    static esp_zb_zcl_ota_upgrade_client_variable_t ota_client = {
+        .timer_query   = ESP_ZB_ZCL_OTA_UPGRADE_QUERY_TIMER_COUNT_DEF,
+        .hw_version    = 1,
+        .max_data_size = 64,
+    };
+    esp_zb_ota_cluster_add_attr(ota, ESP_ZB_ZCL_ATTR_OTA_UPGRADE_CLIENT_DATA_ID, &ota_client);
+    esp_zb_cluster_list_add_ota_cluster(cl, ota, ESP_ZB_ZCL_CLUSTER_CLIENT_ROLE);
 
     esp_zb_cluster_list_add_custom_cluster(cl, build_custom_cluster(), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
@@ -300,7 +334,8 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
 
 static esp_err_t action_handler(esp_zb_core_action_callback_id_t id, const void *msg)
 {
-    if (id == ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID) return attr_cb(msg);
+    if (id == ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID)    return attr_cb(msg);
+    if (id == ESP_ZB_CORE_OTA_UPGRADE_VALUE_CB_ID) return ota_zcl_handle(msg);
     return ESP_OK;
 }
 
@@ -318,10 +353,11 @@ static void zb_task(void *arg)
     ESP_ERROR_CHECK(esp_zb_start(false));
 
     /* Periodic telemetry push (spec: temps + status keep flowing even without an
-     * external trigger). 10 s cadence matches the control cycle / sensor sweep. */
-    const esp_timer_create_args_t telem_args = { .callback = telemetry_timer_cb, .name = "zb_telem" };
-    ESP_ERROR_CHECK(esp_timer_create(&telem_args, &s_telemetry_timer));
-    ESP_ERROR_CHECK(esp_timer_start_periodic(s_telemetry_timer, 10000000ULL));
+     * external trigger). 10 s cadence matches the control cycle / sensor sweep.
+     * Runs in its own task rather than an esp_timer callback: every call below
+     * blocks on the Zigbee stack lock, and esp_timer callbacks share one task, so
+     * blocking there stalls every other timer in the system. */
+    xTaskCreate(telemetry_task, "zb_telem", 4096, NULL, 4, NULL);
 
     esp_zb_stack_main_loop();
 }
@@ -409,11 +445,16 @@ static void set_local_temperature(void)
 /* Periodic telemetry: temps + status + thermostat local_temperature, every 10 s
  * regardless of writes/reads from the coordinator (BLOCKER fix — nothing else pushes
  * this data on its own). Each helper below acquires/releases the ZB lock itself. */
-static void telemetry_timer_cb(void *arg)
+#define TELEMETRY_PERIOD_MS 10000
+
+static void telemetry_task(void *arg)
 {
-    zigbee_report_temps();
-    zigbee_push_status();
-    set_local_temperature();
+    for (;;) {
+        vTaskDelay(pdMS_TO_TICKS(TELEMETRY_PERIOD_MS));
+        zigbee_report_temps();
+        zigbee_push_status();
+        set_local_temperature();
+    }
 }
 
 /* Reporting: temps at ±0.2 K or 60 s max; position at ±1 %. */
