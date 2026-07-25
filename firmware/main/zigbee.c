@@ -13,6 +13,14 @@ static const char *TAG = "zigbee";
 static bool s_joined = false;
 static esp_timer_handle_t s_telemetry_timer;
 
+/* Steering never gives up: while unjoined we re-attempt on a backoff, so a
+ * coordinator that is down, out of range, or not permitting join is recovered
+ * from without a button press. Regulation is unaffected either way — the
+ * control task keeps running on its own when the link is down. */
+#define STEER_RETRY_MIN_MS 10000u
+#define STEER_RETRY_MAX_MS 60000u
+static uint32_t s_retry_ms = STEER_RETRY_MIN_MS;
+
 static void configure_reporting_temp(uint8_t ep);
 static void configure_reporting_position(void);
 static void configure_reporting_bitmap(uint16_t attr_id);
@@ -171,6 +179,45 @@ static esp_zb_ep_list_t *build_endpoints(void)
     return eps;
 }
 
+/* Runs in the Zigbee stack task (scheduler callback), so no lock is taken. */
+static void steer_retry_cb(uint8_t param);
+
+static void schedule_steer_retry(void)
+{
+    esp_zb_scheduler_alarm_cancel(steer_retry_cb, 0);   /* never stack alarms */
+    esp_zb_scheduler_alarm(steer_retry_cb, 0, s_retry_ms);
+    ESP_LOGW(TAG, "not joined — next steering attempt in %u ms", (unsigned)s_retry_ms);
+    s_retry_ms = (s_retry_ms * 2 > STEER_RETRY_MAX_MS) ? STEER_RETRY_MAX_MS : s_retry_ms * 2;
+}
+
+static void steer_retry_cb(uint8_t param)
+{
+    (void)param;
+    if (s_joined) return;
+    esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
+    /* Re-arm unconditionally: if this attempt yields no STEERING signal at all
+     * (silent failure), the loop must still keep trying. Cancelled on join. */
+    schedule_steer_retry();
+}
+
+static void mark_joined(void)
+{
+    esp_zb_scheduler_alarm_cancel(steer_retry_cb, 0);
+    s_retry_ms = STEER_RETRY_MIN_MS;
+    s_joined = true;
+    ESP_LOGI(TAG, "joined");
+    control_task_set_link(true, now_ms());
+    configure_reporting_on_join();
+    zigbee_on_join();
+}
+
+static void mark_unjoined(void)
+{
+    s_joined = false;
+    control_task_set_link(false, now_ms());
+    schedule_steer_retry();
+}
+
 void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal)
 {
     uint32_t *p = signal->p_app_signal;
@@ -182,19 +229,25 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal)
         break;
     case ESP_ZB_BDB_SIGNAL_DEVICE_FIRST_START:
     case ESP_ZB_BDB_SIGNAL_DEVICE_REBOOT:
-        if (err == ESP_OK && esp_zb_bdb_is_factory_new())
+        if (err != ESP_OK) {
+            ESP_LOGW(TAG, "startup failed (%s)", esp_err_to_name(err));
+            mark_unjoined();
+        } else if (esp_zb_bdb_is_factory_new()) {
             esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
+            schedule_steer_retry();          /* covers a steer that never reports */
+        } else {
+            /* Already commissioned and back on our network — no STEERING signal
+             * is emitted in this path, so the join hooks must fire here too. */
+            mark_joined();
+        }
         break;
     case ESP_ZB_BDB_SIGNAL_STEERING:
-        if (err == ESP_OK) {
-            s_joined = true; ESP_LOGI(TAG, "joined");
-            control_task_set_link(true, now_ms());
-            configure_reporting_on_join();
-            zigbee_on_join();
-        } else {
-            s_joined = false;
-            control_task_set_link(false, now_ms());
-        }
+        if (err == ESP_OK) mark_joined();
+        else               mark_unjoined();
+        break;
+    case ESP_ZB_ZDO_SIGNAL_LEAVE:
+        ESP_LOGW(TAG, "left the network");
+        mark_unjoined();
         break;
     default:
         break;
@@ -274,8 +327,23 @@ static void zb_task(void *arg)
 }
 
 void zigbee_start(void){ xTaskCreate(zb_task, "zigbee", 8192, NULL, 5, NULL); }
-void zigbee_steer(void){ esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING); }
-void zigbee_leave(void){ esp_zb_bdb_reset_via_local_action(); s_joined = false; control_task_set_link(false, now_ms()); }
+/* Called from the button/console tasks, i.e. outside the Zigbee stack task —
+ * esp_zb_* APIs need the stack lock held, same as the reporting paths below. */
+void zigbee_steer(void)
+{
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_zb_bdb_start_top_level_commissioning(ESP_ZB_BDB_MODE_NETWORK_STEERING);
+    esp_zb_lock_release();
+}
+
+void zigbee_leave(void)
+{
+    esp_zb_lock_acquire(portMAX_DELAY);
+    esp_zb_bdb_reset_via_local_action();
+    esp_zb_lock_release();
+    s_joined = false;
+    control_task_set_link(false, now_ms());
+}
 bool zigbee_joined(void){ return s_joined; }
 
 void zigbee_report_temps(void)
@@ -359,6 +427,9 @@ static void configure_reporting_temp(uint8_t ep)
         .attr_id = ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID,
         .manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
     };
+    /* Without this the report goes out with APS profile 0 (ZDO), which
+     * coordinators route to the ZDO parser and reject as a malformed frame. */
+    info.dst.profile_id = ESP_ZB_AF_HA_PROFILE_ID;
     info.u.send_info.min_interval = 0;
     info.u.send_info.max_interval = 60;
     info.u.send_info.delta.s16 = 20;   /* 0.2 K in hundredths */
@@ -377,6 +448,7 @@ static void configure_reporting_position(void)
         .attr_id = ESP_ZB_ZCL_ATTR_ANALOG_OUTPUT_PRESENT_VALUE_ID,
         .manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
     };
+    info.dst.profile_id = ESP_ZB_AF_HA_PROFILE_ID;
     info.u.send_info.min_interval = 0;
     info.u.send_info.max_interval = 60;
     info.u.send_info.delta.f32 = 1.0f;   /* ±1 % */
@@ -397,6 +469,7 @@ static void configure_reporting_bitmap(uint16_t attr_id)
         .attr_id = attr_id,
         .manuf_code = VALVECTL_MFR_CODE,
     };
+    info.dst.profile_id = ESP_ZB_AF_HA_PROFILE_ID;
     info.u.send_info.min_interval = 0;
     info.u.send_info.max_interval = 0;
     info.u.send_info.delta.u16 = 0;
