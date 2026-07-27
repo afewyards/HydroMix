@@ -25,9 +25,13 @@ const e = exposes.presets, ea = exposes.access;
 //   5. Restart Z2M (or trigger a re-read of the index) so "Check for updates" picks it up.
 // See Task 27 (MANUAL CHECKPOINT) for the on-device round-trip + rollback verification.
 
-const MFR = 0x1234;                 // must match VALVECTL_MFR_CODE (firmware/main/zigbee.h)
 const CLUSTER = 0xFC00;             // VALVECTL_CUSTOM_CLUSTER_ID
-const opts = {manufacturerCode: MFR};
+// No manufacturerCode on 0xFC00 reads/writes. The firmware registers these as plain
+// attributes via esp_zb_custom_cluster_add_custom_attr() (0xFC00 is already a private
+// cluster id, so the attributes inside don't need their own code) — sending 0x1234 here
+// matched no registered attribute and every read/write came back UNSUPPORTED_ATTRIBUTE.
+// Keep in lockstep with build_custom_cluster() in firmware/main/zigbee.c.
+const opts = {};
 
 // ZCL attribute type codes used below.
 const T_BOOL   = 0x10;
@@ -54,14 +58,22 @@ const CUSTOM_ATTRS = {
 const ATTR_ID_BY_KEY = Object.fromEntries(
     Object.entries(CUSTOM_ATTRS).map(([id, v]) => [v.key, Number(id)]));
 
+// fromZigbee matching is a strict === against the cluster name zigbee-herdsman reports.
+// 0xFC00 isn't a known cluster, so herdsman names it by its decimal id as a STRING —
+// matching on the number 0xFC00 silently matched nothing ("No converter available for
+// ... cluster '64512'") and every attribute the device correctly returned was dropped on
+// the floor. Reads/writes below still take the numeric id; only this matcher is a string.
+const CLUSTER_FZ = String(CLUSTER);   // '64512'
+
 const fzCustom = {
-    cluster: CLUSTER, type: ['attributeReport', 'readResponse'],
+    cluster: CLUSTER_FZ, type: ['attributeReport', 'readResponse'],
     convert: (model, msg, publish, options, meta) => {
         const d = {}, a = msg.data;
         for (const [id, def] of Object.entries(CUSTOM_ATTRS)) {
             if (a[id] === undefined) continue;
             if (def.key === 'alarm') { d.alarm = (a[id] !== 0) ? 'ON' : 'OFF'; continue; }
-            d[def.key] = a[id];
+            // Same float32 rounding as valve_position for the SINGLE-typed tunables.
+            d[def.key] = (def.type === T_SINGLE) ? Math.round(a[id] * 100) / 100 : a[id];
         }
         return d;
     },
@@ -101,9 +113,35 @@ const fzAnalogOutput = {
     cluster: 'genAnalogOutput', type: ['attributeReport', 'readResponse'],
     convert: (model, msg, publish, options, meta) => {
         if (msg.data.presentValue === undefined) return;
-        return {valve_position: msg.data.presentValue};
+        // float32 straight off the wire is e.g. 48.08318328857422 — 0.1 % is well past
+        // anything the valve can actually resolve.
+        return {valve_position: Math.round(msg.data.presentValue * 10) / 10};
     },
 };
+// water_running is the On/Off cluster on EP1. Same trap as the temps: fz.on_off/tz.on_off
+// key on `state` (postfixed to `state_1` here by multiEndpoint), which never matches the
+// `water_running` expose — it read Null and writes silently went nowhere. Hand-rolled both
+// directions so the exposed property and the converter key agree, matching the
+// fzAnalogOutput/tzAnalogOutput pattern above.
+const fzWaterRunning = {
+    cluster: 'genOnOff', type: ['attributeReport', 'readResponse'],
+    convert: (model, msg, publish, options, meta) => {
+        if (msg.data.onOff === undefined) return;
+        return {water_running: msg.data.onOff ? 'ON' : 'OFF'};
+    },
+};
+const tzWaterRunning = {
+    key: ['water_running'],
+    convertSet: async (entity, key, value, meta) => {
+        const on = (value === 'ON' || value === true);
+        await entity.command('genOnOff', on ? 'on' : 'off', {});
+        return {state: {water_running: on ? 'ON' : 'OFF'}};
+    },
+    convertGet: async (entity, key, meta) => {
+        await entity.read('genOnOff', ['onOff']);
+    },
+};
+
 const tzAnalogOutput = {
     key: ['valve_position'],
     convertSet: async (entity, key, value, meta) => {
@@ -120,16 +158,22 @@ export default [{
     model: 'HydroMix',
     vendor: 'Knife',
     description: 'Hydronic 3-way mixing valve controller',
-    fromZigbee: [fz.on_off, fz.temperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
-    toZigbee: [tz.on_off, tz.thermostat_occupied_heating_setpoint,
+    fromZigbee: [fzWaterRunning, fz.temperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
+    toZigbee: [tzWaterRunning, tz.thermostat_occupied_heating_setpoint,
                tz.thermostat_occupied_cooling_setpoint, tzAnalogOutput, tzTunable],
     exposes: [
         e.binary('water_running', ea.ALL, 'ON', 'OFF').withDescription('Regulation enable'),
-        e.numeric('supply_temp', ea.STATE).withUnit('°C').withEndpoint('2'),
-        e.numeric('return_temp', ea.STATE).withUnit('°C').withEndpoint('3'),
-        e.numeric('source_temp', ea.STATE).withUnit('°C').withEndpoint('4'),
-        e.numeric('hx_a_temp', ea.STATE).withUnit('°C').withEndpoint('5'),
-        e.numeric('hx_b_temp', ea.STATE).withUnit('°C').withEndpoint('6'),
+        // withProperty('temperature') is load-bearing: fz.temperature publishes under
+        // `temperature`, postfixed to `temperature_<ep>` by multiEndpoint. Without it the
+        // property defaults to the expose *name* (`supply_temp_2`), which nothing ever
+        // writes — the entity then renders Null forever while the real value sits in
+        // `temperature_2`. withProperty must come BEFORE withEndpoint (withEndpoint
+        // appends the suffix to whatever property is set at that point).
+        e.numeric('supply_temp', ea.STATE).withUnit('°C').withProperty('temperature').withEndpoint('2'),
+        e.numeric('return_temp', ea.STATE).withUnit('°C').withProperty('temperature').withEndpoint('3'),
+        e.numeric('source_temp', ea.STATE).withUnit('°C').withProperty('temperature').withEndpoint('4'),
+        e.numeric('hx_a_temp', ea.STATE).withUnit('°C').withProperty('temperature').withEndpoint('5'),
+        e.numeric('hx_b_temp', ea.STATE).withUnit('°C').withProperty('temperature').withEndpoint('6'),
         e.numeric('valve_position', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100)
             .withDescription('Writable only while water_running is OFF; supersedes park_pos until ON/reboot'),
         e.enum('mode', ea.STATE, ['idle', 'heating', 'cooling']),
@@ -148,6 +192,34 @@ export default [{
         e.numeric('travel_since_resync', ea.STATE).withUnit('%'),
         e.binary('resync', ea.SET, true, false).withDescription('Trigger valve resync'),
     ],
+    // The tunables are plain read/write attributes: the firmware only sets up *reporting*
+    // for temps, valve position and the alarm/fault bitmaps, so nothing ever pushes the
+    // rest and they stay null until something reads them. Seed them once at configure.
+    // Deliberately no reporting.bind() here — the firmware configures its own reporting
+    // locally (esp_zb_zcl_update_reporting_info) and reports already arrive, so re-binding
+    // would only risk disturbing a working live device.
+    configure: async (device, coordinatorEndpoint, definition) => {
+        const ep1 = device.getEndpoint(1);
+        // Each read is isolated: an UNSUPPORTED_ATTRIBUTE on one cluster used to reject the
+        // whole promise chain, so a single bad attribute left every later read unsent and
+        // every remaining property null — hiding which one actually failed.
+        const tryRead = async (cluster, attrs, options) => {
+            try {
+                await ep1.read(cluster, attrs, options);
+            } catch (e) {
+                console.warn(`HydroMix: read ${cluster} [${attrs}] failed: ${e.message}`);
+            }
+        };
+        await tryRead('genOnOff', ['onOff']);
+        await tryRead('genAnalogOutput', ['presentValue']);
+        await tryRead('hvacThermostat', ['runningMode', 'localTemp']);
+        // One attribute per Read Attributes request, deliberately. A batched read rejects
+        // as a whole if any single attribute in it errors, so one bad id silently blanked
+        // every other tunable in the same batch — single reads of the same ids work fine.
+        for (const id of Object.keys(CUSTOM_ATTRS).map(Number)) {
+            await tryRead(CLUSTER, [id], opts);
+        }
+    },
     endpoint: (device) => ({'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6}),
     meta: {multiEndpoint: true},
     ota: true,

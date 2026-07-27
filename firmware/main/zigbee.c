@@ -4,6 +4,7 @@
 #include "valve_hw.h"
 #include "config.h"
 #include "ota.h"
+#include <math.h>
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_app_desc.h"
@@ -27,6 +28,7 @@ static uint32_t s_retry_ms = STEER_RETRY_MIN_MS;
 static void configure_reporting_temp(uint8_t ep);
 static void configure_reporting_position(void);
 static void configure_reporting_bitmap(uint16_t attr_id);
+static void configure_reporting_running_mode(void);
 static void telemetry_task(void *arg);
 
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
@@ -41,6 +43,7 @@ static void configure_reporting_on_join(void)
     configure_reporting_temp(EP_T_HXA);
     configure_reporting_temp(EP_T_HXB);
     configure_reporting_position();
+    configure_reporting_running_mode();
     /* spec §4.5: alarm/fault bitmaps report immediately (on any change, no periodic cap). */
     configure_reporting_bitmap(ATTR_ALARM_BITMAP);
     configure_reporting_bitmap(ATTR_FAULT_BITMAP);
@@ -88,8 +91,22 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     s_attr_travel_since   = 0.0f;
 
     esp_zb_attribute_list_t *custom = esp_zb_zcl_attr_list_create(VALVECTL_CUSTOM_CLUSTER_ID);
-    uint8_t rw = ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE | ESP_ZB_ZCL_ATTR_MANUF_SPEC;
-    uint8_t ro = ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING | ESP_ZB_ZCL_ATTR_MANUF_SPEC;
+    /* Plain (non-manufacturer-specific) attributes. 0xFC00 is already in the
+     * manufacturer-specific *cluster* range, so the attributes inside it don't also need a
+     * manufacturer code — and making them MANUF_SPEC is actively broken here:
+     *   - esp_zb_custom_cluster_add_custom_attr() takes no manufacturer code, so the
+     *     MANUF_SPEC flag alone registered them under code 0. Z2M reads/writes carrying
+     *     code 0x1234 matched nothing -> UNSUPPORTED_ATTRIBUTE, every tunable read null
+     *     and no write landed.
+     *   - esp_zb_cluster_add_manufacturer_attr() is the API that *does* take the code, but
+     *     its cluster_id parameter is documented as an esp_zb_zcl_cluster_id_t (a STANDARD
+     *     cluster). Passing a custom 0xFC00 leaves the descriptor inconsistent and the
+     *     ZBOSS reporting engine load-faults in zb_zcl_get_next_reporting_info() the
+     *     moment it first sweeps the table -> boot loop right after "joined".
+     * So: keep the custom-cluster API, drop MANUF_SPEC, and have the Z2M converter talk to
+     * 0xFC00 without a manufacturer code. */
+    uint8_t rw = ESP_ZB_ZCL_ATTR_ACCESS_READ_WRITE;
+    uint8_t ro = ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING;
 
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_HEAT_THRESHOLD, ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_heat_threshold);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_COOL_THRESHOLD, ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_cool_threshold);
@@ -170,7 +187,16 @@ static esp_zb_ep_list_t *build_endpoints(void)
         .control_sequence_of_operation = 0x04, /* cooling & heating */
         .system_mode = 0x01,                 /* auto */
     };
-    esp_zb_cluster_list_add_thermostat_cluster(cl, esp_zb_thermostat_cluster_create(&thcfg), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
+    /* RunningMode (0x001E) is optional and NOT part of esp_zb_thermostat_cluster_cfg_t, so
+     * esp_zb_thermostat_cluster_create() never declares it. Without this explicit add, the
+     * zigbee_push_status() write to RUNNING_MODE_ID silently no-ops and a coordinator read
+     * gets UNSUPPORTED_ATTRIBUTE — the `mode` property stays null forever. */
+    esp_zb_attribute_list_t *therm = esp_zb_thermostat_cluster_create(&thcfg);
+    static uint8_t s_attr_running_mode = 0x00;   /* stack keeps the pointer; must outlive this fn */
+    esp_zb_cluster_add_attr(therm, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
+        ESP_ZB_ZCL_ATTR_THERMOSTAT_RUNNING_MODE_ID, ESP_ZB_ZCL_ATTR_TYPE_8BIT_ENUM,
+        ESP_ZB_ZCL_ATTR_ACCESS_READ_ONLY | ESP_ZB_ZCL_ATTR_ACCESS_REPORTING, &s_attr_running_mode);
+    esp_zb_cluster_list_add_thermostat_cluster(cl, therm, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
     esp_zb_analog_output_cluster_cfg_t aocfg = {
         .present_value = 50.0f, .out_of_service = 0, .status_flags = 0,
@@ -321,8 +347,8 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
             if (*(uint8_t*)m->attribute.data.value) {
                 valve_resync();
                 uint8_t zero = 0;   /* self-clear */
-                esp_zb_zcl_set_manufacturer_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                    ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, VALVECTL_MFR_CODE, ATTR_RESYNC, &zero, false);
+                esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                    ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_RESYNC, &zero, false);
             }
             return ESP_OK;
         }
@@ -401,7 +427,12 @@ void zigbee_push_status(void)
 {
     esp_zb_lock_acquire(portMAX_DELAY);
 
-    float pos = valve_get_position();
+    /* Quantise to 0.1 % before publishing: the valve is timing-driven and cannot resolve
+     * anything close to that, so advertising the raw float is false precision to every
+     * consumer, not just Z2M. Note this does NOT by itself give a clean number on the wire
+     * — float32 cannot represent 48.1 exactly (it becomes 48.099998474121094), so the Z2M
+     * converter still rounds on receipt. This is about not claiming the resolution. */
+    float pos = roundf(valve_get_position() * 10.0f) / 10.0f;
     esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_ANALOG_OUTPUT,
         ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_ANALOG_OUTPUT_PRESENT_VALUE_ID, &pos, false);
 
@@ -419,16 +450,16 @@ void zigbee_push_status(void)
         ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_RUNNING_MODE_ID, &running_mode, false);
 
     uint16_t alarm_bits = control_task_alarm() ? 0x0001 : 0x0000;
-    esp_zb_zcl_set_manufacturer_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, VALVECTL_MFR_CODE, ATTR_ALARM_BITMAP, &alarm_bits, false);
+    esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_ALARM_BITMAP, &alarm_bits, false);
 
     uint16_t fault_bits = control_task_faults();
-    esp_zb_zcl_set_manufacturer_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, VALVECTL_MFR_CODE, ATTR_FAULT_BITMAP, &fault_bits, false);
+    esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_FAULT_BITMAP, &fault_bits, false);
 
-    float travel_since = valve_travel_since_resync();
-    esp_zb_zcl_set_manufacturer_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, VALVECTL_MFR_CODE, ATTR_TRAVEL_SINCE, &travel_since, false);
+    float travel_since = roundf(valve_travel_since_resync() * 100.0f) / 100.0f;
+    esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+        ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_TRAVEL_SINCE, &travel_since, false);
 
     esp_zb_lock_release();
 }
@@ -498,6 +529,26 @@ static void configure_reporting_position(void)
     esp_zb_zcl_update_reporting_info(&info);
 }
 
+/* RunningMode: on change, and at least every 60 s so `mode` survives a coordinator restart. */
+static void configure_reporting_running_mode(void)
+{
+    esp_zb_zcl_reporting_info_t info = {
+        .direction = ESP_ZB_ZCL_REPORT_DIRECTION_SEND,
+        .ep = EP_MAIN,
+        .cluster_id = ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
+        .cluster_role = ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+        .attr_id = ESP_ZB_ZCL_ATTR_THERMOSTAT_RUNNING_MODE_ID,
+        .manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
+    };
+    info.dst.profile_id = ESP_ZB_AF_HA_PROFILE_ID;
+    info.u.send_info.min_interval = 0;
+    info.u.send_info.max_interval = 60;
+    info.u.send_info.delta.u8 = 1;
+    info.u.send_info.def_min_interval = 0;
+    info.u.send_info.def_max_interval = 60;
+    esp_zb_zcl_update_reporting_info(&info);
+}
+
 /* Alarm/fault bitmaps: immediately on any change, no periodic re-send
  * (max_interval=0, delta=0 -> report as soon as the value differs). */
 static void configure_reporting_bitmap(uint16_t attr_id)
@@ -508,7 +559,9 @@ static void configure_reporting_bitmap(uint16_t attr_id)
         .cluster_id = VALVECTL_CUSTOM_CLUSTER_ID,
         .cluster_role = ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
         .attr_id = attr_id,
-        .manuf_code = VALVECTL_MFR_CODE,
+        /* Plain attributes now (see build_custom_cluster) — a VALVECTL_MFR_CODE here would
+         * no longer resolve to any registered attribute. */
+        .manuf_code = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
     };
     info.dst.profile_id = ESP_ZB_AF_HA_PROFILE_ID;
     info.u.send_info.min_interval = 0;
