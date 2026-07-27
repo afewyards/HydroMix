@@ -5,6 +5,7 @@
 #include "config.h"
 #include "ota.h"
 #include <math.h>
+#include <string.h>
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_app_desc.h"
@@ -161,6 +162,22 @@ static uint32_t ota_file_version(void)
     return v ? v : 0x01000000;
 }
 
+/* ZCL character strings are length-prefixed (byte 0 = length), same shape as the MFR/MODEL
+ * literals above — but these two are built at runtime from the app descriptor so they can
+ * never drift from the flashed image. Storage is static: the stack keeps the pointer and
+ * build_endpoints() returns. */
+static char SW_BUILD_ID[17];
+static char DATE_CODE[17];
+
+static void fill_zcl_string(char *dst, size_t cap, const char *src)
+{
+    size_t n = strlen(src);
+    if (n > cap - 2) n = cap - 2;      /* 1 length byte + NUL */
+    dst[0] = (char)n;
+    memcpy(dst + 1, src, n);
+    dst[n + 1] = '\0';
+}
+
 static esp_zb_ep_list_t *build_endpoints(void)
 {
     esp_zb_ep_list_t *eps = esp_zb_ep_list_create();
@@ -170,7 +187,16 @@ static esp_zb_ep_list_t *build_endpoints(void)
 
     esp_zb_basic_cluster_cfg_t bcfg = { .zcl_version = 8, .power_source = 0x01 };
     esp_zb_attribute_list_t *basic = esp_zb_basic_cluster_create(&bcfg);
+    /* SWBuildID (0x4000) is what Z2M surfaces as "Firmware build ID"; without it the field
+     * reads "unknown". DateCode (0x0006) backs "Firmware date code". Both are optional, so
+     * esp_zb_basic_cluster_create() does not declare them. */
+    const esp_app_desc_t *app = esp_app_get_description();
+    fill_zcl_string(SW_BUILD_ID, sizeof SW_BUILD_ID, app ? app->version : "0.0.0");
+    fill_zcl_string(DATE_CODE,   sizeof DATE_CODE,   app ? app->date    : "");
+
     esp_zb_basic_cluster_add_attr(basic, ESP_ZB_ZCL_ATTR_BASIC_MANUFACTURER_NAME_ID, MFR);
+    esp_zb_basic_cluster_add_attr(basic, ESP_ZB_ZCL_ATTR_BASIC_SW_BUILD_ID, SW_BUILD_ID);
+    esp_zb_basic_cluster_add_attr(basic, ESP_ZB_ZCL_ATTR_BASIC_DATE_CODE_ID, DATE_CODE);
     esp_zb_basic_cluster_add_attr(basic, ESP_ZB_ZCL_ATTR_BASIC_MODEL_IDENTIFIER_ID, MODEL);
     esp_zb_cluster_list_add_basic_cluster(cl, basic, ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
