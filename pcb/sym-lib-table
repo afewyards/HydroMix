@@ -1,0 +1,4 @@
+(sym_lib_table
+	(version 7)
+	(lib (name "UJ20") (type "KiCad") (uri "${KIPRJMOD}/UJ20_C_V_C_3_SMT_TR") (options "") (descr ""))
+)
