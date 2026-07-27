@@ -10,8 +10,14 @@
 
 static const char *TAG = "sensors";
 
-/* GPIO per sensor id (spec §2). */
-static const int PIN[SENS_COUNT] = { 0, 1, 10, 18, 19 };
+/* GPIO per sensor id (spec §2): SUPPLY, RETURN, SOURCE, HX_A, HX_B.
+ *
+ * BENCH WIRING 2026-07-27 — HX_A and HX_B are deliberately SWAPPED relative to the spec
+ * (HX_A reads GPIO19, HX_B reads GPIO18) because the HX-B probe is currently plugged into
+ * the HX-A port. This matters beyond labelling: mode detection keys off HX_A, so without
+ * the swap heating/cooling selection would follow the wrong probe.
+ * REVERT to { 0, 1, 10, 18, 19 } as soon as the probes are moved to their correct ports. */
+static const int PIN[SENS_COUNT] = { 0, 1, 10, 19, 18 };
 #define SWEEP_PERIOD_MS 10000
 #define CONVERT_MS       750
 #define MAX_RETRY          3
