@@ -53,6 +53,22 @@ void test_ki_dt_scaling(void){
     TEST_ASSERT_EQUAL_FLOAT(9.0f, s.integ);
 }
 
+static const pi_cfg_t cfg_db = { .kp = 2.0f, .ki = 6.0f, .out_min = 0.0f, .out_max = 100.0f,
+                                 .deadband_k = 0.25f };
+
+/* Inside the band: pure FF out, integrator untouched. */
+void test_deadband_inside(void){
+    float out = pi_step(&s, 50.0f, 0.2f, false, false, 10.0f, &cfg_db);
+    TEST_ASSERT_EQUAL_FLOAT(50.0f, out);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, s.integ);
+}
+
+/* Gap form: err 1.25 acts as 1.0. p = 2*1 = 2, integ = 6*1*(10/60) = 1 -> 53. */
+void test_deadband_gap_ramp(void){
+    float out = pi_step(&s, 50.0f, 1.25f, false, false, 10.0f, &cfg_db);
+    TEST_ASSERT_EQUAL_FLOAT(53.0f, out);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_heating_trim);
@@ -61,5 +77,7 @@ int main(void){
     RUN_TEST(test_mode_change_hold_3);
     RUN_TEST(test_freeze);
     RUN_TEST(test_ki_dt_scaling);
+    RUN_TEST(test_deadband_inside);
+    RUN_TEST(test_deadband_gap_ramp);
     return UNITY_END();
 }

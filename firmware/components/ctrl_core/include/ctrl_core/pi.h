@@ -4,7 +4,8 @@
 #define PI_HOLD_CYCLES 3
 
 typedef struct { float integ; int hold; } pi_state_t;
-typedef struct { float kp; float ki; /* %/K per minute */ float out_min; float out_max; } pi_cfg_t;
+typedef struct { float kp; float ki; /* %/K per minute */ float out_min; float out_max;
+                 float deadband_k; /* gap-form error deadband, K; 0 = disabled */ } pi_cfg_t;
 
 void  pi_init(pi_state_t *s);
 void  pi_reset(pi_state_t *s);        /* integ=0, hold=0 (water_running OFF) */
