@@ -2,6 +2,7 @@
 #include "ctrl_core/types.h"
 
 #define PI_HOLD_CYCLES 3
+#define PI_TRIM_CLAMP_PCT 20.0f
 
 typedef struct { float integ; int hold; } pi_state_t;
 typedef struct { float kp; float ki; /* %/K per minute */ float out_min; float out_max;

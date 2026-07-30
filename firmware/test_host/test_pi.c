@@ -69,6 +69,14 @@ void test_deadband_gap_ramp(void){
     TEST_ASSERT_EQUAL_FLOAT(53.0f, out);
 }
 
+/* Trim (P+I) caps at +20 even though total output never hits the 0/100 clamp. */
+void test_trim_clamp_backcalc(void){
+    for (int i = 0; i < 40; i++) pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg);
+    float out = pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg);
+    TEST_ASSERT_EQUAL_FLOAT(70.0f, out);          /* 50 + 20 */
+    TEST_ASSERT_TRUE(s.integ <= 10.0f + 1e-4f);   /* back-calculated: 20 - p(10) */
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_heating_trim);
@@ -79,5 +87,6 @@ int main(void){
     RUN_TEST(test_ki_dt_scaling);
     RUN_TEST(test_deadband_inside);
     RUN_TEST(test_deadband_gap_ramp);
+    RUN_TEST(test_trim_clamp_backcalc);
     return UNITY_END();
 }

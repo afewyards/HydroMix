@@ -17,6 +17,8 @@ float pi_step(pi_state_t *s, float pos_ff, float err_supply, bool cooling, bool 
 
     float p = cfg->kp * e_eff;
     float cand = s->integ + cfg->ki * e_eff * (dt_s / 60.0f);
+    if (p + cand >  PI_TRIM_CLAMP_PCT) cand =  PI_TRIM_CLAMP_PCT - p;   /* back-calculate */
+    if (p + cand < -PI_TRIM_CLAMP_PCT) cand = -PI_TRIM_CLAMP_PCT - p;
     float out = pos_ff + p + cand;
     float clamped = ctrl_clampf(out, cfg->out_min, cfg->out_max);
     bool saturated = (out != clamped);
