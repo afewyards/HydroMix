@@ -7,6 +7,9 @@
 #include "ctrl_core/degradation.h"
 #include "ctrl_core/alarm.h"
 
+#define TRANSIT_MOVE_PCT    0.5f
+#define TRANSIT_RELEASE_K   0.25f
+
 typedef struct {
     mode_detect_state_t mode;
     ff_state_t          ff;
@@ -18,12 +21,19 @@ typedef struct {
     bool                inited;
     uint32_t            last_now_ms;
     bool                have_now;
+    float               last_pos;
+    bool                have_pos;
+    bool                holding;
+    uint32_t            hold_until_ms;
+    float               hold_supply_ref;
+    float               latched_trim;
 } control_state_t;
 
 typedef struct {
     float t_source_f, t_return_f;   /* filtered */
     float t_supply;                 /* raw */
     float hx_a;
+    float valve_pos;                /* actual estimated valve position, % */
     sensor_faults_t faults;
     bool  water_running;
     bool  resync_active;
@@ -39,6 +49,7 @@ typedef struct {
     pi_cfg_t   pi_cfg;
     gov_cfg_t  gov_cfg;
     uint32_t   alarm_dwell_ms;
+    float      deadtime_s;
 } control_cfg_t;
 
 typedef struct {

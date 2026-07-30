@@ -1,5 +1,6 @@
 #include "unity.h"
 #include "ctrl_core/control.h"
+#include <math.h>
 
 static control_state_t st;
 static control_cfg_t cfg;
@@ -12,11 +13,19 @@ void setUp(void){
     cfg.pi_cfg   = (pi_cfg_t){ 4.0f, 3.0f, 0.0f, 100.0f };
     cfg.gov_cfg  = (gov_cfg_t){ 36.0f, 16.0f, 35.0f, 17.0f };
     cfg.alarm_dwell_ms = 300000;
+    cfg.deadtime_s = 0.0f;                                  /* 0 = hold disabled (old behavior) */
     in = (control_in_t){0};
     in.water_running = true; in.link_up = true;
     in.t_supply = 30.0f; in.t_source_f = 45.0f; in.t_return_f = 30.0f; in.hx_a = 30.0f;
 }
 void tearDown(void){}
+
+static uint32_t warmup_heating(void){
+    uint32_t t = 0;
+    control_step(&st, &in, &cfg, t);
+    for (int i = 0; i < 8; i++){ t += 10000; control_step(&st, &in, &cfg, t); }
+    return t;   /* HEATING committed, PI active */
+}
 
 /* water_running OFF -> park at park_pos, not regulating. */
 void test_water_off_parks(void){
@@ -73,6 +82,63 @@ void test_link_guard(void){
     TEST_ASSERT_TRUE(guarded.valve_target < normal.valve_target); /* warmer sp = less cold source */
 }
 
+/* After the valve moves >0.5 %, integrator freezes and trim latches for deadtime_s. */
+void test_transit_hold(void){
+    cfg.deadtime_s = 30.0f;
+    in.valve_pos = 40.0f; in.t_supply = 32.0f;
+    uint32_t t = warmup_heating();
+    control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_TRUE(st.pi.integ != 0.0f);            /* PI integrating */
+    in.valve_pos = 42.0f;                             /* moved 2 % -> arms hold */
+    control_step(&st, &in, &cfg, t += 10000);
+    float integ1 = st.pi.integ;
+    control_step(&st, &in, &cfg, t += 10000);         /* holding */
+    TEST_ASSERT_TRUE(st.holding);
+    TEST_ASSERT_EQUAL_FLOAT(integ1, st.pi.integ);     /* frozen */
+    control_step(&st, &in, &cfg, t += 20000);         /* deadtime elapsed */
+    TEST_ASSERT_FALSE(st.holding);
+    TEST_ASSERT_TRUE(st.pi.integ != integ1);          /* integrating again */
+}
+
+/* Early release when the pipe answers (>0.25 K supply move since hold start). */
+void test_transit_hold_early_release(void){
+    cfg.deadtime_s = 60.0f;
+    in.valve_pos = 40.0f; in.t_supply = 32.0f;
+    uint32_t t = warmup_heating();
+    in.valve_pos = 43.0f;                             /* arm */
+    control_step(&st, &in, &cfg, t += 10000);
+    float integ1 = st.pi.integ;
+    in.t_supply = 32.4f;                              /* pipe answered */
+    control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_FALSE(st.holding);
+    TEST_ASSERT_TRUE(st.pi.integ != integ1);
+}
+
+/* Governor overrides regardless of hold state. */
+void test_governor_bypasses_hold(void){
+    cfg.deadtime_s = 60.0f;
+    in.valve_pos = 40.0f; in.t_supply = 32.0f;
+    uint32_t t = warmup_heating();
+    in.valve_pos = 43.0f;
+    control_step(&st, &in, &cfg, t += 10000);         /* armed */
+    in.t_supply = 37.0f;                              /* over gov_high */
+    control_out_t o = control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, o.valve_target);
+}
+
+/* FF stays live during the hold; only the trim is latched. */
+void test_ff_live_during_hold(void){
+    cfg.deadtime_s = 120.0f;
+    in.valve_pos = 40.0f; in.t_supply = 34.9f;        /* near-zero err */
+    uint32_t t = warmup_heating();
+    in.valve_pos = 43.0f;                             /* arm */
+    control_out_t a = control_step(&st, &in, &cfg, t += 10000);
+    in.t_return_f = 25.0f;                            /* FF input shifts while holding */
+    control_out_t b = control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_TRUE(st.holding);
+    TEST_ASSERT_TRUE(fabsf(b.valve_target - a.valve_target) > 1.0f);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -81,5 +147,9 @@ int main(void){
     RUN_TEST(test_governor_overrides);
     RUN_TEST(test_degradation_park_cooling);
     RUN_TEST(test_link_guard);
+    RUN_TEST(test_transit_hold);
+    RUN_TEST(test_transit_hold_early_release);
+    RUN_TEST(test_governor_bypasses_hold);
+    RUN_TEST(test_ff_live_during_hold);
     return UNITY_END();
 }

@@ -1,4 +1,5 @@
 #include "ctrl_core/control.h"
+#include <math.h>
 
 void control_init(control_state_t *s){
     mode_detect_init(&s->mode);
@@ -10,6 +11,37 @@ void control_init(control_state_t *s){
     s->prev_resync = false;
     s->inited = true;
     s->have_now = false;
+    s->have_pos = false;
+    s->holding = false;
+    s->latched_trim = 0.0f;
+}
+
+/* PI wrapped in the transit hold: after real valve movement, latch the trim and
+ * freeze the integrator until the pipe answers (deadtime_s or >0.25 K supply move).
+ * prev_pos/had_pos are the PREVIOUS cycle's valve position (control_step records the
+ * current one into state before calling this). */
+static float pi_transit(control_state_t *s, const control_in_t *in, const control_cfg_t *cfg,
+                        float pos_ff, float t_set, bool cooling, bool freeze,
+                        float dt_s, float prev_pos, bool had_pos, uint32_t now){
+    if (s->holding &&
+        ((int32_t)(now - s->hold_until_ms) >= 0 ||
+         fabsf(in->t_supply - s->hold_supply_ref) > TRANSIT_RELEASE_K))
+        s->holding = false;
+
+    float target;
+    if (s->holding){
+        target = ctrl_clampf(pos_ff + s->latched_trim, cfg->pi_cfg.out_min, cfg->pi_cfg.out_max);
+    } else {
+        target = pi_step(&s->pi, pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, &cfg->pi_cfg);
+        s->latched_trim = target - pos_ff;
+    }
+
+    if (had_pos && fabsf(in->valve_pos - prev_pos) > TRANSIT_MOVE_PCT){
+        s->holding = true;                                   /* (re)arm on any movement */
+        s->hold_until_ms = now + (uint32_t)(cfg->deadtime_s * 1000.0f);
+        s->hold_supply_ref = in->t_supply;
+    }
+    return target;
 }
 
 control_out_t control_step(control_state_t *s, const control_in_t *in,
@@ -19,14 +51,23 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     float dt_s = s->have_now ? ctrl_clampf((now - s->last_now_ms) / 1000.0f, 1.0f, 120.0f) : 10.0f;
     s->last_now_ms = now; s->have_now = true;
 
+    float prev_pos = s->last_pos; bool had_pos = s->have_pos;
+    s->last_pos = in->valve_pos; s->have_pos = true;
+
     /* Mode (HX-A). Fault -> hold last mode (mode_detect handles invalid). */
     ctrl_mode_t mode = mode_detect_step(&s->mode, in->hx_a, !in->faults.hx_a, &cfg->mode_cfg, now);
     o.mode = mode;
 
-    if (mode != s->last_mode){ pi_mode_change(&s->pi); s->last_mode = mode; }
+    if (mode != s->last_mode){
+        pi_mode_change(&s->pi); s->last_mode = mode;
+        s->holding = false; s->latched_trim = 0.0f;
+    }
 
     /* Resync falling edge -> re-seed FF fresh with integrator 0. */
-    if (s->prev_resync && !in->resync_active) pi_reset(&s->pi);
+    if (s->prev_resync && !in->resync_active){
+        pi_reset(&s->pi);
+        s->holding = false; s->latched_trim = 0.0f;
+    }
     s->prev_resync = in->resync_active;
 
     /* Telemetry (always). */
@@ -38,6 +79,7 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     /* water_running OFF: park, clear integrator, not regulating. */
     if (!in->water_running){
         pi_reset(&s->pi);
+        s->holding = false; s->latched_trim = 0.0f;
         o.valve_target = cfg->park_pos;
         o.regulating = false;
         return o;
@@ -61,6 +103,7 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     switch (deg.strategy){
     case CTRL_PARK:
         pi_reset(&s->pi);
+        s->holding = false; s->latched_trim = 0.0f;
         o.valve_target = deg.park_pos;
         return o;
     case CTRL_FF_ONLY: {
@@ -70,13 +113,13 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     case CTRL_PI_ONLY:
         /* No usable source/return -> pure PI around park baseline. */
-        target = pi_step(&s->pi, cfg->park_pos, t_set - in->t_supply, cooling, freeze_pi, dt_s, &cfg->pi_cfg);
+        target = pi_transit(s, in, cfg, cfg->park_pos, t_set, cooling, freeze_pi, dt_s, prev_pos, had_pos, now);
         break;
     case CTRL_FULL:
     default: {
         ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f);
         bool freeze = freeze_pi || ff.frozen;               /* low authority freezes integrator */
-        target = pi_step(&s->pi, ff.pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, &cfg->pi_cfg);
+        target = pi_transit(s, in, cfg, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
         break;
     }
     }
