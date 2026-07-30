@@ -36,7 +36,13 @@ static float pi_transit(control_state_t *s, const control_in_t *in, const contro
 
     float target;
     if (s->holding){
-        target = ctrl_clampf(pos_ff + s->latched_trim, pc->out_min, pc->out_max);
+        /* The trim was latched under whatever strategy was active when the hold
+         * armed (e.g. CTRL_PI_ONLY, trim_max=100). If the strategy flips back to
+         * CTRL_FULL (probe recovery) while still holding, replaying that trim
+         * onto the FF baseline must be re-bounded to the CURRENT strategy's
+         * authority, not the one that produced it. */
+        float tm = (pc->trim_max > 0.0f) ? pc->trim_max : PI_TRIM_CLAMP_PCT;
+        target = ctrl_clampf(pos_ff + ctrl_clampf(s->latched_trim, -tm, tm), pc->out_min, pc->out_max);
     } else {
         target = pi_step(&s->pi, pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, pc);
         s->latched_trim = target - pos_ff;

@@ -162,6 +162,42 @@ void test_pi_only_full_authority(void){
     TEST_ASSERT_TRUE(o.valve_target > 75.0f);
 }
 
+/* A trim latched while holding under CTRL_PI_ONLY (trim_max=100, no cap) must
+ * be re-bounded to the CURRENT strategy's authority if the strategy flips
+ * back to CTRL_FULL (probe recovery) while the hold is still latched --
+ * otherwise a PI_ONLY-sized trim gets replayed straight onto the FF baseline,
+ * blowing through the CTRL_FULL +/-20 clamp. */
+void test_hold_trim_clamped_on_strategy_flip(void){
+    cfg.deadtime_s = 0.0f;                              /* hold releases every cycle during buildup */
+    uint32_t t = warmup_heating();                      /* CTRL_FULL; FF = (35-30)/(45-30)*100 = 33.33 % */
+    in.faults.source = true;                            /* -> CTRL_PI_ONLY, full trim authority */
+    in.t_supply = 30.0f;                                /* err = +5 K, sustained */
+    in.valve_pos = cfg.park_pos;
+    control_out_t o = {0};
+    for (int i = 0; i < 6; i++){                         /* build a trim well past +/-20 */
+        t += 10000;
+        o = control_step(&st, &in, &cfg, t);
+        in.valve_pos = o.valve_target;
+    }
+    TEST_ASSERT_TRUE(st.latched_trim > 20.0f);
+
+    cfg.deadtime_s = 60.0f;                             /* this arm must survive the strategy flip below */
+    t += 10000;
+    o = control_step(&st, &in, &cfg, t);                /* still CTRL_PI_ONLY */
+    in.valve_pos = o.valve_target;
+    TEST_ASSERT_TRUE(st.holding);
+    TEST_ASSERT_TRUE(st.latched_trim > 20.0f);
+
+    in.faults.source = false;                           /* probe recovers -> back to CTRL_FULL, still holding */
+    t += 10000;
+    o = control_step(&st, &in, &cfg, t);
+    TEST_ASSERT_EQUAL(CTRL_FULL, o.strategy);
+    TEST_ASSERT_TRUE(st.holding);                       /* hold survived the strategy flip */
+    /* Replayed trim clamped to +/-20 around the FF baseline (33.33 %), not the
+     * unclamped PI_ONLY trim (would be ~70 % without the fix). */
+    TEST_ASSERT_TRUE(fabsf(o.valve_target - 53.3333f) < 0.05f);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -175,5 +211,6 @@ int main(void){
     RUN_TEST(test_governor_bypasses_hold);
     RUN_TEST(test_ff_live_during_hold);
     RUN_TEST(test_pi_only_full_authority);
+    RUN_TEST(test_hold_trim_clamped_on_strategy_flip);
     return UNITY_END();
 }
