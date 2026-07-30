@@ -123,12 +123,12 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_GOV_HIGH,       ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_gov_high);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_GOV_LOW,        ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_gov_low);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_ALARM_DWELL,    ESP_ZB_ZCL_ATTR_TYPE_U32,    rw, &s_attr_alarm_dwell);
-    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_DEADTIME_S,  ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_deadtime_s);
-    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_PI_DEADBAND, ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_pi_deadband);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_RESYNC,         ESP_ZB_ZCL_ATTR_TYPE_BOOL,   rw, &s_attr_resync);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_ALARM_BITMAP,   ESP_ZB_ZCL_ATTR_TYPE_16BITMAP, ro, &s_attr_alarm_bitmap);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_FAULT_BITMAP,   ESP_ZB_ZCL_ATTR_TYPE_16BITMAP, ro, &s_attr_fault_bitmap);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_TRAVEL_SINCE,   ESP_ZB_ZCL_ATTR_TYPE_SINGLE, ro, &s_attr_travel_since);
+    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_DEADTIME_S,     ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_deadtime_s);
+    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_PI_DEADBAND,    ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_pi_deadband);
 
     return custom;
 }
@@ -385,6 +385,33 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
             return ESP_OK;
         }
         config_apply_custom(m->attribute.id, m->attribute.data.value);   /* config.c, persists */
+        /* config_apply_custom() clamps some tunables (kp/ki/park_pos/deadtime_s/
+         * pi_deadband_k); echo the clamped g_config value back into the ZCL attribute
+         * store so a subsequent read reflects the regulated value instead of the raw
+         * write the stack already latched into the backing s_attr_* variable. */
+        switch (m->attribute.id) {
+        case ATTR_PARK_POS:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PARK_POS, &g_config.park_pos, false);
+            break;
+        case ATTR_KP:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KP, &g_config.kp, false);
+            break;
+        case ATTR_KI:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KI, &g_config.ki, false);
+            break;
+        case ATTR_DEADTIME_S:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_DEADTIME_S, &g_config.deadtime_s, false);
+            break;
+        case ATTR_PI_DEADBAND:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PI_DEADBAND, &g_config.pi_deadband_k, false);
+            break;
+        default: break;   /* unclamped attrs already match what the stack latched */
+        }
         return ESP_OK;
     }
     return ESP_OK;

@@ -28,6 +28,21 @@ typedef struct {
     uint32_t alarm_dwell_ms, enter_dwell_ms, leave_dwell_ms;
 } config_v1_t;
 
+/* Defensive clamp applied after every successful load path (fresh v2 blob or v1
+ * migration) so a stale, hand-edited, or bit-flipped NVS blob can never leave
+ * g_config outside the bounds every write path (config_apply_custom / ctrl_core's
+ * tunable_apply) already enforces. */
+static void clamp_config(config_t *c)
+{
+    c->park_pos      = ctrl_clampf(c->park_pos, 0.0f, 100.0f);
+    c->heat_setpoint = ctrl_clampf(c->heat_setpoint, 17.0f, 35.0f);
+    c->cool_setpoint = ctrl_clampf(c->cool_setpoint, 17.0f, 35.0f);
+    c->kp            = ctrl_clampf(c->kp, 0.5f, 15.0f);
+    c->ki            = ctrl_clampf(c->ki, 0.0f, 5.0f);
+    c->deadtime_s    = ctrl_clampf(c->deadtime_s, 0.0f, 120.0f);
+    c->pi_deadband_k = ctrl_clampf(c->pi_deadband_k, 0.0f, 1.0f);
+}
+
 void config_load(void)
 {
     esp_err_t e = nvs_flash_init();
@@ -43,21 +58,27 @@ void config_load(void)
     if (nvs_get_blob(h, "cfg", NULL, &sz) == ESP_OK) {
         if (sz == sizeof(config_t)) {
             config_t tmp;
-            if (nvs_get_blob(h, "cfg", &tmp, &sz) == ESP_OK && tmp.cfg_version == CONFIG_VERSION)
+            if (nvs_get_blob(h, "cfg", &tmp, &sz) == ESP_OK && tmp.cfg_version == CONFIG_VERSION) {
                 g_config = tmp;
+                clamp_config(&g_config);
+            } else {
+                ESP_LOGW(TAG, "cfg blob v2-sized but unreadable or version mismatch, using defaults");
+            }
         } else if (sz == sizeof(config_v1_t)) {
             config_v1_t v1;
             if (nvs_get_blob(h, "cfg", &v1, &sz) == ESP_OK) {
                 memcpy(&g_config, &v1, sizeof(v1));       /* common prefix, same layout */
-                g_config.kp = ctrl_clampf(v1.kp, 0.5f, 15.0f);
-                g_config.ki = ctrl_clampf(v1.ki * 6.0f, 0.0f, 5.0f);  /* per-10s-cycle -> per-min */
+                g_config.ki = v1.ki * 6.0f;               /* per-10s-cycle -> per-min */
                 g_config.deadtime_s = DEFAULTS.deadtime_s;
                 g_config.pi_deadband_k = DEFAULTS.pi_deadband_k;
+                clamp_config(&g_config);
                 g_config.cfg_version = CONFIG_VERSION;
                 nvs_close(h);
                 ESP_LOGI(TAG, "cfg migrated v1->v2 (ki %.2f/cycle -> %.2f/min)", v1.ki, g_config.ki);
                 config_save();
                 return;
+            } else {
+                ESP_LOGW(TAG, "cfg v1 blob unreadable, using defaults");
             }
         }
     }
