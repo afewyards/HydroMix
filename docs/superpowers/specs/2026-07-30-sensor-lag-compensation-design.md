@@ -2,7 +2,7 @@
 
 - **Date:** 2026-07-30
 - **Status:** Approved
-- **Target firmware:** 1.0.6
+- **Target firmware:** 1.1.0 (current: 1.0.7; minor bump — `ki` changes unit and new attributes are added)
 
 ## Problem
 
@@ -86,7 +86,7 @@ the fix.
    insulation over each probe and ~100 mm of pipe either side. Halves probe lag
    (60–120 s → 20–30 s) and removes the 2–5 K ambient-coupling bias that skews
    both PI and FF.
-3. **Firmware 1.0.6** via the existing OTA override index.
+3. **Firmware 1.1.0** via the existing OTA override index.
 
 ## Out of scope (second wave, only if hunting persists)
 
