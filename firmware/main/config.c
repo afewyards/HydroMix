@@ -80,6 +80,9 @@ void config_load(void)
             } else {
                 ESP_LOGW(TAG, "cfg v1 blob unreadable, using defaults");
             }
+        } else {
+            ESP_LOGW(TAG, "cfg blob size %u matches neither v1 (%u) nor v2 (%u) layout, using defaults",
+                     (unsigned)sz, (unsigned)sizeof(config_v1_t), (unsigned)sizeof(config_t));
         }
     }
     nvs_close(h);
