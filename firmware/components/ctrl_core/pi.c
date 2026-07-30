@@ -16,14 +16,15 @@ float pi_step(pi_state_t *s, float pos_ff, float err_supply, bool cooling, bool 
     else if (err < -cfg->deadband_k) e_eff = err + cfg->deadband_k;
 
     float p = cfg->kp * e_eff;
+    float tm = (cfg->trim_max > 0.0f) ? cfg->trim_max : PI_TRIM_CLAMP_PCT;
     float cand = s->integ + cfg->ki * e_eff * (dt_s / 60.0f);
-    if (p + cand >  PI_TRIM_CLAMP_PCT) cand =  PI_TRIM_CLAMP_PCT - p;   /* back-calculate */
-    if (p + cand < -PI_TRIM_CLAMP_PCT) cand = -PI_TRIM_CLAMP_PCT - p;
-    float out = pos_ff + p + cand;
+    cand = ctrl_clampf(cand, -tm, tm);                 /* integrator state itself stays bounded */
+    float trim = ctrl_clampf(p + cand, -tm, tm);
+    float out = pos_ff + trim;
     float clamped = ctrl_clampf(out, cfg->out_min, cfg->out_max);
-    bool saturated = (out != clamped);
-    bool pushing = (clamped >= cfg->out_max && e_eff > 0.0f) ||
-                   (clamped <= cfg->out_min && e_eff < 0.0f);
-    if (!saturated || !pushing) s->integ = cand;   /* conditional anti-windup */
-    return ctrl_clampf(pos_ff + p + s->integ, cfg->out_min, cfg->out_max);
+    bool saturated = (out != clamped) || (p + cand != trim);
+    bool pushing = ((clamped >= cfg->out_max || trim >=  tm) && e_eff > 0.0f) ||
+                   ((clamped <= cfg->out_min || trim <= -tm) && e_eff < 0.0f);
+    if (!saturated || !pushing) s->integ = cand;       /* conditional anti-windup at BOTH clamps */
+    return ctrl_clampf(pos_ff + ctrl_clampf(p + s->integ, -tm, tm), cfg->out_min, cfg->out_max);
 }

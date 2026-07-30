@@ -114,15 +114,19 @@ void test_transit_hold_early_release(void){
     TEST_ASSERT_TRUE(st.pi.integ != integ1);
 }
 
-/* Governor overrides regardless of hold state. */
+/* Governor overrides regardless of hold state -- and the hold itself stays
+ * latched throughout, proving the governor clamp is applied on top of (not
+ * instead of) the frozen transit-hold trim. */
 void test_governor_bypasses_hold(void){
     cfg.deadtime_s = 60.0f;
-    in.valve_pos = 40.0f; in.t_supply = 32.0f;
-    uint32_t t = warmup_heating();
-    in.valve_pos = 43.0f;
-    control_step(&st, &in, &cfg, t += 10000);         /* armed */
-    in.t_supply = 37.0f;                              /* over gov_high */
+    in.valve_pos = 40.0f; in.t_supply = 35.9f;         /* stays under gov_high 36 */
+    uint32_t t = warmup_heating();                     /* err = 35-35.9 = -0.9 K, fine for heating */
+    in.valve_pos = 43.0f;                              /* moved 3 % -> arms hold */
+    control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_TRUE(st.holding);
+    in.t_supply = 36.1f;                               /* over gov_high; Delta 0.2 < release 0.25 -> hold stays latched */
     control_out_t o = control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_TRUE(st.holding);
     TEST_ASSERT_EQUAL_FLOAT(0.0f, o.valve_target);
 }
 
@@ -139,6 +143,25 @@ void test_ff_live_during_hold(void){
     TEST_ASSERT_TRUE(fabsf(b.valve_target - a.valve_target) > 1.0f);
 }
 
+/* CTRL_PI_ONLY gets full trim authority (park_pos +/- full 0..100 span), not
+ * the default +/-20 % clamp: a sustained error must drive the target well
+ * past what a +/-20 clamp around park_pos (50) could ever reach (max 70). */
+void test_pi_only_full_authority(void){
+    cfg.deadtime_s = 0.0f;                              /* hold releases every cycle -- simplest */
+    uint32_t t = warmup_heating();
+    in.faults.source = true;                            /* source-or-return fault -> CTRL_PI_ONLY */
+    in.t_supply = 30.0f;                                /* err = 35-30 = +5 K, sustained */
+    in.valve_pos = cfg.park_pos;
+    control_out_t o = {0};
+    for (int i = 0; i < 30; i++){
+        t += 10000;
+        o = control_step(&st, &in, &cfg, t);
+        TEST_ASSERT_EQUAL(CTRL_PI_ONLY, o.strategy);
+        in.valve_pos = o.valve_target;                  /* feed back -> transit hold arms/releases naturally */
+    }
+    TEST_ASSERT_TRUE(o.valve_target > 75.0f);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -151,5 +174,6 @@ int main(void){
     RUN_TEST(test_transit_hold_early_release);
     RUN_TEST(test_governor_bypasses_hold);
     RUN_TEST(test_ff_live_during_hold);
+    RUN_TEST(test_pi_only_full_authority);
     return UNITY_END();
 }

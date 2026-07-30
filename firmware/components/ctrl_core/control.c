@@ -14,6 +14,10 @@ void control_init(control_state_t *s){
     s->have_pos = false;
     s->holding = false;
     s->latched_trim = 0.0f;
+    s->last_pos = 0.0f;
+    s->last_now_ms = 0;
+    s->hold_until_ms = 0;
+    s->hold_supply_ref = 0.0f;
 }
 
 /* PI wrapped in the transit hold: after real valve movement, latch the trim and
@@ -21,8 +25,10 @@ void control_init(control_state_t *s){
  * prev_pos/had_pos are the PREVIOUS cycle's valve position (control_step records the
  * current one into state before calling this). */
 static float pi_transit(control_state_t *s, const control_in_t *in, const control_cfg_t *cfg,
-                        float pos_ff, float t_set, bool cooling, bool freeze,
+                        const pi_cfg_t *pc, float pos_ff, float t_set, bool cooling, bool freeze,
                         float dt_s, float prev_pos, bool had_pos, uint32_t now){
+    if (freeze){ s->holding = false; s->latched_trim = 0.0f; }   /* freeze semantics outrank the hold */
+
     if (s->holding &&
         ((int32_t)(now - s->hold_until_ms) >= 0 ||
          fabsf(in->t_supply - s->hold_supply_ref) > TRANSIT_RELEASE_K))
@@ -30,9 +36,9 @@ static float pi_transit(control_state_t *s, const control_in_t *in, const contro
 
     float target;
     if (s->holding){
-        target = ctrl_clampf(pos_ff + s->latched_trim, cfg->pi_cfg.out_min, cfg->pi_cfg.out_max);
+        target = ctrl_clampf(pos_ff + s->latched_trim, pc->out_min, pc->out_max);
     } else {
-        target = pi_step(&s->pi, pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, &cfg->pi_cfg);
+        target = pi_step(&s->pi, pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, pc);
         s->latched_trim = target - pos_ff;
     }
 
@@ -59,6 +65,8 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     o.mode = mode;
 
     if (mode != s->last_mode){
+        /* 3-cycle FF-only hold stretches in wall-clock time while a transit hold is
+         * latched (pi_step, which decrements pi.hold, isn't called during a hold). */
         pi_mode_change(&s->pi); s->last_mode = mode;
         s->holding = false; s->latched_trim = 0.0f;
     }
@@ -111,15 +119,19 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
         target = ctrl_clampf(ff.pos_ff + deg.ff_bias_pct, 0.0f, 100.0f);
         break;                                              /* no supply -> no PI, no gov */
     }
-    case CTRL_PI_ONLY:
+    case CTRL_PI_ONLY: {
         /* No usable source/return -> pure PI around park baseline. */
-        target = pi_transit(s, in, cfg, cfg->park_pos, t_set, cooling, freeze_pi, dt_s, prev_pos, had_pos, now);
+        pi_cfg_t pc = cfg->pi_cfg;
+        pc.trim_max = pc.out_max - pc.out_min;   /* PI is the whole controller here — full authority */
+        target = pi_transit(s, in, cfg, &pc, cfg->park_pos, t_set, cooling, freeze_pi, dt_s, prev_pos, had_pos, now);
         break;
+    }
     case CTRL_FULL:
     default: {
         ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f);
         bool freeze = freeze_pi || ff.frozen;               /* low authority freezes integrator */
-        target = pi_transit(s, in, cfg, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
+        pi_cfg_t pc = cfg->pi_cfg;                          /* trim_max stays 0 -> default ±20, FF carries the baseline */
+        target = pi_transit(s, in, cfg, &pc, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
         break;
     }
     }

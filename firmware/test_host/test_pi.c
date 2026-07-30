@@ -56,11 +56,12 @@ void test_ki_dt_scaling(void){
 static const pi_cfg_t cfg_db = { .kp = 2.0f, .ki = 6.0f, .out_min = 0.0f, .out_max = 100.0f,
                                  .deadband_k = 0.25f };
 
-/* Inside the band: pure FF out, integrator untouched. */
+/* Inside the band: pure FF out, integrator untouched (frozen, not reset). */
 void test_deadband_inside(void){
+    s.integ = 5.0f;
     float out = pi_step(&s, 50.0f, 0.2f, false, false, 10.0f, &cfg_db);
-    TEST_ASSERT_EQUAL_FLOAT(50.0f, out);
-    TEST_ASSERT_EQUAL_FLOAT(0.0f, s.integ);
+    TEST_ASSERT_EQUAL_FLOAT(55.0f, out);
+    TEST_ASSERT_EQUAL_FLOAT(5.0f, s.integ);
 }
 
 /* Gap form: err 1.25 acts as 1.0. p = 2*1 = 2, integ = 6*1*(10/60) = 1 -> 53. */
@@ -69,12 +70,28 @@ void test_deadband_gap_ramp(void){
     TEST_ASSERT_EQUAL_FLOAT(53.0f, out);
 }
 
-/* Trim (P+I) caps at +20 even though total output never hits the 0/100 clamp. */
+/* Trim (P+I) caps at +20 even though total output never hits the 0/100 clamp.
+ * Conditional integration (not back-calculation) holds the integrator at
+ * integ = trim_max - p once p alone reaches the clamp. */
 void test_trim_clamp_backcalc(void){
     for (int i = 0; i < 40; i++) pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg);
     float out = pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg);
     TEST_ASSERT_EQUAL_FLOAT(70.0f, out);          /* 50 + 20 */
-    TEST_ASSERT_TRUE(s.integ <= 10.0f + 1e-4f);   /* back-calculated: 20 - p(10) */
+    TEST_ASSERT_EQUAL_FLOAT(10.0f, s.integ);
+}
+
+static const pi_cfg_t cfg6 = { .kp = 6.0f, .ki = 6.0f, .out_min = 0.0f, .out_max = 100.0f };
+
+/* p alone (30) already exceeds trim_max (20): integrator must never latch a
+ * wrong-sign or out-of-range value trying to compensate for P's overshoot. */
+void test_trim_clamp_p_saturation(void){
+    pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg6);
+    float out = pi_step(&s, 50.0f, 5.0f, false, false, 10.0f, &cfg6);
+    TEST_ASSERT_TRUE(s.integ >= 0.0f && s.integ <= 20.0f);
+    TEST_ASSERT_EQUAL_FLOAT(70.0f, out);
+
+    out = pi_step(&s, 50.0f, 0.0f, false, false, 10.0f, &cfg6);
+    TEST_ASSERT_EQUAL_FLOAT(50.0f, out);          /* no wrong-sign residue */
 }
 
 int main(void){
@@ -88,5 +105,6 @@ int main(void){
     RUN_TEST(test_deadband_inside);
     RUN_TEST(test_deadband_gap_ramp);
     RUN_TEST(test_trim_clamp_backcalc);
+    RUN_TEST(test_trim_clamp_p_saturation);
     return UNITY_END();
 }
