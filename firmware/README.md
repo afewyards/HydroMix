@@ -160,11 +160,18 @@ real Zigbee Alliance-assigned code (see the plan's "Unresolved Q1").
   supply; setpoints clamped 17–35 °C; `SystemMode` writes accepted but
   ignored — mode is auto-detected from HX-A), Analog Output (position 0–100 %,
   writable only while `water_running` is OFF), OTA client, plus a
-  manufacturer-specific custom cluster `0xFC00` exposing 10 read-write
-  tunables, a self-clearing `resync` bool, and read-only alarm-bitmap /
-  fault-bitmap / travel-since-resync attributes. Alarm and fault bitmaps report
-  **immediately** on change (no periodic cap); temperatures report at ±0.2 K or
-  60 s max; position reports at ±1 % or 60 s max.
+  manufacturer-specific custom cluster `0xFC00` exposing 12 read-write
+  tunables — including, since **1.1.0**, `0x000E deadtime_s` (transit hold:
+  seconds the PI loop pauses after the valve moves, 0–120, default 30) and
+  `0x000F pi_deadband_k` (PI error deadband, K, 0–1, default 0.25) — a
+  self-clearing `resync` bool, and read-only alarm-bitmap / fault-bitmap /
+  travel-since-resync attributes. `ki` is also %/K per **minute** as of
+  1.1.0 (was %/K per 10 s cycle in ≤1.0.7); a device upgrading from an older
+  build migrates its stored config automatically on first boot (ki ×6,
+  clamped to the new bounds — see `config_load()` in `firmware/main/config.c`).
+  Alarm and fault bitmaps report **immediately** on change (no periodic cap);
+  temperatures report at ±0.2 K or 60 s max; position reports at ±1 % or
+  60 s max.
 - **EP2–EP6**: Temperature Measurement (supply, return, source, HX-A, HX-B).
 
 ## Zigbee2MQTT integration

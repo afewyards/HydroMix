@@ -38,7 +38,7 @@ const T_BOOL   = 0x10;
 const T_U32    = 0x23;
 const T_SINGLE = 0x39;
 
-// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x000D).
+// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x000F).
 const CUSTOM_ATTRS = {
     0:  {key: 'heat_threshold',      type: T_SINGLE, rw: true},
     1:  {key: 'cool_threshold',      type: T_SINGLE, rw: true},
@@ -54,6 +54,8 @@ const CUSTOM_ATTRS = {
     11: {key: 'alarm',               type: T_U32 /* 16bitmap */, rw: false},
     12: {key: 'fault_bitmap',        type: T_U32 /* 16bitmap */, rw: false},
     13: {key: 'travel_since_resync', type: T_SINGLE, rw: false},
+    14: {key: 'deadtime_s',          type: T_SINGLE, rw: true},
+    15: {key: 'pi_deadband_k',       type: T_SINGLE, rw: true},
 };
 const ATTR_ID_BY_KEY = Object.fromEntries(
     Object.entries(CUSTOM_ATTRS).map(([id, v]) => [v.key, Number(id)]));
@@ -183,10 +185,14 @@ export default [{
         e.numeric('park_pos', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100),
         e.binary('direction_swap', ea.ALL, true, false),
         e.numeric('kp', ea.ALL),
-        e.numeric('ki', ea.ALL),
+        e.numeric('ki', ea.ALL).withDescription('Integral gain, %/K per minute (1.1.0+; was per 10 s cycle)'),
         e.numeric('gov_high', ea.ALL).withUnit('°C'),
         e.numeric('gov_low', ea.ALL).withUnit('°C'),
         e.numeric('alarm_dwell', ea.ALL).withUnit('ms'),
+        e.numeric('deadtime_s', ea.ALL).withUnit('s').withValueMin(0).withValueMax(120)
+            .withDescription('Transit hold: PI pauses this long after valve movement'),
+        e.numeric('pi_deadband_k', ea.ALL).withUnit('K').withValueMin(0).withValueMax(1)
+            .withDescription('PI error deadband (gap form)'),
         e.binary('alarm', ea.STATE, 'ON', 'OFF'),
         e.numeric('fault_bitmap', ea.STATE),
         e.numeric('travel_since_resync', ea.STATE).withUnit('%'),
