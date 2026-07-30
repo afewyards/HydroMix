@@ -36,6 +36,7 @@ static void control_loop(void *arg){
         in.t_return_f = sensors_get(SENS_RETURN).value_filt_c;
         in.t_supply   = sensors_get(SENS_SUPPLY).value_c;
         in.hx_a       = sensors_get(SENS_HX_A).value_c;
+        in.valve_pos  = valve_get_position();
         sensors_fill_faults(&in.faults);
         /* HX-B is monitoring-only (spec: fault -> alarm only, never blocks control) —
          * excluded from the OTA good-sweep gate so it can't cause a rollback loop. */
@@ -51,9 +52,10 @@ static void control_loop(void *arg){
             .park_pos = g_config.park_pos,
             .mode_cfg = { g_config.heat_threshold, g_config.cool_threshold, g_config.hysteresis,
                           g_config.enter_dwell_ms, g_config.leave_dwell_ms },
-            .pi_cfg = { g_config.kp, g_config.ki, 0.0f, 100.0f },
+            .pi_cfg = { g_config.kp, g_config.ki, 0.0f, 100.0f, g_config.pi_deadband_k },
             .gov_cfg = { g_config.gov_high, g_config.gov_low, 35.0f, 17.0f },
             .alarm_dwell_ms = g_config.alarm_dwell_ms,
+            .deadtime_s = g_config.deadtime_s,
         };
 
         control_out_t o = control_step(&s_ctrl, &in, &cfg, now_ms());

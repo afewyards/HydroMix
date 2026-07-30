@@ -25,6 +25,8 @@
 #define ATTR_ALARM_BITMAP    0x000B
 #define ATTR_FAULT_BITMAP    0x000C
 #define ATTR_TRAVEL_SINCE    0x000D
+#define ATTR_DEADTIME_S      0x000E
+#define ATTR_PI_DEADBAND     0x000F
 
 void zigbee_start(void);
 void zigbee_steer(void);

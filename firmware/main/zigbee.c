@@ -73,6 +73,8 @@ static bool     s_attr_resync;
 static uint16_t s_attr_alarm_bitmap;
 static uint16_t s_attr_fault_bitmap;
 static float    s_attr_travel_since;  /* TODO: no travel-since-resync accessor in valve_hw yet; placeholder 0 */
+static float    s_attr_deadtime_s;
+static float    s_attr_pi_deadband;
 
 static esp_zb_attribute_list_t *build_custom_cluster(void)
 {
@@ -90,6 +92,8 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     s_attr_alarm_bitmap   = 0;
     s_attr_fault_bitmap   = 0;
     s_attr_travel_since   = 0.0f;
+    s_attr_deadtime_s     = g_config.deadtime_s;
+    s_attr_pi_deadband    = g_config.pi_deadband_k;
 
     esp_zb_attribute_list_t *custom = esp_zb_zcl_attr_list_create(VALVECTL_CUSTOM_CLUSTER_ID);
     /* Plain (non-manufacturer-specific) attributes. 0xFC00 is already in the
@@ -119,6 +123,8 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_GOV_HIGH,       ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_gov_high);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_GOV_LOW,        ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_gov_low);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_ALARM_DWELL,    ESP_ZB_ZCL_ATTR_TYPE_U32,    rw, &s_attr_alarm_dwell);
+    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_DEADTIME_S,  ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_deadtime_s);
+    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_PI_DEADBAND, ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_pi_deadband);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_RESYNC,         ESP_ZB_ZCL_ATTR_TYPE_BOOL,   rw, &s_attr_resync);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_ALARM_BITMAP,   ESP_ZB_ZCL_ATTR_TYPE_16BITMAP, ro, &s_attr_alarm_bitmap);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_FAULT_BITMAP,   ESP_ZB_ZCL_ATTR_TYPE_16BITMAP, ro, &s_attr_fault_bitmap);

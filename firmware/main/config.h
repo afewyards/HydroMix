@@ -3,6 +3,8 @@
 #include <stdbool.h>
 #include "esp_err.h"
 
+#define CONFIG_VERSION 2
+
 typedef struct {
     float    heat_threshold;   /* 28  */
     float    cool_threshold;   /* 16  */
@@ -12,13 +14,17 @@ typedef struct {
     float    park_pos;         /* 50  */
     uint32_t travel_time_s;    /* 120 */
     bool     direction_swap;   /* false */
-    float    kp;               /* 4.0 */
-    float    ki;               /* 0.5 */
+    float    kp;               /* 2.8 */
+    float    ki;               /* 0.9 */
     float    gov_high;         /* 36  */
     float    gov_low;          /* 16  */
     uint32_t alarm_dwell_ms;   /* 300000 */
     uint32_t enter_dwell_ms;   /* 60000  */
     uint32_t leave_dwell_ms;   /* 420000 */
+    /* NEW FIELDS GO LAST — v1 NVS blobs are migrated by prefix match in config_load(). */
+    float    deadtime_s;       /* 30   */
+    float    pi_deadband_k;    /* 0.25 */
+    uint32_t cfg_version;
 } config_t;
 
 extern config_t g_config;
