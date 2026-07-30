@@ -16,6 +16,8 @@ typedef struct {
     ctrl_mode_t         last_mode;
     bool                prev_resync;
     bool                inited;
+    uint32_t            last_now_ms;
+    bool                have_now;
 } control_state_t;
 
 typedef struct {

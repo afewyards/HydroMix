@@ -9,11 +9,15 @@ void control_init(control_state_t *s){
     s->last_mode = MODE_IDLE;
     s->prev_resync = false;
     s->inited = true;
+    s->have_now = false;
 }
 
 control_out_t control_step(control_state_t *s, const control_in_t *in,
                            const control_cfg_t *cfg, uint32_t now){
     control_out_t o = {0};
+
+    float dt_s = s->have_now ? ctrl_clampf((now - s->last_now_ms) / 1000.0f, 1.0f, 120.0f) : 10.0f;
+    s->last_now_ms = now; s->have_now = true;
 
     /* Mode (HX-A). Fault -> hold last mode (mode_detect handles invalid). */
     ctrl_mode_t mode = mode_detect_step(&s->mode, in->hx_a, !in->faults.hx_a, &cfg->mode_cfg, now);
@@ -66,13 +70,13 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     case CTRL_PI_ONLY:
         /* No usable source/return -> pure PI around park baseline. */
-        target = pi_step(&s->pi, cfg->park_pos, t_set - in->t_supply, cooling, freeze_pi, &cfg->pi_cfg);
+        target = pi_step(&s->pi, cfg->park_pos, t_set - in->t_supply, cooling, freeze_pi, dt_s, &cfg->pi_cfg);
         break;
     case CTRL_FULL:
     default: {
         ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f);
         bool freeze = freeze_pi || ff.frozen;               /* low authority freezes integrator */
-        target = pi_step(&s->pi, ff.pos_ff, t_set - in->t_supply, cooling, freeze, &cfg->pi_cfg);
+        target = pi_step(&s->pi, ff.pos_ff, t_set - in->t_supply, cooling, freeze, dt_s, &cfg->pi_cfg);
         break;
     }
     }

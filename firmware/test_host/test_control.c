@@ -9,7 +9,7 @@ void setUp(void){
     control_init(&st);
     cfg.heat_setpoint = 35.0f; cfg.cool_setpoint = 18.0f; cfg.park_pos = 50.0f;
     cfg.mode_cfg = (mode_cfg_t){ 28.0f, 16.0f, 2.0f, 60000, 420000 };
-    cfg.pi_cfg   = (pi_cfg_t){ 4.0f, 0.5f, 0.0f, 100.0f };
+    cfg.pi_cfg   = (pi_cfg_t){ 4.0f, 3.0f, 0.0f, 100.0f };
     cfg.gov_cfg  = (gov_cfg_t){ 36.0f, 16.0f, 35.0f, 17.0f };
     cfg.alarm_dwell_ms = 300000;
     in = (control_in_t){0};
@@ -39,7 +39,7 @@ void test_heating_ff(void){
     control_step(&st, &in, &cfg, 0);
     control_out_t o = control_step(&st, &in, &cfg, 60000);  /* HEATING now */
     TEST_ASSERT_EQUAL(MODE_HEATING, o.mode);
-    TEST_ASSERT_TRUE(o.valve_target > 20.0f && o.valve_target < 60.0f);
+    TEST_ASSERT_TRUE(o.valve_target > 25.0f && o.valve_target < 80.0f);
 }
 
 /* Governor: supply hot -> target forced to 0 regardless of FF. */
