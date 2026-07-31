@@ -195,6 +195,25 @@ export default [{
         e.numeric('valve_position', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100)
             .withDescription('Writable only while water_running is OFF; supersedes park_pos until ON/reboot'),
         e.enum('mode', ea.STATE, ['idle', 'heating', 'cooling']),
+        // OccupiedHeating/CoolingSetpoint (hvacThermostat, EP1) are the two regulation
+        // targets. Deliberately e.numeric(), NOT e.climate(): the device auto-detects
+        // heating vs. cooling from live temperatures and does not accept system_mode
+        // writes, so a climate entity would misrepresent it as user-selectable.
+        // Property-suffix trace: fz.thermostat is a generic (unmodified) converter that
+        // internally calls postfixWithEndpointName() before publishing, same as it already
+        // does for local_temperature_1 / running_mode_1 above. With meta.multiEndpoint
+        // true and the endpoint() map below naming device endpoint 1 as '1', that call
+        // appends '_1' to its base property, publishing occupied_heating_setpoint_1 /
+        // occupied_cooling_setpoint_1. The expose name here already equals that base
+        // property (no withProperty() needed, unlike the temperature_<ep> exposes), so
+        // withEndpoint('1') alone appends the matching '_1' suffix to both name and
+        // property, landing exactly on what fz.thermostat publishes.
+        e.numeric('occupied_heating_setpoint', ea.ALL).withUnit('°C')
+            .withValueMin(17).withValueMax(35).withValueStep(0.5).withEndpoint('1')
+            .withDescription('Heating setpoint. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
+        e.numeric('occupied_cooling_setpoint', ea.ALL).withUnit('°C')
+            .withValueMin(17).withValueMax(35).withValueStep(0.5).withEndpoint('1')
+            .withDescription('Cooling setpoint. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
         e.numeric('heat_threshold', ea.ALL).withUnit('°C').withValueMin(10).withValueMax(60),
         e.numeric('cool_threshold', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(40),
         e.numeric('travel_time_s', ea.ALL).withUnit('s').withValueMin(30).withValueMax(600),
