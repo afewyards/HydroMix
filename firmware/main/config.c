@@ -8,6 +8,7 @@
 #include "esp_log.h"
 
 #define NS "valvectl"
+#define KEY_WATER "water"
 static const char *TAG = "config";
 config_t g_config;
 
@@ -164,4 +165,26 @@ void config_apply_custom(uint16_t attr_id, const void *val)
      * g_config (e.g. a write that got clamped back to its current value, or an
      * unchanged re-write) — avoids wearing the NVS partition on no-op traffic. */
     if (memcmp(&before, &g_config, sizeof g_config) != 0) config_save();
+}
+
+bool config_water_running_load(void)
+{
+    nvs_handle_t h;
+    if (nvs_open(NS, NVS_READONLY, &h) != ESP_OK) return false;
+    uint8_t v = 0;
+    esp_err_t e = nvs_get_u8(h, KEY_WATER, &v);
+    nvs_close(h);
+    if (e != ESP_OK) {
+        ESP_LOGI(TAG, "no persisted water_running, defaulting OFF (park)");
+        return false;
+    }
+    return v != 0;
+}
+
+void config_water_running_save(bool on)
+{
+    nvs_handle_t h;
+    if (nvs_open(NS, NVS_READWRITE, &h) != ESP_OK) return;
+    if (nvs_set_u8(h, KEY_WATER, on ? 1 : 0) == ESP_OK) nvs_commit(h);
+    nvs_close(h);
 }

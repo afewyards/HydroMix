@@ -209,7 +209,9 @@ static esp_zb_ep_list_t *build_endpoints(void)
     esp_zb_identify_cluster_cfg_t icfg = { .identify_time = 0 };
     esp_zb_cluster_list_add_identify_cluster(cl, esp_zb_identify_cluster_create(&icfg), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
-    esp_zb_on_off_cluster_cfg_t oncfg = { .on_off = 0 };   /* water_running = OFF at boot */
+    /* Seeded from the NVS-restored value (app_main sets it before zigbee_start()), so
+     * reads and reports of OnOff always agree with what the control task is doing. */
+    esp_zb_on_off_cluster_cfg_t oncfg = { .on_off = control_task_water_running() };
     esp_zb_cluster_list_add_on_off_cluster(cl, esp_zb_on_off_cluster_create(&oncfg), ESP_ZB_ZCL_CLUSTER_SERVER_ROLE);
 
     esp_zb_thermostat_cluster_cfg_t thcfg = {
@@ -349,7 +351,13 @@ void esp_zb_app_signal_handler(esp_zb_app_signal_t *signal)
 static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
 {
     if (m->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_ON_OFF) {
-        control_task_set_water_running(*(bool*)m->attribute.data.value);
+        bool on = *(bool*)m->attribute.data.value;
+        /* Write-through, with no-op elision: HA re-sending the same state must not
+         * erase/write NVS from the Zigbee stack task on every message. */
+        if (on != control_task_water_running()) {
+            control_task_set_water_running(on);
+            config_water_running_save(on);
+        }
         return ESP_OK;
     }
     if (m->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT) {

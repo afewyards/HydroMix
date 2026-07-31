@@ -42,7 +42,11 @@ void app_main(void)
     sensors_start();
     valve_start();
     control_task_start();
-    control_task_set_water_running(true);   /* bench default; Zigbee On/Off overrides later */
+    /* Restore the last state HA commanded. Forcing true here (the old "bench default")
+     * meant that after any power blip the device regulated a live loop while the OnOff
+     * attribute -- and therefore HA -- still read OFF. Must run BEFORE zigbee_start():
+     * build_endpoints() seeds the OnOff attribute from control_task_water_running(). */
+    control_task_set_water_running(config_water_running_load());
     zigbee_start();
     ui_start();
     console_start();
