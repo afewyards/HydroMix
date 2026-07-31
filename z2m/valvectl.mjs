@@ -185,7 +185,8 @@ export default [{
         e.numeric('park_pos', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100),
         e.binary('direction_swap', ea.ALL, true, false),
         e.numeric('kp', ea.ALL),
-        e.numeric('ki', ea.ALL).withDescription('Integral gain, %/K per minute (1.1.0+; was per 10 s cycle)'),
+        e.numeric('ki', ea.ALL).withDescription('Integral gain, %/K per minute (1.1.0+; was per 10 s cycle). '
+            + 'Out-of-range writes are clamped by the device (kp 0.5-15, ki 0-5) and echoed back.'),
         e.numeric('gov_high', ea.ALL).withUnit('°C'),
         e.numeric('gov_low', ea.ALL).withUnit('°C'),
         e.numeric('alarm_dwell', ea.ALL).withUnit('ms'),
