@@ -8,6 +8,7 @@
 #include "esp_task_wdt.h"
 #include "ctrl_core/control.h"
 #include "ota.h"
+#include "ctrl_core/ota_gate.h"
 
 #define CYCLE_MS 10000
 
@@ -22,11 +23,16 @@ static uint32_t s_link_seen = 0;
  * cleared on any water_running transition. While set, the OFF-park loop below leaves
  * the valve alone (spec §4.5: write supersedes park_pos until water_running ON or reboot). */
 static bool s_override_active = false;
-/* Completed control cycles, capped at 3. Sensor faults are a property of
- * the plant wiring, not the image; 3 completed cycles prove the control
- * task isn't hung (a hang trips the 30 s task WDT -> reset -> rollback) so
- * OTA validation must not wait on fault-free sensors -- see the call below. */
-static uint8_t s_cycles_completed = 0;
+/* Completed control cycles, saturating at OTA_GATE_CYCLES (see ctrl_core/ota_gate.h).
+ * Sensor faults are a property of the plant wiring, not of the image, so OTA
+ * validation must not wait on fault-free probes. What this gate DOES prove is that
+ * the control task is still looping -- and only if it takes longer than the task
+ * watchdog: OTA_GATE_CYCLES * CYCLE_MS is ~110 s, comfortably OUTSIDE the 30 s window
+ * (CONFIG_ESP_TASK_WDT_TIMEOUT_S=30, panic on), so a hung control task trips the WDT
+ * -> reset -> rollback long before this gate could validate. At the previous 3 cycles
+ * (~20 s) the gate fired INSIDE the watchdog window and therefore proved nothing. */
+#define OTA_GATE_CYCLES 12
+static uint32_t s_cycles_completed = 0;
 
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
 
@@ -76,12 +82,9 @@ static void control_loop(void *arg){
             valve_set_target(g_config.park_pos);
         }
 
-        /* OTA validation fast path: don't let a missing/faulted probe delay
-         * validation all the way out to the 10-minute fallback timer. */
-        if (s_cycles_completed < 3) {
-            s_cycles_completed++;
-            if (s_cycles_completed == 3) ota_note_good_sweep();
-        }
+        /* OTA validation fast path: don't let a missing/faulted probe delay validation
+         * all the way out to the 10-minute fallback timer in ota.c. */
+        if (ota_gate_step(&s_cycles_completed, OTA_GATE_CYCLES)) ota_note_good_sweep();
 
         vTaskDelay(pdMS_TO_TICKS(CYCLE_MS));
     }

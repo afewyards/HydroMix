@@ -65,10 +65,13 @@ logic lives in `firmware/main/ota.c`:
   `ota_note_good_sweep()` is called from `control_task.c` on either of:
   1. a control cycle completing with no sensor faults, checked every cycle
      (fast path), or
-  2. 3 completed control cycles regardless of sensor faults — sensor faults
-     are a plant-wiring property, not an image property, and 3 completed
-     cycles already prove the control task isn't hung (a hang trips the 30 s
-     task WDT and reboots, which rolls back on its own).
+  2. `OTA_GATE_CYCLES` (12) completed control cycles regardless of sensor faults —
+     sensor faults are a plant-wiring property, not an image property. 12 cycles at
+     the 10 s control period is ~110 s, deliberately **longer** than the 30 s task
+     watchdog timeout (`CONFIG_ESP_TASK_WDT_TIMEOUT_S=30`, panic on): a control task
+     that hangs trips the watchdog and reboots — rolling back — *before* this gate
+     could ever validate the image. (1.2.1 used 3 cycles ≈ 20 s, which fired inside
+     the watchdog window and so proved nothing.)
 
   As a last resort, a bounded 10-minute fallback timer (started at rejoin)
   validates unconditionally if neither path above has fired yet.
