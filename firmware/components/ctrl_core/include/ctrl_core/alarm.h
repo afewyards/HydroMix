@@ -16,5 +16,13 @@ typedef struct {
 
 void  alarm_init(alarm_state_t *s);
 bool  alarm_supply_step(alarm_state_t *s, float t_supply, uint32_t dwell_ms, uint32_t now_ms);
-float cooling_link_guard(float cool_setpoint, ctrl_mode_t mode, bool link_up,
+
+/* Autonomous dew-point guard. Raises the cooling setpoint toward LINK_LOSS_COOL_SETPOINT
+ * once we have not heard from the coordinator for LINK_LOSS_COOLING_MS, so an unattended
+ * device cannot keep chilling a floor below dew point. Deliberately NOT gated on a ZDO
+ * link-down signal: a Router whose coordinator dies silently never emits one, which is
+ * precisely the scenario this exists for. last_seen_ms is refreshed by inbound ZCL
+ * traffic AND by join/leave signals (control_task_note_link_activity / _set_link).
+ * Only ever raises the setpoint -- never lowers it. */
+float cooling_link_guard(float cool_setpoint, ctrl_mode_t mode,
                          uint32_t last_seen_ms, uint32_t now_ms);

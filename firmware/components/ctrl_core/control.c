@@ -116,7 +116,7 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
 
     /* Effective setpoint (+ autonomous cooling link guard). */
     bool cooling = (mode == MODE_COOLING);
-    float eff_cool = cooling_link_guard(cfg->cool_setpoint, mode, in->link_up,
+    float eff_cool = cooling_link_guard(cfg->cool_setpoint, mode,
                                         in->link_last_seen_ms, now);
     float t_set = cooling ? ctrl_clampf(eff_cool, 17.0f, 35.0f)
                           : ctrl_clampf(cfg->heat_setpoint, 17.0f, 35.0f);

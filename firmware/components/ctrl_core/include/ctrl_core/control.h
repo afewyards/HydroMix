@@ -37,8 +37,10 @@ typedef struct {
     sensor_faults_t faults;
     bool  water_running;
     bool  resync_active;
-    bool  link_up;
-    uint32_t link_last_seen_ms;
+    bool  link_up;                  /* ZDO-observed join state; STATUS ONLY -- the cooling
+                                       dew guard deliberately does not consume it, since a
+                                       silently dead coordinator leaves it true forever */
+    uint32_t link_last_seen_ms;     /* last inbound ZCL activity or ZDO signal */
 } control_in_t;
 
 typedef struct {

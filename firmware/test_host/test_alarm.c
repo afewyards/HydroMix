@@ -31,17 +31,24 @@ void test_clear_hysteresis(void){
     TEST_ASSERT_FALSE(alarm_supply_step(&s, 35.0f, 300000, 310000)); /* <=35.5 -> clear */
 }
 
-/* Cooling link guard: >30 min lost link in COOLING raises setpoint to 21. */
+/* Cooling dew guard: 30 min without inbound traffic in COOLING raises setpoint to 21.
+ * This is the silently-dead-coordinator case -- there is no ZDO signal to key off, so
+ * traffic silence alone must be enough. */
 void test_link_guard_raises(void){
-    float sp = cooling_link_guard(18.0f, MODE_COOLING, false, 0, 1800000);
-    TEST_ASSERT_EQUAL_FLOAT(21.0f, sp);
+    TEST_ASSERT_EQUAL_FLOAT(21.0f, cooling_link_guard(18.0f, MODE_COOLING, 0, 1800000));
 }
 
-/* Guard inactive when link up, or in heating, or <30 min. */
+/* Recent traffic keeps the guard inactive no matter how long the device has been up. */
+void test_link_guard_inactive_when_traffic_recent(void){
+    TEST_ASSERT_EQUAL_FLOAT(18.0f, cooling_link_guard(18.0f, MODE_COOLING, 86400000u, 86401000u));
+}
+
+/* Inactive in heating, inside the window, at boot, and it never LOWERS a setpoint. */
 void test_link_guard_inactive(void){
-    TEST_ASSERT_EQUAL_FLOAT(18.0f, cooling_link_guard(18.0f, MODE_COOLING, true,  0, 1800000));
-    TEST_ASSERT_EQUAL_FLOAT(35.0f, cooling_link_guard(35.0f, MODE_HEATING, false, 0, 1800000));
-    TEST_ASSERT_EQUAL_FLOAT(18.0f, cooling_link_guard(18.0f, MODE_COOLING, false, 0, 1799000));
+    TEST_ASSERT_EQUAL_FLOAT(35.0f, cooling_link_guard(35.0f, MODE_HEATING, 0, 1800000));
+    TEST_ASSERT_EQUAL_FLOAT(18.0f, cooling_link_guard(18.0f, MODE_COOLING, 0, 1799000));
+    TEST_ASSERT_EQUAL_FLOAT(18.0f, cooling_link_guard(18.0f, MODE_COOLING, 0, 0));
+    TEST_ASSERT_EQUAL_FLOAT(24.0f, cooling_link_guard(24.0f, MODE_COOLING, 0, 1800000));
 }
 
 int main(void){
@@ -51,6 +58,7 @@ int main(void){
     RUN_TEST(test_dwell_resets_on_return);
     RUN_TEST(test_clear_hysteresis);
     RUN_TEST(test_link_guard_raises);
+    RUN_TEST(test_link_guard_inactive_when_traffic_recent);
     RUN_TEST(test_link_guard_inactive);
     return UNITY_END();
 }

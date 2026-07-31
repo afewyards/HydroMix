@@ -70,14 +70,16 @@ void test_degradation_park_cooling(void){
     TEST_ASSERT_EQUAL_FLOAT(10.0f, o.valve_target);
 }
 
-/* Link guard raises cooling setpoint after 30 min lost link (warmer target -> lower FF). */
+/* Link guard raises cooling setpoint after 30 min of traffic silence (warmer target ->
+ * lower FF). Driven by last_seen_ms alone -- link_up is status-only and no longer gates
+ * the guard, since a silently dead coordinator never flips it. */
 void test_link_guard(void){
     in.hx_a = 8.0f; in.t_source_f = 8.0f; in.t_return_f = 24.0f; in.t_supply = 18.0f;
     control_step(&st, &in, &cfg, 0);
     control_step(&st, &in, &cfg, 60000);                    /* COOLING */
     in.link_up = false; in.link_last_seen_ms = 0;
-    control_out_t guarded = control_step(&st, &in, &cfg, 1860000); /* >30 min */
-    in.link_up = true;
+    control_out_t guarded = control_step(&st, &in, &cfg, 1860000); /* >30 min silent */
+    in.link_up = true; in.link_last_seen_ms = 1870000;      /* traffic resumes */
     control_out_t normal  = control_step(&st, &in, &cfg, 1870000);
     TEST_ASSERT_TRUE(guarded.valve_target < normal.valve_target); /* warmer sp = less cold source */
 }

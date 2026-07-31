@@ -16,9 +16,9 @@ bool alarm_supply_step(alarm_state_t *s, float t, uint32_t dwell_ms, uint32_t no
     return s->alarmed;
 }
 
-float cooling_link_guard(float cool_setpoint, ctrl_mode_t mode, bool link_up,
+float cooling_link_guard(float cool_setpoint, ctrl_mode_t mode,
                          uint32_t last_seen_ms, uint32_t now){
-    if (mode == MODE_COOLING && !link_up && (now - last_seen_ms) >= LINK_LOSS_COOLING_MS)
+    if (mode == MODE_COOLING && (now - last_seen_ms) >= LINK_LOSS_COOLING_MS)
         return fmaxf(cool_setpoint, LINK_LOSS_COOL_SETPOINT);
     return cool_setpoint;
 }
