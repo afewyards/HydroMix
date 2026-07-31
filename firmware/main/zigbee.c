@@ -363,13 +363,31 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
     if (m->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT) {
         if (m->attribute.id == ESP_ZB_ZCL_ATTR_THERMOSTAT_SYSTEM_MODE_ID)
             return ESP_OK;   /* accepted-but-ignored: mode is auto-detected */
+        /* Setpoints are clamped to the same 17..35 C band control_task.c re-clamps with.
+         * Two things follow, both previously missing:
+         *  - echo the clamped value back UNCONDITIONALLY: the stack already latched the
+         *    raw write into the attribute store, so without this a 40 C write leaves the
+         *    store at 4000 and HA reads back a setpoint the device will never honour.
+         *    Safe to call from here -- this runs in the stack task, same as the
+         *    ATTR_RESYNC self-clear below;
+         *  - only config_save() when g_config actually changed, so HA re-sending the
+         *    same setpoint (or one that clamps back to the current value) does not
+         *    erase/write NVS from the stack task on every message. */
         if (m->attribute.id == ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_HEATING_SETPOINT_ID) {
-            float c = *(int16_t*)m->attribute.data.value / 100.0f;
-            g_config.heat_setpoint = ctrl_clampf(c, 17.0f, 35.0f); config_save();
+            float c = ctrl_clampf(*(int16_t*)m->attribute.data.value / 100.0f, 17.0f, 35.0f);
+            if (c != g_config.heat_setpoint) { g_config.heat_setpoint = c; config_save(); }
+            int16_t echo = (int16_t)(c * 100.0f + 0.5f);   /* c >= 17, so +0.5 rounds */
+            esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+                ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_HEATING_SETPOINT_ID, &echo, false);
         }
         if (m->attribute.id == ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_COOLING_SETPOINT_ID) {
-            float c = *(int16_t*)m->attribute.data.value / 100.0f;
-            g_config.cool_setpoint = ctrl_clampf(c, 17.0f, 35.0f); config_save();
+            float c = ctrl_clampf(*(int16_t*)m->attribute.data.value / 100.0f, 17.0f, 35.0f);
+            if (c != g_config.cool_setpoint) { g_config.cool_setpoint = c; config_save(); }
+            int16_t echo = (int16_t)(c * 100.0f + 0.5f);
+            esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
+                ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_COOLING_SETPOINT_ID, &echo, false);
         }
         return ESP_OK;
     }
