@@ -4,30 +4,68 @@
 #include "esp_timer.h"
 #include "esp_system.h"
 #include "esp_zigbee_core.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 
 /* Bounded fallback: a flaky/faulted sensor must never cause a permanent rollback loop.
  * If a good sweep hasn't happened this long after rejoin, validate anyway. */
 #define VALIDATE_FALLBACK_MS (10u * 60u * 1000u)
 
 static const char *TAG = "ota";
+
+/* s_pending/s_joined/s_swept are touched from three different task contexts
+ * (Zigbee stack task via ota_note_joined, the control task via
+ * ota_note_good_sweep, and the esp_timer task via fallback_timer_cb). Every
+ * read-modify-test of them must happen inside s_mux so the three-way AND in
+ * maybe_validate() can't race. */
+static portMUX_TYPE s_mux = portMUX_INITIALIZER_UNLOCKED;
 static bool s_pending = false;    /* image awaiting validation */
 static bool s_joined = false;
 static bool s_swept  = false;
 static esp_timer_handle_t s_fallback_timer;
 
-static void mark_valid_now(const char *reason){
-    if (!s_pending) return;
+/* esp_ota_mark_app_valid_cancel_rollback() erases/writes the otadata flash
+ * partition, which on this unicore config suspends the scheduler for the
+ * duration. It must never run in the control task or an esp_timer callback
+ * (both real-time contexts); maybe_validate() offloads it to a short-lived
+ * one-shot task instead. */
+static void validate_task(void *arg){
+    const char *reason = (const char *)arg;
     esp_ota_mark_app_valid_cancel_rollback();
-    s_pending = false;
     ESP_LOGI(TAG, "OTA image validated, rollback cancelled (%s)", reason);
+    vTaskDelete(NULL);
 }
 
-static void maybe_validate(void){
-    if (s_pending && s_joined && s_swept) mark_valid_now("rejoin + good sweep");
+static void maybe_validate(const char *reason){
+    bool won = false;
+
+    taskENTER_CRITICAL(&s_mux);
+    if (s_pending && s_joined && s_swept) {
+        s_pending = false;
+        won = true;
+    }
+    taskEXIT_CRITICAL(&s_mux);
+
+    if (!won) return;
+
+    BaseType_t ok = xTaskCreate(validate_task, "ota_valid", 3072, (void *)reason, 3, NULL);
+    if (ok != pdPASS) {
+        ESP_LOGE(TAG, "failed to spawn ota_valid task, will retry on next call");
+        taskENTER_CRITICAL(&s_mux);
+        s_pending = true;   /* let a later note_* call retry */
+        taskEXIT_CRITICAL(&s_mux);
+    }
 }
 
 static void fallback_timer_cb(void *arg){
-    if (s_pending) mark_valid_now("bounded fallback after rejoin");
+    /* Bounded fallback: validate regardless of sweep status. Route it through
+     * the same atomic maybe_validate() path by forcing joined+swept true,
+     * rather than writing flash directly from this esp_timer callback. */
+    taskENTER_CRITICAL(&s_mux);
+    s_joined = true;
+    s_swept = true;
+    taskEXIT_CRITICAL(&s_mux);
+    maybe_validate("bounded fallback after rejoin");
 }
 
 void ota_init(void){
@@ -42,14 +80,26 @@ void ota_init(void){
 }
 
 void ota_note_joined(void){
+    bool pending;
+
+    taskENTER_CRITICAL(&s_mux);
     s_joined = true;
-    if (s_pending) {
+    pending = s_pending;
+    taskEXIT_CRITICAL(&s_mux);
+
+    if (pending) {
         esp_timer_stop(s_fallback_timer);   /* no-op if not currently running; ignore result */
         ESP_ERROR_CHECK(esp_timer_start_once(s_fallback_timer, (uint64_t)VALIDATE_FALLBACK_MS * 1000ULL));
     }
-    maybe_validate();
+    maybe_validate("rejoin + good sweep");
 }
-void ota_note_good_sweep(void){ s_swept = true; maybe_validate(); }
+
+void ota_note_good_sweep(void){
+    taskENTER_CRITICAL(&s_mux);
+    s_swept = true;
+    taskEXIT_CRITICAL(&s_mux);
+    maybe_validate("rejoin + good sweep");
+}
 
 /* ---------------- Zigbee OTA client (image transfer) ----------------
  *
