@@ -1,5 +1,8 @@
 import * as fz from 'zigbee-herdsman-converters/converters/fromZigbee';
 import * as exposes from 'zigbee-herdsman-converters/lib/exposes';
+import * as reporting from 'zigbee-herdsman-converters/lib/reporting';
+import * as globalStore from 'zigbee-herdsman-converters/lib/store';
+import {logger} from 'zigbee-herdsman-converters/lib/logger';
 
 const e = exposes.presets, ea = exposes.access;
 
@@ -37,7 +40,7 @@ const T_BOOL   = 0x10;
 const T_U32    = 0x23;
 const T_SINGLE = 0x39;
 
-// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x0011).
+// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x0012).
 const CUSTOM_ATTRS = {
     0:  {key: 'heat_threshold',      type: T_SINGLE, rw: true},
     1:  {key: 'cool_threshold',      type: T_SINGLE, rw: true},
@@ -57,6 +60,7 @@ const CUSTOM_ATTRS = {
     15: {key: 'pi_deadband_k',       type: T_SINGLE, rw: true},
     16: {key: 'heat_setpoint',       type: T_SINGLE, rw: true},
     17: {key: 'cool_setpoint',       type: T_SINGLE, rw: true},
+    18: {key: 'valve_deadband_pct',  type: T_SINGLE, rw: true},   // firmware 1.4.0+, see expose below
 };
 const ATTR_ID_BY_KEY = Object.fromEntries(
     Object.entries(CUSTOM_ATTRS).map(([id, v]) => [v.key, Number(id)]));
@@ -107,6 +111,30 @@ const fzRunningMode = {
         return {mode: map[msg.data.runningMode] ?? 'idle'};
     },
 };
+
+// runningMode had no reporting configured on the firmware side, historically: hvacThermostat
+// was never bound (see the comment above configure() below — live binding-table inspection
+// showed EP1 bound for genOnOff + genAnalogOutput only, nothing for hvacThermostat), so
+// RunningMode reports had nowhere to go and configure()'s one-time read was the only thing
+// that ever populated 'mode'. That left the HA sensor 6 h stale on the live device while
+// everything else updated every minute. Binding hvacThermostat in configure() is the actual
+// root-cause fix; this poll is a belt-and-suspenders refresh on top of it — a plain ZCL read
+// does NOT touch the firmware's link-activity tracking inside the ZBOSS stack, so it is NOT a
+// device-side keepalive, only a periodic refresh of Z2M's own copy of 'mode'. Firmware 1.4.0
+// additionally pushes runningMode on change once it arrives over a real binding, making this
+// poll a fallback for missed pushes and for pre-1.4.0 devices that never push at all.
+//
+// Shaped like ZHC's built-in `poll()` modern-extend helper (src/lib/modernExtend.ts) rather
+// than a hand-rolled setInterval: ZHC 25+ (we're on 26.76.0) passes onEvent a SINGLE
+// discriminated-union event object, not the old `(type, data, device)` triple — the 'stop'
+// event's `data` carries ONLY `ieeeAddr`, no `.device`, so teardown must key off that. ZHC
+// also synthesizes a 'start' event on (re)pairing and maps device removal to 'stop', so
+// pairing-after-boot and removal teardown come for free. State lives in ZHC's globalStore
+// (keyed by ieeeAddr) rather than a module-level Map so it can't be orphaned by a module
+// re-import.
+const LOG_NS = 'zhc:hydromix';
+const RUNNING_MODE_POLL_KEY = 'runningModePoll';
+const RUNNING_MODE_POLL_MS = 5 * 60 * 1000;
 
 // Analog Output (valve position) IS writable while water_running is OFF (firmware attr_cb()
 // honors the write only in that state and ignores it otherwise; a write supersedes park_pos
@@ -229,8 +257,22 @@ export default [{
         e.numeric('alarm_dwell', ea.ALL).withUnit('ms').withValueMin(10000).withValueMax(3600000),
         e.numeric('deadtime_s', ea.ALL).withUnit('s').withValueMin(0).withValueMax(120)
             .withDescription('Transit hold: PI pauses this long after valve movement'),
+        // Without withValueStep, HA defaults the number entity's step to 1.0 — over a
+        // 0-1 range that only lets the UI produce 0 or 1, never anything in between.
         e.numeric('pi_deadband_k', ea.ALL).withUnit('K').withValueMin(0).withValueMax(1)
+            .withValueStep(0.05)
             .withDescription('PI error deadband (gap form)'),
+        // attr 0x0012, firmware 1.4.0+. On older firmware the configure() read of this attr
+        // comes back UNSUPPORTED_ATTRIBUTE, which the isolated tryRead loop below already
+        // tolerates per-attribute — the entity just stays null instead of blanking the rest.
+        e.numeric('valve_deadband_pct', ea.ALL).withUnit('%').withValueMin(0.2).withValueMax(5)
+            .withValueStep(0.1)
+            .withDescription('Motor deadband: the valve only drives when |target − position| exceeds '
+            + 'this percent of travel, and stops at the band edge. Smaller = tighter supply tracking '
+            + 'but more actuator movement. Requires firmware 1.4.0+. Device clamps 0.2-5 %, and also '
+            + 'enforces a travel-time-derived floor of 1.2×100/travel_time_s % (1.0 % at the default '
+            + '120 s travel) — writes below that floor are clamped up and echoed back. Min stays 0.2 '
+            + 'here since the floor is legal at longer travel times.'),
         e.binary('alarm', ea.STATE, 'ON', 'OFF'),
         e.numeric('fault_bitmap', ea.STATE),
         e.numeric('travel_since_resync', ea.STATE).withUnit('%'),
@@ -239,11 +281,27 @@ export default [{
     // The tunables are plain read/write attributes: the firmware only sets up *reporting*
     // for temps, valve position and the alarm/fault bitmaps, so nothing ever pushes the
     // rest and they stay null until something reads them. Seed them once at configure.
-    // Deliberately no reporting.bind() here — the firmware configures its own reporting
-    // locally (esp_zb_zcl_update_reporting_info) and reports already arrive, so re-binding
-    // would only risk disturbing a working live device.
+    // No reporting.bind() for the clusters that already work (genOnOff/genAnalogOutput/temp/
+    // custom) — the firmware configures its own reporting locally
+    // (esp_zb_zcl_update_reporting_info) and reports already arrive, so re-binding them would
+    // only risk disturbing a working live device. hvacThermostat is the one exception: live
+    // binding-table inspection showed EP1 bound for genOnOff + genAnalogOutput only (EP2-6
+    // bound for temperature) — hvacThermostat was never bound at all, so RunningMode reports
+    // (both the firmware's passive reporting engine and its 1.4.0+ explicit push) have nowhere
+    // to go. That's the actual root cause of 'mode' going stale for hours. Bound additively
+    // below, alongside the existing seed reads — this doesn't touch any cluster that already
+    // works.
     configure: async (device, coordinatorEndpoint, definition) => {
         const ep1 = device.getEndpoint(1);
+        // Same isolation as tryRead below: a failed bind (already bound, coordinator busy,
+        // etc.) shouldn't block the seed reads that follow.
+        try {
+            await reporting.bind(ep1, coordinatorEndpoint, ['hvacThermostat']);
+        } catch (e) {
+            // logger.warning, not console.warn: console.warn bypasses Z2M's log-level
+            // filtering, file rotation, and the bridge/logging MQTT topic entirely.
+            logger.warning(`HydroMix: bind hvacThermostat failed: ${e.message}`, LOG_NS);
+        }
         // Each read is isolated: an UNSUPPORTED_ATTRIBUTE on one cluster used to reject the
         // whole promise chain, so a single bad attribute left every later read unsent and
         // every remaining property null — hiding which one actually failed.
@@ -251,7 +309,7 @@ export default [{
             try {
                 await ep1.read(cluster, attrs, options);
             } catch (e) {
-                console.warn(`HydroMix: read ${cluster} [${attrs}] failed: ${e.message}`);
+                logger.warning(`HydroMix: read ${cluster} [${attrs}] failed: ${e.message}`, LOG_NS);
             }
         };
         await tryRead('genOnOff', ['onOff']);
@@ -267,4 +325,45 @@ export default [{
     endpoint: (device) => ({'1': 1, '2': 2, '3': 3, '4': 4, '5': 5, '6': 6}),
     meta: {multiEndpoint: true},
     ota: true,
+    // See the runningMode comment above fzRunningMode for why this polls at all, and why it's
+    // shaped like ZHC's poll() helper instead of a plain (type, data, device) setInterval.
+    onEvent: async (event) => {
+        if (event.type === 'stop') {
+            // 'stop' data carries ONLY ieeeAddr — no .device — per ZHC 25+'s OnEvent contract.
+            clearTimeout(globalStore.getValue(event.data.ieeeAddr, RUNNING_MODE_POLL_KEY));
+            globalStore.clearValue(event.data.ieeeAddr, RUNNING_MODE_POLL_KEY);
+            return;
+        }
+        const device = event.data.device;
+        if (!device) return;
+        if (event.data.options?.disabled) return;   // don't poll a disabled device
+        // Start-if-absent rather than clear-and-restart: only the first event that carries a
+        // device should kick this off, so a later event of some other type doesn't spawn a
+        // second overlapping poll chain for the same device.
+        if (globalStore.hasValue(device.ieeeAddr, RUNNING_MODE_POLL_KEY)) return;
+        const scheduleNext = () => {
+            const timer = setTimeout(async () => {
+                // Resolved fresh every tick, not captured once at chain start: matches ZHC's
+                // own poll() pattern, and means a device/endpoint that goes away mid-chain
+                // just skips a tick instead of throwing the same swallowed TypeError forever.
+                const ep = device.getEndpoint(1);
+                if (ep) {
+                    try {
+                        await ep.read('hvacThermostat', ['runningMode']);
+                    } catch (e) {
+                        // debug, not warn: an offline device fails this every 5 min (288/day)
+                        // — expected, not something worth spamming the log about.
+                        logger.debug(`HydroMix: runningMode poll failed: ${e.message}`, LOG_NS);
+                    }
+                }
+                // Keep the chain going only while we're still the active timer for this
+                // device — a 'stop' event clears the stored value, which ends it here rather
+                // than continuing to poll a device that's gone.
+                if (globalStore.getValue(device.ieeeAddr, RUNNING_MODE_POLL_KEY) === timer) scheduleNext();
+            }, RUNNING_MODE_POLL_MS);
+            timer.unref?.();   // never let this be the reason the process stays alive
+            globalStore.putValue(device.ieeeAddr, RUNNING_MODE_POLL_KEY, timer);
+        };
+        scheduleNext();
+    },
 }];
