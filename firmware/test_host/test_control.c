@@ -213,6 +213,45 @@ void test_ff_no_authority_parks_after_dwell(void){
     TEST_ASSERT_EQUAL_FLOAT(0.0f, st.pi.integ);   /* no windup while parked */
 }
 
+/* Supply probe faulted: t_supply is stale or BSS-zero, so the freeze alarm must not
+ * latch on it. 0.0 C is <= ALARM_SUPPLY_LOW and would otherwise alarm after dwell. */
+void test_supply_fault_blocks_false_freeze_alarm(void){
+    in.faults.supply = true;
+    in.t_supply = 0.0f;
+    control_out_t o = control_step(&st, &in, &cfg, 0);
+    TEST_ASSERT_FALSE(o.supply_alarm);
+    o = control_step(&st, &in, &cfg, 600000);        /* 10 min, twice the 5 min dwell */
+    TEST_ASSERT_FALSE(o.supply_alarm);
+}
+
+/* A real alarm must survive the probe subsequently failing -- a frozen in-band value
+ * must not clear it. */
+void test_supply_fault_holds_existing_alarm(void){
+    in.t_supply = 37.0f;
+    control_step(&st, &in, &cfg, 0);
+    control_out_t o = control_step(&st, &in, &cfg, 300000);
+    TEST_ASSERT_TRUE(o.supply_alarm);                /* dwell met -> alarmed */
+    in.faults.supply = true; in.t_supply = 30.0f;    /* frozen, in the clear band */
+    o = control_step(&st, &in, &cfg, 310000);
+    TEST_ASSERT_TRUE(o.supply_alarm);                /* must NOT falsely clear */
+}
+
+/* The excursion dwell re-arms clean on fault clear: an out-of-bounds reading right
+ * after recovery must serve a fresh full dwell, not inherit stale elapsed time. */
+void test_supply_fault_rearms_dwell_on_recovery(void){
+    in.faults.supply = true;
+    in.t_supply = 37.0f;
+    control_step(&st, &in, &cfg, 0);
+    control_step(&st, &in, &cfg, 600000);            /* 10 min faulted, no dwell accrues */
+    in.faults.supply = false;
+    control_out_t o = control_step(&st, &in, &cfg, 610000);
+    TEST_ASSERT_FALSE(o.supply_alarm);               /* dwell restarts here */
+    o = control_step(&st, &in, &cfg, 890000);        /* +280 s, still < 300 s */
+    TEST_ASSERT_FALSE(o.supply_alarm);
+    o = control_step(&st, &in, &cfg, 910001);        /* +300.001 s -> alarm */
+    TEST_ASSERT_TRUE(o.supply_alarm);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -228,5 +267,8 @@ int main(void){
     RUN_TEST(test_pi_only_full_authority);
     RUN_TEST(test_hold_trim_clamped_on_strategy_flip);
     RUN_TEST(test_ff_no_authority_parks_after_dwell);
+    RUN_TEST(test_supply_fault_blocks_false_freeze_alarm);
+    RUN_TEST(test_supply_fault_holds_existing_alarm);
+    RUN_TEST(test_supply_fault_rearms_dwell_on_recovery);
     return UNITY_END();
 }

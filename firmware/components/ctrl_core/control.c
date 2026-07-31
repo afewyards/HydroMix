@@ -84,8 +84,19 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     s->prev_resync = in->resync_active;
 
-    /* Telemetry (always). */
-    o.supply_alarm = alarm_supply_step(&s->alarm, in->t_supply, cfg->alarm_dwell_ms, now);
+    /* Telemetry (always). The supply freeze alarm is only meaningful on a LIVE supply
+     * reading: with the probe faulted, in->t_supply is the last-good value, or 0.0
+     * straight from BSS if it never read once. 0.0 <= ALARM_SUPPLY_LOW would latch a
+     * false freeze alarm after the dwell, and a frozen in-band value would falsely
+     * clear a real one. So hold the current alarm state and re-arm the excursion dwell,
+     * making it restart clean when the probe recovers. */
+    if (in->faults.supply){
+        s->alarm.out_of_bounds = false;
+        s->alarm.oob_since_ms  = now;
+        o.supply_alarm = s->alarm.alarmed;
+    } else {
+        o.supply_alarm = alarm_supply_step(&s->alarm, in->t_supply, cfg->alarm_dwell_ms, now);
+    }
     degradation_out_t deg = degradation_eval(&in->faults, mode, cfg->park_pos);
     o.fault_bits = deg.alarm_bits;
     o.strategy   = deg.strategy;
