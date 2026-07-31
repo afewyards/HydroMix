@@ -59,16 +59,22 @@ logic lives in `firmware/main/ota.c`:
 - On boot, `ota_init()` checks whether the running image is still
   `ESP_OTA_IMG_PENDING_VERIFY` (i.e. it was just flashed via OTA and hasn't been
   validated yet).
-- The image is marked valid — cancelling any pending rollback — only once
-  **both** conditions are met:
-  1. `ota_note_joined()` — Zigbee has rejoined the network (called from
-     `zigbee_on_join()` in `app_main.c`).
-  2. `ota_note_good_sweep()` — at least one control cycle has completed with
-     no sensor faults (called from `control_task.c` once supply/return/source/
-     HX-A/HX-B are all fault-free).
+- The image is marked valid — cancelling any pending rollback — once
+  `ota_note_joined()` (Zigbee rejoined, called from `zigbee_on_join()` in
+  `app_main.c`) **and** `ota_note_good_sweep()` have both fired.
+  `ota_note_good_sweep()` is called from `control_task.c` on either of:
+  1. a control cycle completing with no sensor faults, checked every cycle
+     (fast path), or
+  2. 3 completed control cycles regardless of sensor faults — sensor faults
+     are a plant-wiring property, not an image property, and 3 completed
+     cycles already prove the control task isn't hung (a hang trips the 30 s
+     task WDT and reboots, which rolls back on its own).
 
-  If the new image never reaches both conditions, the bootloader rolls back to
-  the previous image on the next reset.
+  As a last resort, a bounded 10-minute fallback timer (started at rejoin)
+  validates unconditionally if neither path above has fired yet.
+
+  If the new image never reaches validation by any of these paths, the
+  bootloader rolls back to the previous image on the next reset.
 
 **Publishing an OTA update via Zigbee2MQTT:** there is no cloud OTA index entry
 for this private manufacturer code. The process (documented in comments at the

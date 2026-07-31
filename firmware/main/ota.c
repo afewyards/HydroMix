@@ -7,8 +7,12 @@
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 
-/* Bounded fallback: a flaky/faulted sensor must never cause a permanent rollback loop.
- * If a good sweep hasn't happened this long after rejoin, validate anyway. */
+/* Bounded fallback of last resort. Normal validation no longer depends only on
+ * a fault-free sensor sweep: control_task.c also calls ota_note_good_sweep()
+ * once 3 control cycles have completed regardless of sensor faults, since
+ * faults are a plant-wiring property, not an image property. This timer only
+ * matters if validation still hasn't happened this long after rejoin (e.g.
+ * the control task itself never got that far) -- validate anyway. */
 #define VALIDATE_FALLBACK_MS (10u * 60u * 1000u)
 
 static const char *TAG = "ota";
@@ -85,7 +89,7 @@ void ota_init(void){
     const esp_partition_t *run = esp_ota_get_running_partition();
     if (esp_ota_get_state_partition(run, &st) == ESP_OK && st == ESP_OTA_IMG_PENDING_VERIFY) {
         s_pending = true;
-        ESP_LOGW(TAG, "image pending verify: awaiting rejoin + good sweep");
+        ESP_LOGW(TAG, "image pending verify: awaiting rejoin + validation (sweep or 3 cycles)");
     }
     const esp_timer_create_args_t targs = { .callback = fallback_timer_cb, .name = "ota_fallback" };
     ESP_ERROR_CHECK(esp_timer_create(&targs, &s_fallback_timer));
@@ -103,14 +107,14 @@ void ota_note_joined(void){
         esp_timer_stop(s_fallback_timer);   /* no-op if not currently running; ignore result */
         ESP_ERROR_CHECK(esp_timer_start_once(s_fallback_timer, (uint64_t)VALIDATE_FALLBACK_MS * 1000ULL));
     }
-    maybe_validate("rejoin + good sweep");
+    maybe_validate("rejoin + sweep-or-cycle-gate");
 }
 
 void ota_note_good_sweep(void){
     taskENTER_CRITICAL(&s_mux);
     s_swept = true;
     taskEXIT_CRITICAL(&s_mux);
-    maybe_validate("rejoin + good sweep");
+    maybe_validate("rejoin + sweep-or-cycle-gate");
 }
 
 /* ---------------- Zigbee OTA client (image transfer) ----------------
@@ -118,8 +122,8 @@ void ota_note_good_sweep(void){
  * The OTA cluster is declared in zigbee.c; this is the half that actually
  * receives an image and writes it into the inactive OTA slot. The rollback
  * gating above still applies afterwards: the newly booted image only cancels
- * its rollback once it rejoins and completes a clean sweep, or the bounded
- * fallback fires.
+ * its rollback once it rejoins and either a fault-free sensor sweep or 3
+ * completed control cycles land, or the bounded fallback fires.
  *
  * The stack strips the 56-byte ZCL OTA file header before handing us payloads,
  * but NOT the 6-byte sub-element header (2-byte tag id + 4-byte length) that

@@ -22,6 +22,11 @@ static uint32_t s_link_seen = 0;
  * cleared on any water_running transition. While set, the OFF-park loop below leaves
  * the valve alone (spec §4.5: write supersedes park_pos until water_running ON or reboot). */
 static bool s_override_active = false;
+/* Completed control cycles, capped at 3. Sensor faults are a property of
+ * the plant wiring, not the image; 3 completed cycles prove the control
+ * task isn't hung (a hang trips the 30 s task WDT -> reset -> rollback) so
+ * OTA validation must not wait on fault-free sensors -- see the call below. */
+static uint8_t s_cycles_completed = 0;
 
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
 
@@ -69,6 +74,13 @@ static void control_loop(void *arg){
                actually park (a manual AnalogOutput write, applied directly by zigbee's
                attr_cb, supersedes this until water_running goes ON again or reboot). */
             valve_set_target(g_config.park_pos);
+        }
+
+        /* OTA validation fast path: don't let a missing/faulted probe delay
+         * validation all the way out to the 10-minute fallback timer. */
+        if (s_cycles_completed < 3) {
+            s_cycles_completed++;
+            if (s_cycles_completed == 3) ota_note_good_sweep();
         }
 
         vTaskDelay(pdMS_TO_TICKS(CYCLE_MS));
