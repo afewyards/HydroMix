@@ -26,6 +26,12 @@ static bool s_joined = false;
 #define STEER_RETRY_MAX_MS 60000u
 static uint32_t s_retry_ms = STEER_RETRY_MIN_MS;
 
+/* Last RunningMode value explicitly reported via push_running_mode_report() (below).
+ * RUNNING_MODE_UNSET is not a valid RunningMode value, so it always counts as "changed"
+ * — used both at boot and reset on every (re)join, see mark_joined(). */
+#define RUNNING_MODE_UNSET 0xFFu
+static uint8_t s_last_pushed_running_mode = RUNNING_MODE_UNSET;
+
 static void configure_reporting_temp(uint8_t ep);
 static void configure_reporting_position(void);
 static void configure_reporting_bitmap(uint16_t attr_id);
@@ -77,6 +83,7 @@ static float    s_attr_deadtime_s;
 static float    s_attr_pi_deadband;
 static float    s_attr_heat_setpoint;
 static float    s_attr_cool_setpoint;
+static float    s_attr_valve_deadband;
 
 static esp_zb_attribute_list_t *build_custom_cluster(void)
 {
@@ -98,6 +105,7 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     s_attr_pi_deadband    = g_config.pi_deadband_k;
     s_attr_heat_setpoint  = g_config.heat_setpoint;
     s_attr_cool_setpoint  = g_config.cool_setpoint;
+    s_attr_valve_deadband = g_config.valve_deadband_pct;
 
     esp_zb_attribute_list_t *custom = esp_zb_zcl_attr_list_create(VALVECTL_CUSTOM_CLUSTER_ID);
     /* Plain (non-manufacturer-specific) attributes. 0xFC00 is already in the
@@ -135,6 +143,7 @@ static esp_zb_attribute_list_t *build_custom_cluster(void)
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_PI_DEADBAND,    ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_pi_deadband);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_HEAT_SETPOINT,  ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_heat_setpoint);
     esp_zb_custom_cluster_add_custom_attr(custom, ATTR_COOL_SETPOINT,  ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_cool_setpoint);
+    esp_zb_custom_cluster_add_custom_attr(custom, ATTR_VALVE_DEADBAND, ESP_ZB_ZCL_ATTR_TYPE_SINGLE, rw, &s_attr_valve_deadband);
 
     return custom;
 }
@@ -307,6 +316,7 @@ static void mark_joined(void)
     s_joined = true;
     ESP_LOGI(TAG, "joined");
     control_task_set_link(true, now_ms());
+    s_last_pushed_running_mode = RUNNING_MODE_UNSET;   /* force a fresh RunningMode push, see above */
     configure_reporting_on_join();
     zigbee_on_join();
 }
@@ -442,6 +452,11 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
         case ATTR_TRAVEL_TIME_S:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_TRAVEL_TIME_S, &g_config.travel_time_s, false);
+            /* config_apply_custom() may have just re-clamped valve_deadband_pct upward as a
+             * side effect (shortening travel raises its stability floor) -- mirror that into
+             * the attribute store too, same as every other clamped-tunable echo here. */
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.valve_deadband_pct, false);
             break;
         case ATTR_PARK_POS:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
@@ -495,6 +510,10 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_COOLING_SETPOINT_ID, &echo, false);
             break;
         }
+        case ATTR_VALVE_DEADBAND:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.valve_deadband_pct, false);
+            break;
         default: break;   /* ATTR_DIRECTION_SWAP (unclamped) or read-only attrs — already match what the stack latched */
         }
         return ESP_OK;
@@ -590,6 +609,39 @@ void zigbee_report_temps(void)
     esp_zb_lock_release();
 }
 
+/* configure_reporting_running_mode() below only arms the ZCL reporting engine's
+ * passive delta/interval check; live testing found Z2M's `mode` sensor going stale for
+ * hours regardless (observed: 6 h stale). So on top of that, push an explicit one-shot
+ * report the moment the computed value actually changes. RUNNING_MODE_UNSET (not a valid
+ * RunningMode value) forces a push on the first zigbee_push_status() after each join —
+ * even when the mode itself hasn't changed since the last join — giving Z2M an
+ * authoritative read instead of waiting on the passive engine's next sweep; see the reset
+ * in mark_joined(). */
+static void push_running_mode_report(uint8_t running_mode)
+{
+    if (!s_joined || running_mode == s_last_pushed_running_mode) return;
+
+    /* Caller already holds the ZB stack lock (zigbee_push_status(), same discipline as
+     * every other esp_zb_* call from outside the stack task in this file). Address mode
+     * DST_ADDR_ENDP_NOT_PRESENT means "resolve via the binding table", same destination
+     * the passive reporting engine would use — this just sends it now instead of on the
+     * engine's next tick. */
+    esp_zb_zcl_report_attr_cmd_t cmd = {
+        .zcl_basic_cmd = { .src_endpoint = EP_MAIN },
+        .address_mode  = ESP_ZB_APS_ADDR_MODE_DST_ADDR_ENDP_NOT_PRESENT,
+        .direction     = ESP_ZB_ZCL_CMD_DIRECTION_TO_CLI,
+        .clusterID     = ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
+        .manuf_code    = ESP_ZB_ZCL_ATTR_NON_MANUFACTURER_SPECIFIC,
+        .attributeID   = ESP_ZB_ZCL_ATTR_THERMOSTAT_RUNNING_MODE_ID,
+    };
+    /* Only latch on a confirmed send. A failed send (e.g. right after join, before the
+     * route/binding is ready) must NOT mark the value as pushed -- otherwise it goes
+     * quiet until the mode changes again instead of retrying on the next telemetry tick. */
+    if (esp_zb_zcl_report_attr_cmd_req(&cmd) == ESP_OK) {
+        s_last_pushed_running_mode = running_mode;
+    }
+}
+
 void zigbee_push_status(void)
 {
     esp_zb_lock_acquire(portMAX_DELAY);
@@ -615,6 +667,7 @@ void zigbee_push_status(void)
     }
     esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
         ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_RUNNING_MODE_ID, &running_mode, false);
+    push_running_mode_report(running_mode);
 
     uint16_t alarm_bits = control_task_alarm() ? 0x0001 : 0x0000;
     esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,

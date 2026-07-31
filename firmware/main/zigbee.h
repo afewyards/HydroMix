@@ -34,6 +34,7 @@
  * g_config.heat_setpoint/cool_setpoint (clamp [17,35], same as config_apply_custom()). */
 #define ATTR_HEAT_SETPOINT   0x0010
 #define ATTR_COOL_SETPOINT   0x0011
+#define ATTR_VALVE_DEADBAND  0x0012   /* motor stop deadband, % of travel (valve_hw.c) */
 
 void zigbee_start(void);
 void zigbee_steer(void);

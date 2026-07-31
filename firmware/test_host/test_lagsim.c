@@ -6,9 +6,13 @@
 
 /* Closed-loop regression: FOPDT plant (dead time + probe lag) + a real 3-point relay
  * actuator + FF model error + probe quantization + a large-signal start, driven by
- * the real controller. Proves 1.1.0 defaults (kp=2.8, ki=0.9, 0.25K deadband, 30s
- * transit hold) settle where 1.0.x tuning (kp=4, ki=3, no deadband, no hold) sustains
- * a relay limit cycle — across nominal dead-time/lag plus a 4-corner robustness sweep.
+ * the real controller. Gates the current shipped defaults (kp=2.8, ki=0.9, 0.25K
+ * deadband, 30s transit hold) settle where 1.0.x tuning (kp=4, ki=3, no deadband, no
+ * hold) sustains a relay limit cycle — across nominal dead-time/lag plus a 4-corner
+ * robustness sweep. (1.4.0 considered lowering deadband_k to 0.15 alongside the new
+ * valve_deadband_pct tunable; a deadband_k sweep of {0.15, 0.20, 0.22, 0.25} against
+ * this exact matrix found only 0.25 clears every corner/gate — the theta=40/tau=60
+ * corner in particular is non-monotonic across that range — so 0.25 ships unchanged.)
  *
  * Mechanism (found by exhaustive search, docs/superpowers/plans/2026-07-30 Task 7):
  *   - A REAL 3-point relay actuator: once driving, must commit MIN_RUN_TICKS s before

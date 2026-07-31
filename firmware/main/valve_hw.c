@@ -12,7 +12,6 @@
 #define PIN_OPEN  GPIO_NUM_2
 #define PIN_CLOSE GPIO_NUM_3
 #define TICK_MS   100
-#define DEADBAND_PCT 2.0f
 #define RESYNC_STALL_MULT 1.15f
 
 typedef enum { RS_IDLE, RS_DRIVING } resync_state_t;
@@ -25,10 +24,12 @@ static resync_state_t    s_rs = RS_IDLE;
 static uint32_t          s_rs_start_ms = 0;
 static bool              s_resync_req = false;
 /* Latched copies of the motion-affecting config, refreshed only while idle (see
- * valve_task), so a runtime config change never flips the open/close mapping nor
- * rescales the stall/position math mid-stroke or mid-resync. */
+ * valve_task), so a runtime config change never flips the open/close mapping, rescales
+ * the stall/position math mid-stroke or mid-resync, nor moves the stop criterion under a
+ * stroke already in progress. */
 static bool              s_swap_latched = false;
 static uint32_t          s_travel_latched_s = 0;
+static float             s_deadband_latched = 1.0f;
 
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
 
@@ -50,8 +51,8 @@ static void apply(triac_cmd_t c){
 
 static valve_dir_t desired_dir(float target){
     float pos = s_pos.position_pct;
-    if (target > pos + DEADBAND_PCT) return dir_toward_source();
-    if (target < pos - DEADBAND_PCT) return dir_toward_recirc();
+    if (target > pos + s_deadband_latched) return dir_toward_source();
+    if (target < pos - s_deadband_latched) return dir_toward_recirc();
     return VALVE_STOP;
 }
 
@@ -92,6 +93,7 @@ static void valve_task(void *arg){
         if (applied == VALVE_STOP && s_rs == RS_IDLE) {
             s_swap_latched     = g_config.direction_swap;
             s_travel_latched_s = g_config.travel_time_s;
+            s_deadband_latched = g_config.valve_deadband_pct;
         }
 
         pos_est_update(&s_pos, travel_sign_of(applied), TICK_MS, (float)s_travel_latched_s);
@@ -107,6 +109,7 @@ void valve_start(void){
     pos_est_init(&s_pos);
     s_swap_latched     = g_config.direction_swap;          /* initial latch at boot */
     s_travel_latched_s = g_config.travel_time_s;
+    s_deadband_latched = g_config.valve_deadband_pct;
     s_resync_req = true;                                   /* boot resync */
     xTaskCreate(valve_task, "valve", 4096, NULL, 6, NULL);
 }

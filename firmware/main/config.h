@@ -3,7 +3,7 @@
 #include <stdbool.h>
 #include "esp_err.h"
 
-#define CONFIG_VERSION 2
+#define CONFIG_VERSION 3
 
 typedef struct {
     float    heat_threshold;   /* 28  */
@@ -21,9 +21,11 @@ typedef struct {
     uint32_t alarm_dwell_ms;   /* 300000 */
     uint32_t enter_dwell_ms;   /* 60000  */
     uint32_t leave_dwell_ms;   /* 420000 */
-    /* NEW FIELDS GO LAST — v1 NVS blobs are migrated by prefix match in config_load(). */
-    float    deadtime_s;       /* 30   */
-    float    pi_deadband_k;    /* 0.25 */
+    /* NEW FIELDS GO LAST (still before cfg_version) — older-sized NVS blobs are migrated
+     * by field-by-field copy (or, for v1, a same-layout prefix memcpy) in config_load(). */
+    float    deadtime_s;         /* 30  */
+    float    pi_deadband_k;      /* 0.25 */
+    float    valve_deadband_pct; /* 1.0 — valve_hw.c motor stop deadband, % of travel */
     uint32_t cfg_version;
 } config_t;
 
