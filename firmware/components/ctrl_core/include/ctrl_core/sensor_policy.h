@@ -4,6 +4,7 @@
 #define SENSOR_POR_RAW      0x0550u   /* DS18B20 power-on-reset scratchpad (85.0 C) */
 #define SENSOR_FAULT_AFTER  3         /* bad reads to latch a fault */
 #define SENSOR_CLEAR_AFTER  3         /* consecutive good reads to clear a latched fault */
+#define SENSOR_DECAY_AFTER  3         /* consecutive good reads before each further good forgives one fail */
 
 typedef struct {
     int  fail_streak;
