@@ -368,8 +368,10 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
     if (m->info.cluster == ESP_ZB_ZCL_CLUSTER_ID_ANALOG_OUTPUT) {
         /* manual position override — only honored while water_running OFF; supersedes
          * the OFF-park loop in control_task.c until water_running goes ON or reboot. */
+        float v = *(float*)m->attribute.data.value;
+        if (isnan(v)) return ESP_OK;   /* reject: NaN would otherwise freeze the valve */
         if (!control_task_water_running()) {
-            valve_set_target(*(float*)m->attribute.data.value);
+            valve_set_target(ctrl_clampf(v, 0.0f, 100.0f));
             control_task_note_manual_override();
         }
         return ESP_OK;

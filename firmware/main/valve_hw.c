@@ -104,6 +104,7 @@ void valve_start(void){
 }
 
 void valve_set_target(float pct){
+    if (isnan(pct)) return;   /* defense in depth: also reachable from console, not just Zigbee */
     xSemaphoreTake(s_lock, portMAX_DELAY);
     s_target = ctrl_clampf(pct, 0.0f, 100.0f);
     xSemaphoreGive(s_lock);

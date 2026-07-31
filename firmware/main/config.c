@@ -1,6 +1,7 @@
 #include "config.h"
 #include "zigbee.h"
 #include "ctrl_core/types.h"
+#include <math.h>
 #include <string.h>
 #include "nvs_flash.h"
 #include "nvs.h"
@@ -28,19 +29,44 @@ typedef struct {
     uint32_t alarm_dwell_ms, enter_dwell_ms, leave_dwell_ms;
 } config_v1_t;
 
+/* NaN -> reject (keep cur); finite -> clamp to [lo,hi]. A NaN written over
+ * Zigbee (or surviving in a corrupt NVS blob) makes both ctrl_clampf()
+ * comparisons false and passes through unmodified -- this is the gate that
+ * stops it before it ever reaches g_config. */
+static float sane_f(float cur, float v, float lo, float hi)
+{
+    if (isnan(v)) return cur;
+    return ctrl_clampf(v, lo, hi);
+}
+
+/* Range-only clamp for u32 tunables (NaN is a float-only concept). */
+static uint32_t clamp_u32(uint32_t v, uint32_t lo, uint32_t hi)
+{
+    if (v < lo) return lo;
+    if (v > hi) return hi;
+    return v;
+}
+
 /* Defensive clamp applied after every successful load path (fresh v2 blob or v1
  * migration) so a stale, hand-edited, or bit-flipped NVS blob can never leave
  * g_config outside the bounds every write path (config_apply_custom / ctrl_core's
- * tunable_apply) already enforces. */
+ * tunable_apply) already enforces. NaN fields fall back to the shipped default
+ * (there is no "current" value to preserve on a fresh load). */
 static void clamp_config(config_t *c)
 {
-    c->park_pos      = ctrl_clampf(c->park_pos, 0.0f, 100.0f);
-    c->heat_setpoint = ctrl_clampf(c->heat_setpoint, 17.0f, 35.0f);
-    c->cool_setpoint = ctrl_clampf(c->cool_setpoint, 17.0f, 35.0f);
-    c->kp            = ctrl_clampf(c->kp, 0.5f, 15.0f);
-    c->ki            = ctrl_clampf(c->ki, 0.0f, 5.0f);
-    c->deadtime_s    = ctrl_clampf(c->deadtime_s, 0.0f, 120.0f);
-    c->pi_deadband_k = ctrl_clampf(c->pi_deadband_k, 0.0f, 1.0f);
+    c->heat_threshold = sane_f(DEFAULTS.heat_threshold, c->heat_threshold, 10.0f, 60.0f);
+    c->cool_threshold = sane_f(DEFAULTS.cool_threshold, c->cool_threshold, 0.0f, 40.0f);
+    c->gov_high       = sane_f(DEFAULTS.gov_high,       c->gov_high,       20.0f, 60.0f);
+    c->gov_low        = sane_f(DEFAULTS.gov_low,        c->gov_low,        0.0f, 25.0f);
+    c->park_pos       = sane_f(DEFAULTS.park_pos,       c->park_pos,       0.0f, 100.0f);
+    c->heat_setpoint  = sane_f(DEFAULTS.heat_setpoint,  c->heat_setpoint,  17.0f, 35.0f);
+    c->cool_setpoint  = sane_f(DEFAULTS.cool_setpoint,  c->cool_setpoint,  17.0f, 35.0f);
+    c->kp             = sane_f(DEFAULTS.kp,             c->kp,             0.5f, 15.0f);
+    c->ki             = sane_f(DEFAULTS.ki,             c->ki,             0.0f, 5.0f);
+    c->deadtime_s     = sane_f(DEFAULTS.deadtime_s,     c->deadtime_s,     0.0f, 120.0f);
+    c->pi_deadband_k  = sane_f(DEFAULTS.pi_deadband_k,  c->pi_deadband_k,  0.0f, 1.0f);
+    c->travel_time_s  = clamp_u32(c->travel_time_s,  30,    600);
+    c->alarm_dwell_ms = clamp_u32(c->alarm_dwell_ms, 10000, 3600000);
 }
 
 void config_load(void)
@@ -112,18 +138,18 @@ void config_factory_reset(void)
 void config_apply_custom(uint16_t attr_id, const void *val)
 {
     switch (attr_id) {
-    case ATTR_HEAT_THRESHOLD: g_config.heat_threshold = *(const float*)val; break;
-    case ATTR_COOL_THRESHOLD: g_config.cool_threshold = *(const float*)val; break;
-    case ATTR_TRAVEL_TIME_S:  g_config.travel_time_s  = *(const uint32_t*)val; break;
-    case ATTR_PARK_POS:       g_config.park_pos = ctrl_clampf(*(const float*)val, 0.0f, 100.0f); break;
+    case ATTR_HEAT_THRESHOLD: g_config.heat_threshold = sane_f(g_config.heat_threshold, *(const float*)val, 10.0f, 60.0f); break;
+    case ATTR_COOL_THRESHOLD: g_config.cool_threshold = sane_f(g_config.cool_threshold, *(const float*)val, 0.0f, 40.0f); break;
+    case ATTR_TRAVEL_TIME_S:  g_config.travel_time_s  = clamp_u32(*(const uint32_t*)val, 30, 600); break;
+    case ATTR_PARK_POS:       g_config.park_pos = sane_f(g_config.park_pos, *(const float*)val, 0.0f, 100.0f); break;
     case ATTR_DIRECTION_SWAP: g_config.direction_swap = *(const bool*)val; break;
-    case ATTR_KP:             g_config.kp = ctrl_clampf(*(const float*)val, 0.5f, 15.0f); break;
-    case ATTR_KI:             g_config.ki = ctrl_clampf(*(const float*)val, 0.0f, 5.0f); break;
-    case ATTR_GOV_HIGH:       g_config.gov_high = *(const float*)val; break;
-    case ATTR_GOV_LOW:        g_config.gov_low = *(const float*)val; break;
-    case ATTR_ALARM_DWELL:    g_config.alarm_dwell_ms = *(const uint32_t*)val; break;
-    case ATTR_DEADTIME_S:     g_config.deadtime_s = ctrl_clampf(*(const float*)val, 0.0f, 120.0f); break;
-    case ATTR_PI_DEADBAND:    g_config.pi_deadband_k = ctrl_clampf(*(const float*)val, 0.0f, 1.0f); break;
+    case ATTR_KP:             g_config.kp = sane_f(g_config.kp, *(const float*)val, 0.5f, 15.0f); break;
+    case ATTR_KI:             g_config.ki = sane_f(g_config.ki, *(const float*)val, 0.0f, 5.0f); break;
+    case ATTR_GOV_HIGH:       g_config.gov_high = sane_f(g_config.gov_high, *(const float*)val, 20.0f, 60.0f); break;
+    case ATTR_GOV_LOW:        g_config.gov_low = sane_f(g_config.gov_low, *(const float*)val, 0.0f, 25.0f); break;
+    case ATTR_ALARM_DWELL:    g_config.alarm_dwell_ms = clamp_u32(*(const uint32_t*)val, 10000, 3600000); break;
+    case ATTR_DEADTIME_S:     g_config.deadtime_s = sane_f(g_config.deadtime_s, *(const float*)val, 0.0f, 120.0f); break;
+    case ATTR_PI_DEADBAND:    g_config.pi_deadband_k = sane_f(g_config.pi_deadband_k, *(const float*)val, 0.0f, 1.0f); break;
     default: return; /* read-only or unknown — nothing to persist */
     }
     config_save();
