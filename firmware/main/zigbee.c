@@ -387,11 +387,25 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
             return ESP_OK;
         }
         config_apply_custom(m->attribute.id, m->attribute.data.value);   /* config.c, persists */
-        /* config_apply_custom() clamps some tunables (kp/ki/park_pos/deadtime_s/
-         * pi_deadband_k); echo the clamped g_config value back into the ZCL attribute
-         * store so a subsequent read reflects the regulated value instead of the raw
-         * write the stack already latched into the backing s_attr_* variable. */
+        /* config_apply_custom() clamps/NaN-rejects every writable float and u32 tunable
+         * (heat/cool_threshold, gov_high/low, park_pos, kp, ki, alarm_dwell_ms,
+         * travel_time_s, deadtime_s, pi_deadband_k); echo the clamped g_config value
+         * back into the ZCL attribute store so a subsequent read reflects the regulated
+         * value instead of the raw write the stack already latched into the backing
+         * s_attr_* variable. */
         switch (m->attribute.id) {
+        case ATTR_HEAT_THRESHOLD:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_HEAT_THRESHOLD, &g_config.heat_threshold, false);
+            break;
+        case ATTR_COOL_THRESHOLD:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_COOL_THRESHOLD, &g_config.cool_threshold, false);
+            break;
+        case ATTR_TRAVEL_TIME_S:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_TRAVEL_TIME_S, &g_config.travel_time_s, false);
+            break;
         case ATTR_PARK_POS:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PARK_POS, &g_config.park_pos, false);
@@ -404,6 +418,18 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KI, &g_config.ki, false);
             break;
+        case ATTR_GOV_HIGH:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_HIGH, &g_config.gov_high, false);
+            break;
+        case ATTR_GOV_LOW:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_LOW, &g_config.gov_low, false);
+            break;
+        case ATTR_ALARM_DWELL:
+            esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_ALARM_DWELL, &g_config.alarm_dwell_ms, false);
+            break;
         case ATTR_DEADTIME_S:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_DEADTIME_S, &g_config.deadtime_s, false);
@@ -412,7 +438,7 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PI_DEADBAND, &g_config.pi_deadband_k, false);
             break;
-        default: break;   /* unclamped attrs already match what the stack latched */
+        default: break;   /* ATTR_DIRECTION_SWAP (unclamped) or read-only attrs — already match what the stack latched */
         }
         return ESP_OK;
     }

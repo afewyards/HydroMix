@@ -36,8 +36,9 @@ void tunable_apply(tunable_cfg_t *c, tunable_id_t id, const void *v){
     case TUNABLE_DIRECTION_SWAP: c->direction_swap = *(const bool*)v; break;
     case TUNABLE_KP:             c->kp = sane_f(c->kp, *(const float*)v, 0.5f, 15.0f); break;
     case TUNABLE_KI:             c->ki = sane_f(c->ki, *(const float*)v, 0.0f, 5.0f); break;
-    case TUNABLE_GOV_HIGH:       c->gov_high = sane_f(c->gov_high, *(const float*)v, 20.0f, 60.0f); break;
-    case TUNABLE_GOV_LOW:        c->gov_low = sane_f(c->gov_low, *(const float*)v, 0.0f, 25.0f); break;
+    /* release band is 35/17 (control_task.c) — trip thresholds must stay outside it or the governor limit-cycles */
+    case TUNABLE_GOV_HIGH:       c->gov_high = sane_f(c->gov_high, *(const float*)v, 35.0f, 60.0f); break;
+    case TUNABLE_GOV_LOW:        c->gov_low = sane_f(c->gov_low, *(const float*)v, 0.0f, 17.0f); break;
     case TUNABLE_ALARM_DWELL_MS: c->alarm_dwell_ms = clamp_u32(*(const uint32_t*)v, 10000, 3600000); break;
     case TUNABLE_HEAT_SETPOINT:  c->heat_setpoint = sane_f(c->heat_setpoint, *(const float*)v, 17.0f, 35.0f); break;
     case TUNABLE_COOL_SETPOINT:  c->cool_setpoint = sane_f(c->cool_setpoint, *(const float*)v, 17.0f, 35.0f); break;

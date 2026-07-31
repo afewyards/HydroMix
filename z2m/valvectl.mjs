@@ -179,17 +179,20 @@ export default [{
         e.numeric('valve_position', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100)
             .withDescription('Writable only while water_running is OFF; supersedes park_pos until ON/reboot'),
         e.enum('mode', ea.STATE, ['idle', 'heating', 'cooling']),
-        e.numeric('heat_threshold', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(60),
-        e.numeric('cool_threshold', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(60),
-        e.numeric('travel_time_s', ea.ALL).withUnit('s'),
+        e.numeric('heat_threshold', ea.ALL).withUnit('°C').withValueMin(10).withValueMax(60),
+        e.numeric('cool_threshold', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(40),
+        e.numeric('travel_time_s', ea.ALL).withUnit('s').withValueMin(30).withValueMax(600),
         e.numeric('park_pos', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100),
         e.binary('direction_swap', ea.ALL, true, false),
-        e.numeric('kp', ea.ALL),
-        e.numeric('ki', ea.ALL).withDescription('Integral gain, %/K per minute (1.1.0+; was per 10 s cycle). '
+        e.numeric('kp', ea.ALL).withValueMin(0.5).withValueMax(15),
+        e.numeric('ki', ea.ALL).withValueMin(0).withValueMax(5)
+            .withDescription('Integral gain, %/K per minute (1.1.0+; was per 10 s cycle). '
             + 'Out-of-range writes are clamped by the device (kp 0.5-15, ki 0-5) and echoed back.'),
-        e.numeric('gov_high', ea.ALL).withUnit('°C'),
-        e.numeric('gov_low', ea.ALL).withUnit('°C'),
-        e.numeric('alarm_dwell', ea.ALL).withUnit('ms'),
+        // release band is 35/17 (control_task.c) — bounds keep trip thresholds outside it
+        // or the governor limit-cycles; must match config.c/config_map.c clamp_config/tunable_apply.
+        e.numeric('gov_high', ea.ALL).withUnit('°C').withValueMin(35).withValueMax(60),
+        e.numeric('gov_low', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(17),
+        e.numeric('alarm_dwell', ea.ALL).withUnit('ms').withValueMin(10000).withValueMax(3600000),
         e.numeric('deadtime_s', ea.ALL).withUnit('s').withValueMin(0).withValueMax(120)
             .withDescription('Transit hold: PI pauses this long after valve movement'),
         e.numeric('pi_deadband_k', ea.ALL).withUnit('K').withValueMin(0).withValueMax(1)

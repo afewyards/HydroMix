@@ -50,6 +50,20 @@ void test_threshold_and_travel_bounds(void){
     t = 5; tunable_apply(&c, TUNABLE_TRAVEL_TIME_S, &t);
     TEST_ASSERT_EQUAL(30, c.travel_time_s);
 }
+void test_infinity_clamped(void){
+    tunable_cfg_t c; tunable_cfg_defaults(&c);
+    float v = INFINITY;  tunable_apply(&c, TUNABLE_HEAT_THRESHOLD, &v);
+    TEST_ASSERT_EQUAL_FLOAT(60.0f, c.heat_threshold);
+    v = -INFINITY;       tunable_apply(&c, TUNABLE_HEAT_THRESHOLD, &v);
+    TEST_ASSERT_EQUAL_FLOAT(10.0f, c.heat_threshold);
+}
+void test_gov_bounds_protect_release_band(void){
+    tunable_cfg_t c; tunable_cfg_defaults(&c);
+    float v = 20.0f; tunable_apply(&c, TUNABLE_GOV_LOW, &v);
+    TEST_ASSERT_EQUAL_FLOAT(17.0f, c.gov_low);
+    v = 25.0f;       tunable_apply(&c, TUNABLE_GOV_HIGH, &v);
+    TEST_ASSERT_EQUAL_FLOAT(35.0f, c.gov_high);
+}
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_heat_threshold_maps);
@@ -58,5 +72,7 @@ int main(void){
     RUN_TEST(test_gain_bounds);
     RUN_TEST(test_nan_rejected);
     RUN_TEST(test_threshold_and_travel_bounds);
+    RUN_TEST(test_infinity_clamped);
+    RUN_TEST(test_gov_bounds_protect_release_band);
     return UNITY_END();
 }
