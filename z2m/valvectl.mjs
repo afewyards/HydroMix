@@ -1,5 +1,4 @@
 import * as fz from 'zigbee-herdsman-converters/converters/fromZigbee';
-import * as tz from 'zigbee-herdsman-converters/converters/toZigbee';
 import * as exposes from 'zigbee-herdsman-converters/lib/exposes';
 
 const e = exposes.presets, ea = exposes.access;
@@ -38,7 +37,7 @@ const T_BOOL   = 0x10;
 const T_U32    = 0x23;
 const T_SINGLE = 0x39;
 
-// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x000F).
+// attr id -> {key, type} exactly matching firmware/main/zigbee.h ATTR_* defines (0x0000-0x0011).
 const CUSTOM_ATTRS = {
     0:  {key: 'heat_threshold',      type: T_SINGLE, rw: true},
     1:  {key: 'cool_threshold',      type: T_SINGLE, rw: true},
@@ -56,6 +55,8 @@ const CUSTOM_ATTRS = {
     13: {key: 'travel_since_resync', type: T_SINGLE, rw: false},
     14: {key: 'deadtime_s',          type: T_SINGLE, rw: true},
     15: {key: 'pi_deadband_k',       type: T_SINGLE, rw: true},
+    16: {key: 'heat_setpoint',       type: T_SINGLE, rw: true},
+    17: {key: 'cool_setpoint',       type: T_SINGLE, rw: true},
 };
 const ATTR_ID_BY_KEY = Object.fromEntries(
     Object.entries(CUSTOM_ATTRS).map(([id, v]) => [v.key, Number(id)]));
@@ -177,8 +178,12 @@ export default [{
     vendor: 'Knife',
     description: 'Hydronic 3-way mixing valve controller',
     fromZigbee: [fzWaterRunning, fzTemperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
-    toZigbee: [tzWaterRunning, tz.thermostat_occupied_heating_setpoint,
-               tz.thermostat_occupied_cooling_setpoint, tzAnalogOutput, tzTunable],
+    // tz.thermostat_occupied_heating_setpoint / tz.thermostat_occupied_cooling_setpoint were
+    // removed here: ZBOSS enforces heat<=cool-deadband on hvacThermostat, and this device's
+    // independent seasonal targets (heat 35 / cool 18) always violate that, so those writes
+    // were rejected INVALID_VALUE before firmware ever saw them (verified live). The regulation
+    // targets are now heat_setpoint/cool_setpoint below, via tzTunable on the custom cluster.
+    toZigbee: [tzWaterRunning, tzAnalogOutput, tzTunable],
     exposes: [
         e.binary('water_running', ea.ALL, 'ON', 'OFF').withDescription('Regulation enable'),
         // withProperty('temperature') is load-bearing: fz.temperature publishes under
@@ -195,25 +200,19 @@ export default [{
         e.numeric('valve_position', ea.ALL).withUnit('%').withValueMin(0).withValueMax(100)
             .withDescription('Writable only while water_running is OFF; supersedes park_pos until ON/reboot'),
         e.enum('mode', ea.STATE, ['idle', 'heating', 'cooling']),
-        // OccupiedHeating/CoolingSetpoint (hvacThermostat, EP1) are the two regulation
-        // targets. Deliberately e.numeric(), NOT e.climate(): the device auto-detects
-        // heating vs. cooling from live temperatures and does not accept system_mode
-        // writes, so a climate entity would misrepresent it as user-selectable.
-        // Property-suffix trace: fz.thermostat is a generic (unmodified) converter that
-        // internally calls postfixWithEndpointName() before publishing, same as it already
-        // does for local_temperature_1 / running_mode_1 above. With meta.multiEndpoint
-        // true and the endpoint() map below naming device endpoint 1 as '1', that call
-        // appends '_1' to its base property, publishing occupied_heating_setpoint_1 /
-        // occupied_cooling_setpoint_1. The expose name here already equals that base
-        // property (no withProperty() needed, unlike the temperature_<ep> exposes), so
-        // withEndpoint('1') alone appends the matching '_1' suffix to both name and
-        // property, landing exactly on what fz.thermostat publishes.
-        e.numeric('occupied_heating_setpoint', ea.ALL).withUnit('°C')
-            .withValueMin(17).withValueMax(35).withValueStep(0.5).withEndpoint('1')
-            .withDescription('Heating setpoint. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
-        e.numeric('occupied_cooling_setpoint', ea.ALL).withUnit('°C')
-            .withValueMin(17).withValueMax(35).withValueStep(0.5).withEndpoint('1')
-            .withDescription('Cooling setpoint. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
+        // Regulation targets, on the custom cluster (attrs 0x0010/0x0011) — NOT the standard
+        // hvacThermostat OccupiedHeating/CoolingSetpoint. ZBOSS enforces heat<=cool-deadband
+        // on that cluster; this device keeps independent seasonal targets (heat 35 / cool 18)
+        // that always violate it, so every ZCL write there was rejected INVALID_VALUE before
+        // firmware ever saw it (verified live). No withEndpoint() here, matching kp/ki and
+        // the other custom-tunable exposes below (they're plain attrs on EP1's custom cluster,
+        // not postfixed like the generic fz.thermostat-published properties).
+        e.numeric('heat_setpoint', ea.ALL).withUnit('°C')
+            .withValueMin(17).withValueMax(35).withValueStep(0.5)
+            .withDescription('Heating regulation target. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
+        e.numeric('cool_setpoint', ea.ALL).withUnit('°C')
+            .withValueMin(17).withValueMax(35).withValueStep(0.5)
+            .withDescription('Cooling regulation target. Out-of-range writes are clamped by the device (17-35 °C) and echoed back.'),
         e.numeric('heat_threshold', ea.ALL).withUnit('°C').withValueMin(10).withValueMax(60),
         e.numeric('cool_threshold', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(40),
         e.numeric('travel_time_s', ea.ALL).withUnit('s').withValueMin(30).withValueMax(600),
