@@ -47,4 +47,5 @@ ctest --test-dir build -R test_degradation --output-on-failure
 
 `test_alarm.c`, `test_config_map.c`, `test_control.c`, `test_degradation.c`,
 `test_feedforward.c`, `test_governor.c`, `test_interlock.c`,
-`test_mode_detect.c`, `test_pi.c`, `test_pos_estimator.c`, `test_smoke.c`.
+`test_mode_detect.c`, `test_pi.c`, `test_pos_estimator.c`,
+`test_sensor_policy.c`, `test_smoke.c`.

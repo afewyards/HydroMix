@@ -198,6 +198,21 @@ void test_hold_trim_clamped_on_strategy_flip(void){
     TEST_ASSERT_TRUE(fabsf(o.valve_target - 53.3333f) < 0.05f);
 }
 
+/* Sustained no-authority FF (source ~= return) in CTRL_FULL/HEATING must, past
+ * the park dwell, park the valve and stop PI windup -- the live "98 % latched
+ * freeze" incident. */
+void test_ff_no_authority_parks_after_dwell(void){
+    uint32_t t = warmup_heating();          /* CTRL_FULL, PI active, FF has authority */
+    in.t_source_f = 30.2f;                  /* |30.2-30|=0.2 < 2K -> FF freezes from here */
+    control_out_t o = {0};
+    for (int i = 0; i < 7; i++){            /* 7*10s = 70s > 60s dwell */
+        t += 10000;
+        o = control_step(&st, &in, &cfg, t);
+    }
+    TEST_ASSERT_EQUAL_FLOAT(cfg.park_pos, o.valve_target);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, st.pi.integ);   /* no windup while parked */
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -212,5 +227,6 @@ int main(void){
     RUN_TEST(test_ff_live_during_hold);
     RUN_TEST(test_pi_only_full_authority);
     RUN_TEST(test_hold_trim_clamped_on_strategy_flip);
+    RUN_TEST(test_ff_no_authority_parks_after_dwell);
     return UNITY_END();
 }

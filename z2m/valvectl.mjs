@@ -190,8 +190,8 @@ export default [{
             + 'Out-of-range writes are clamped by the device (kp 0.5-15, ki 0-5) and echoed back.'),
         // release band is 35/17 (control_task.c) — bounds keep trip thresholds outside it
         // or the governor limit-cycles; must match config.c/config_map.c clamp_config/tunable_apply.
-        e.numeric('gov_high', ea.ALL).withUnit('°C').withValueMin(35).withValueMax(60),
-        e.numeric('gov_low', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(17),
+        e.numeric('gov_high', ea.ALL).withUnit('°C').withValueMin(36).withValueMax(60),
+        e.numeric('gov_low', ea.ALL).withUnit('°C').withValueMin(0).withValueMax(16),
         e.numeric('alarm_dwell', ea.ALL).withUnit('ms').withValueMin(10000).withValueMax(3600000),
         e.numeric('deadtime_s', ea.ALL).withUnit('s').withValueMin(0).withValueMax(120)
             .withDescription('Transit hold: PI pauses this long after valve movement'),

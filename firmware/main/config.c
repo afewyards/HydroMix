@@ -56,9 +56,10 @@ static void clamp_config(config_t *c)
 {
     c->heat_threshold = sane_f(DEFAULTS.heat_threshold, c->heat_threshold, 10.0f, 60.0f);
     c->cool_threshold = sane_f(DEFAULTS.cool_threshold, c->cool_threshold, 0.0f, 40.0f);
-    /* release band is 35/17 (control_task.c) — trip thresholds must stay outside it or the governor limit-cycles */
-    c->gov_high       = sane_f(DEFAULTS.gov_high,       c->gov_high,       35.0f, 60.0f);
-    c->gov_low        = sane_f(DEFAULTS.gov_low,        c->gov_low,        0.0f, 17.0f);
+    /* release band is 35/17 (control_task.c) — trip thresholds must stay strictly outside it or the
+     * governor limit-cycles; observed live (gov_low written as 17, sitting on the band edge) */
+    c->gov_high       = sane_f(DEFAULTS.gov_high,       c->gov_high,       36.0f, 60.0f);
+    c->gov_low        = sane_f(DEFAULTS.gov_low,        c->gov_low,        0.0f, 16.0f);
     c->park_pos       = sane_f(DEFAULTS.park_pos,       c->park_pos,       0.0f, 100.0f);
     c->heat_setpoint  = sane_f(DEFAULTS.heat_setpoint,  c->heat_setpoint,  17.0f, 35.0f);
     c->cool_setpoint  = sane_f(DEFAULTS.cool_setpoint,  c->cool_setpoint,  17.0f, 35.0f);
@@ -150,9 +151,10 @@ void config_apply_custom(uint16_t attr_id, const void *val)
     case ATTR_DIRECTION_SWAP: g_config.direction_swap = *(const bool*)val; break;
     case ATTR_KP:             g_config.kp = sane_f(g_config.kp, *(const float*)val, 0.5f, 15.0f); break;
     case ATTR_KI:             g_config.ki = sane_f(g_config.ki, *(const float*)val, 0.0f, 5.0f); break;
-    /* release band is 35/17 (control_task.c) — trip thresholds must stay outside it or the governor limit-cycles */
-    case ATTR_GOV_HIGH:       g_config.gov_high = sane_f(g_config.gov_high, *(const float*)val, 35.0f, 60.0f); break;
-    case ATTR_GOV_LOW:        g_config.gov_low = sane_f(g_config.gov_low, *(const float*)val, 0.0f, 17.0f); break;
+    /* release band is 35/17 (control_task.c) — trip thresholds must stay strictly outside it or the
+     * governor limit-cycles; observed live (gov_low written as 17, sitting on the band edge) */
+    case ATTR_GOV_HIGH:       g_config.gov_high = sane_f(g_config.gov_high, *(const float*)val, 36.0f, 60.0f); break;
+    case ATTR_GOV_LOW:        g_config.gov_low = sane_f(g_config.gov_low, *(const float*)val, 0.0f, 16.0f); break;
     case ATTR_ALARM_DWELL:    g_config.alarm_dwell_ms = clamp_u32(*(const uint32_t*)val, 10000, 3600000); break;
     case ATTR_DEADTIME_S:     g_config.deadtime_s = sane_f(g_config.deadtime_s, *(const float*)val, 0.0f, 120.0f); break;
     case ATTR_PI_DEADBAND:    g_config.pi_deadband_k = sane_f(g_config.pi_deadband_k, *(const float*)val, 0.0f, 1.0f); break;

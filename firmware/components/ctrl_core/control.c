@@ -121,8 +121,9 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
         o.valve_target = deg.park_pos;
         return o;
     case CTRL_FF_ONLY: {
-        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f);
-        target = ctrl_clampf(ff.pos_ff + deg.ff_bias_pct, 0.0f, 100.0f);
+        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f, now);
+        target = ff.park_requested ? cfg->park_pos
+                                    : ctrl_clampf(ff.pos_ff + deg.ff_bias_pct, 0.0f, 100.0f);
         break;                                              /* no supply -> no PI, no gov */
     }
     case CTRL_PI_ONLY: {
@@ -134,10 +135,17 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     case CTRL_FULL:
     default: {
-        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f);
+        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f, now);
         bool freeze = freeze_pi || ff.frozen;               /* low authority freezes integrator */
         pi_cfg_t pc = cfg->pi_cfg;                          /* trim_max stays 0 -> default ±20, FF carries the baseline */
-        target = pi_transit(s, in, cfg, &pc, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
+        if (ff.park_requested){
+            /* Sustained no-authority freeze: park outright, no windup while parked. */
+            pi_reset(&s->pi);
+            s->holding = false; s->latched_trim = 0.0f;
+            target = cfg->park_pos;
+        } else {
+            target = pi_transit(s, in, cfg, &pc, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
+        }
         break;
     }
     }

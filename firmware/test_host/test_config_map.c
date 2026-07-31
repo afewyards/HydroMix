@@ -60,9 +60,9 @@ void test_infinity_clamped(void){
 void test_gov_bounds_protect_release_band(void){
     tunable_cfg_t c; tunable_cfg_defaults(&c);
     float v = 20.0f; tunable_apply(&c, TUNABLE_GOV_LOW, &v);
-    TEST_ASSERT_EQUAL_FLOAT(17.0f, c.gov_low);
+    TEST_ASSERT_EQUAL_FLOAT(16.0f, c.gov_low);
     v = 25.0f;       tunable_apply(&c, TUNABLE_GOV_HIGH, &v);
-    TEST_ASSERT_EQUAL_FLOAT(35.0f, c.gov_high);
+    TEST_ASSERT_EQUAL_FLOAT(36.0f, c.gov_high);
 }
 int main(void){
     UNITY_BEGIN();
