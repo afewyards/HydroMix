@@ -25,14 +25,26 @@ static bool s_swept  = false;
 static esp_timer_handle_t s_fallback_timer;
 
 /* esp_ota_mark_app_valid_cancel_rollback() erases/writes the otadata flash
- * partition, which on this unicore config suspends the scheduler for the
- * duration. It must never run in the control task or an esp_timer callback
- * (both real-time contexts); maybe_validate() offloads it to a short-lived
- * one-shot task instead. */
+ * partition. CONFIG_SPI_FLASH_AUTO_SUSPEND is off, so the write disables the
+ * flash cache and stalls every task on this core for its duration -- running
+ * it from a dedicated task does NOT spare other tasks from that stall. The
+ * real reasons to offload it here: the esp_timer task is shared with
+ * fallback_timer_cb (and any other timer callback), so running it there would
+ * block that queue for the duration; and the control task is registered with
+ * the task WDT, so running it there would eat into its watchdog budget.
+ * maybe_validate() offloads it to a short-lived one-shot task instead. */
 static void validate_task(void *arg){
     const char *reason = (const char *)arg;
-    esp_ota_mark_app_valid_cancel_rollback();
-    ESP_LOGI(TAG, "OTA image validated, rollback cancelled (%s)", reason);
+    esp_err_t err = esp_ota_mark_app_valid_cancel_rollback();
+    if (err != ESP_OK) {
+        ESP_LOGE(TAG, "esp_ota_mark_app_valid_cancel_rollback failed: %s", esp_err_to_name(err));
+        taskENTER_CRITICAL(&s_mux);
+        s_pending = true;   /* let the next 10 s good-sweep retry */
+        taskEXIT_CRITICAL(&s_mux);
+    } else {
+        esp_timer_stop(s_fallback_timer);   /* ignore result; may not be armed */
+        ESP_LOGI(TAG, "OTA image validated, rollback cancelled (%s)", reason);
+    }
     vTaskDelete(NULL);
 }
 
