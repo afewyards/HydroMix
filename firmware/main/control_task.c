@@ -13,16 +13,21 @@
 #define CYCLE_MS 10000
 
 static control_state_t s_ctrl;
-static ctrl_mode_t s_mode = MODE_IDLE;
-static bool s_alarm = false;
-static uint16_t s_faults = 0;
-static bool s_water_running = false;      /* HA enables regulation */
-static bool s_link_up = false;
-static uint32_t s_link_seen = 0;
+/* Cross-task state. Written by the Zigbee stack task (attr_cb, signal handler) and the
+ * console task, read by the control loop -- and s_mode/s_alarm/s_faults the other way
+ * round. volatile matches the ui.c:13 idiom for exactly this pattern. It is NOT
+ * atomicity, but each of these is a single naturally-aligned word on RV32, and volatile
+ * is what stops the compiler caching them in a register across the 10 s loop. */
+static volatile ctrl_mode_t s_mode = MODE_IDLE;
+static volatile bool     s_alarm = false;
+static volatile uint16_t s_faults = 0;
+static volatile bool     s_water_running = false;      /* HA enables regulation */
+static volatile bool     s_link_up = false;
+static volatile uint32_t s_link_seen = 0;
 /* One-shot: set when an AnalogOutput manual override write is accepted (zigbee.c),
  * cleared on any water_running transition. While set, the OFF-park loop below leaves
  * the valve alone (spec §4.5: write supersedes park_pos until water_running ON or reboot). */
-static bool s_override_active = false;
+static volatile bool s_override_active = false;
 /* Completed control cycles, saturating at OTA_GATE_CYCLES (see ctrl_core/ota_gate.h).
  * Sensor faults are a property of the plant wiring, not of the image, so OTA
  * validation must not wait on fault-free probes. What this gate DOES prove is that
@@ -99,5 +104,17 @@ void control_task_set_water_running(bool on){
     s_water_running = on;
 }
 bool control_task_water_running(void){ return s_water_running; }
-void control_task_set_link(bool up, uint32_t seen){ s_link_up = up; s_link_seen = seen; }
+void control_task_set_link(bool up, uint32_t seen){
+    /* seen BEFORE up: a reader that interleaves then sees a stale timestamp alongside
+     * the new link state, never a fresh timestamp alongside the old one. The cooling
+     * dew guard keys off the timestamp, and "older than it really is" errs toward
+     * raising the cooling setpoint -- less cooling, the safe direction. */
+    s_link_seen = seen;
+    s_link_up = up;
+}
+
+/* Passive liveness. ZDO signals alone are not enough: a Router whose coordinator dies
+ * silently gets no LEAVE and no failed STEERING, so s_link_up stays true forever. Any
+ * inbound ZCL action is positive proof the coordinator is still talking to us. */
+void control_task_note_link_activity(void){ s_link_seen = now_ms(); }
 void control_task_note_manual_override(void){ s_override_active = true; }

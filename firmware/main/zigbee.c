@@ -447,6 +447,12 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
 
 static esp_err_t action_handler(esp_zb_core_action_callback_id_t id, const void *msg)
 {
+    /* Any inbound core action -- attribute write, OTA block, reporting-config, command
+     * callback -- proves the coordinator is alive. This is the broadest hook the stack
+     * offers; plain attribute READS are answered inside the stack and do NOT reach here,
+     * so the liveness signal is only as good as the traffic Z2M actually generates
+     * (see Unresolved Q3: availability polling). */
+    control_task_note_link_activity();
     if (id == ESP_ZB_CORE_SET_ATTR_VALUE_CB_ID)    return attr_cb(msg);
     if (id == ESP_ZB_CORE_OTA_UPGRADE_VALUE_CB_ID) return ota_zcl_handle(msg);
     return ESP_OK;
