@@ -4,6 +4,21 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.3.1 — Zigbee-writable setpoints
+
+- **heat_setpoint / cool_setpoint moved to the custom cluster** (attrs `0x0010`/`0x0011`,
+  float °C, clamped 17–35, NaN-rejected, echoed back, NVS-persisted — same machinery as
+  the other tunables). The standard Thermostat cluster rejects every setpoint write on
+  this device with `INVALID_VALUE`: ZBOSS enforces the ZCL single-zone invariant
+  `heat ≤ cool − deadband`, which the device's independent seasonal targets (heat 35 /
+  cool 18) deliberately violate. The thermostat cluster's `OccupiedHeating/CoolingSetpoint`
+  are effectively static boot defaults: the firmware attempts a mirror write on every
+  custom-cluster setpoint change, but ZBOSS vetoes local thermostat setpoint stores under
+  the same deadband rule (verified on-air 2026-07-31, `check=false` notwithstanding), so
+  reads of the standard attributes do NOT reflect the live targets — use the custom
+  attrs. `z2m/valvectl.mjs` exposes both as `heat_setpoint` / `cool_setpoint` numbers
+  and no longer attempts thermostat-cluster writes.
+
 ## 1.3.0 — review-findings release
 
 Safety and correctness fixes from the 2026-07-31 firmware review:
