@@ -4,6 +4,46 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.4.0 — valve deadband tunable + RunningMode push
+
+- **Motor stop deadband is now a runtime Zigbee tunable** (`0x0012 valve_deadband_pct`,
+  float %, custom cluster `0xFC00`, same read/write/NVS-persist machinery as the other
+  tunables). Was a compile-time `#define DEADBAND_PCT 2.0f` in `valve_hw.c`.
+  **BEHAVIOR CHANGE:** the shipped default is now 1.0 % *at `travel_time_s` ≥ 120 s*
+  (was effectively 2.0 % on every device before this release, regardless of
+  `travel_time_s`) — halved because at `kp=2.8 %/K` that's ≈±0.36 K of supply error
+  before the motor reacts, and the existing 30 s transit hold + 0.25 K supply-move
+  release already suppress oscillation at the tighter band. Below `travel_time_s=120`
+  this is NOT a straight halving: `clamp_config()` raises the migrated default up to
+  the travel-derived floor (below), so a device already tuned to `travel_time_s=60`
+  lands at 2.0 % (unchanged) and one at `travel_time_s=30` lands at 4.0 % (doubled).
+  Clamped to `[max(0.2, floor), 5.0]`, where `floor` is derived from the interlock's
+  minimum drive pulse and the current `travel_time_s` (`1.2 × (INTERLOCK_MIN_PULSE_MS /
+  1000) × 100 / (2 × travel_time_s)` — ≈1.0 % at 120 s, 2.0 % at 60 s, 0.2 % at 600 s):
+  a constant floor below this lets a short travel time turn every drive pulse into a
+  full band crossing, limit-cycling the motor. Writing `travel_time_s` re-clamps
+  `valve_deadband_pct` against the new floor as a side effect (shortening travel can
+  raise the floor above an already-set deadband) — both the Zigbee attribute store and
+  NVS reflect the adjusted value.
+- **`pi_deadband_k` (`0x000F`) stays at its 0.25 K default.** A lower value (0.15) was
+  considered alongside the valve-deadband work above, but a closed-loop sweep of
+  {0.15, 0.20, 0.22, 0.25} against `test_lagsim.c`'s dead-time/lag robustness matrix
+  found only 0.25 clears every corner's convergence/ripple gate — 0.25 ships unchanged.
+- **NVS config migrates v2 → v3** (`CONFIG_VERSION` 2 → 3) to add `valve_deadband_pct`
+  without wiping existing tunables: a 1.3.x-sized blob is read field-by-field, the new
+  field defaults to 1.0, and the blob is re-saved at the new size/version. **Downgrading
+  to ≤1.3.1 after this release wipes the config** — the old firmware's loader only
+  recognizes its own (smaller) blob size and falls back to defaults for anything else.
+- **Thermostat `RunningMode` (`0x001E`) now pushes an explicit unsolicited report** on
+  every change, and once on every (re)join. This is a belt-and-suspenders addition, NOT
+  the root-cause fix for the 6 h-stale `mode` sensor observed live: the actual cause was
+  that EP1's `hvacThermostat` cluster was never bound in the first place (live
+  binding-table inspection showed EP1 bound for `genOnOff`/`genAnalogOutput` only), so
+  neither the passive ZCL reporting-engine config *nor* this new explicit push has
+  anywhere to send a report without a binding. The root-cause fix is converter-side —
+  `z2m/valvectl.mjs`'s `configure()` now binds `hvacThermostat` — and this firmware push
+  only helps once that binding exists.
+
 ## 1.3.1 — Zigbee-writable setpoints
 
 - **heat_setpoint / cool_setpoint moved to the custom cluster** (attrs `0x0010`/`0x0011`,
@@ -210,14 +250,18 @@ real Zigbee Alliance-assigned code (see the plan's "Unresolved Q1").
 
 - **EP1**: Basic, Identify, On/Off (`water_running`), Thermostat (local temp =
   supply; setpoints clamped 17–35 °C; `SystemMode` writes accepted but
-  ignored — mode is auto-detected from HX-A), Analog Output (position 0–100 %,
-  writable only while `water_running` is OFF), OTA client, plus a
-  manufacturer-specific custom cluster `0xFC00` exposing 12 read-write
-  tunables — including, since **1.1.0**, `0x000E deadtime_s` (transit hold:
-  seconds the PI loop pauses after the valve moves, 0–120, default 30) and
-  `0x000F pi_deadband_k` (PI error deadband, K, 0–1, default 0.25) — a
-  self-clearing `resync` bool, and read-only alarm-bitmap / fault-bitmap /
-  travel-since-resync attributes. `ki` is also %/K per **minute** as of
+  ignored — mode is auto-detected from HX-A; `RunningMode` pushes an explicit
+  unsolicited report on change and on every (re)join, since **1.4.0**), Analog
+  Output (position 0–100 %, writable only while `water_running` is OFF), OTA
+  client, plus a manufacturer-specific custom cluster `0xFC00` exposing 15
+  read-write tunables — including, since **1.1.0**, `0x000E deadtime_s` (transit
+  hold: seconds the PI loop pauses after the valve moves, 0–120, default 30) and
+  `0x000F pi_deadband_k` (PI error deadband, K, 0–1, default 0.25) — and since
+  **1.4.0**, `0x0012 valve_deadband_pct` (motor stop
+  deadband, % of travel, default 1.0, clamped to `[max(0.2, floor), 5.0]` where
+  `floor` tracks `travel_time_s` — see the 1.4.0 notes above) — a self-clearing
+  `resync` bool, and read-only alarm-bitmap / fault-bitmap / travel-since-resync
+  attributes. `ki` is also %/K per **minute** as of
   1.1.0 (was %/K per 10 s cycle in ≤1.0.7); a device upgrading from an older
   build migrates its stored config automatically on first boot (ki ×6,
   clamped to the new bounds — see `config_load()` in `firmware/main/config.c`).
