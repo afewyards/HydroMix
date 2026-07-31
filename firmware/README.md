@@ -4,6 +4,34 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.3.0 — review-findings release
+
+Safety and correctness fixes from the 2026-07-31 firmware review:
+
+- **water_running now survives a reboot.** Persisted in its own NVS key (`valvectl/water`,
+  outside the cfg blob, so no `CONFIG_VERSION` bump) and used to seed the OnOff attribute
+  at endpoint build. Previously every boot forced regulation ON while HA read OFF. Absent
+  key ⇒ OFF (parks at `park_pos`). A factory reset therefore boots OFF.
+- **Faulted probes publish the ZCL invalid sentinel `0x8000`** instead of a frozen
+  last-good value, on both Temperature Measurement `MeasuredValue` and Thermostat
+  `LocalTemperature`. `z2m/valvectl.mjs` maps it to `null`.
+- **The sensor sweep is watchdogged**, and any reading older than 35 s (3 sweep periods
+  + slack) is reported faulted regardless of latch state — a wedged sweep now degrades
+  control to park instead of integrating frozen data. `sensors_fill_faults()` takes one
+  coherent locked snapshot.
+- **OTA validation gate moved outside the watchdog window:** 12 control cycles (~110 s)
+  instead of 3 (~20 s), extracted to `ctrl_core/ota_gate.c` and host-tested.
+- **Fault-streak decay requires 3 consecutive good reads** (break-even 25 % failure rate,
+  was 33 %) — a probe failing a third of its sweeps now latches.
+- **Thermostat setpoint writes echo the clamped value back** to the attribute store, and
+  only write NVS when the value actually changed.
+- **Cooling dew guard triggers on 30 min of traffic silence** rather than a ZDO link-down
+  signal, which a silently dead coordinator never sends.
+- **Supply freeze alarm is held while the supply probe is faulted** (no false latch on a
+  BSS-zero reading, no false clear on a frozen in-band one).
+- `travel_time_s` is latched with `direction_swap`, so a mid-stroke write cannot corrupt
+  the position estimate; a short first OTA payload block now aborts loudly.
+
 ## Prerequisites
 
 - **ESP-IDF v5.5.4**, installed at `~/esp/esp-idf` on this machine. Activate it in
