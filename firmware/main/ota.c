@@ -177,7 +177,19 @@ esp_err_t ota_zcl_handle(const void *msg)
         s_dl_total = m->ota_header.image_size;
 
         if (!s_dl_trimmed) {
-            if (len <= OTA_SUBELEMENT_HDR_LEN) return ESP_OK;   /* wait for more */
+            /* The 6-byte sub-element header always arrives whole in the first block:
+             * max_data_size is 64 (zigbee.c), ten times this header. A shorter first
+             * block means the server framed the image differently than assumed, and
+             * there is NO accumulation buffer here to re-assemble it -- the old code
+             * returned ESP_OK and silently dropped image bytes, producing a corrupt
+             * flash write with no diagnostic. Fail visibly instead. */
+            if (len <= OTA_SUBELEMENT_HDR_LEN) {
+                ESP_LOGE(TAG, "first OTA payload block is %u bytes, <= the %u-byte "
+                              "sub-element header; cannot trim without buffering",
+                         (unsigned)len, (unsigned)OTA_SUBELEMENT_HDR_LEN);
+                download_abort("short first payload block");
+                return ESP_FAIL;
+            }
             data += OTA_SUBELEMENT_HDR_LEN;
             len  -= OTA_SUBELEMENT_HDR_LEN;
             s_dl_trimmed = true;
