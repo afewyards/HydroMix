@@ -42,7 +42,7 @@ static uint32_t s_cycles_completed = 0;
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
 
 static void control_loop(void *arg){
-    esp_task_wdt_add(NULL);
+    ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     control_init(&s_ctrl);
     for (;;) {
         esp_task_wdt_reset();

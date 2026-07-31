@@ -5,6 +5,7 @@
 #include "freertos/semphr.h"
 #include "esp_timer.h"
 #include "esp_log.h"
+#include "esp_task_wdt.h"
 #include "onewire_bus.h"
 #include "onewire_crc.h"
 #include "ctrl_core/sensor_policy.h"
@@ -23,6 +24,12 @@ static const int PIN[SENS_COUNT] = { 0, 1, 10, 19, 18 };
 #define CONVERT_MS       750
 #define MAX_RETRY          3
 #define EMA_TAU_S       40.0f
+/* Belt-and-braces for a sweep that stops producing readings without failing them
+ * (task starved, RMT wedged, sweep_task deleted). Independent of the latch state:
+ * a reading whose last good sweep is older than this is reported faulted, so control
+ * degrades to park instead of silently integrating frozen data. 3 sweep periods plus
+ * 5 s of slack. */
+#define SENSOR_STALE_MS (3u * SWEEP_PERIOD_MS + 5000u)   /* 35 s */
 
 /* DS18B20 ROM/function commands (Skip ROM: single sensor per wire). */
 #define CMD_SKIP_ROM  0xCC
@@ -89,7 +96,13 @@ static void mark_fail(sensor_id_t id)
 
 static void sweep_task(void *arg)
 {
+    /* Subscribed to the task WDT like the control and valve tasks: an RMT/1-Wire wedge
+     * here used to be invisible (readings simply froze) rather than causing the reset +
+     * rollback the watchdog exists to produce. One iteration is ~10 s (750 ms convert +
+     * 9.25 s delay), well inside the 30 s budget. */
+    ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     for (;;) {
+        esp_task_wdt_reset();
         /* Phase 1: kick a conversion on each GPIO in turn (line released between). */
         for (int i = 0; i < SENS_COUNT; ++i) onewire_convert(PIN[i]);
         vTaskDelay(pdMS_TO_TICKS(CONVERT_MS));             /* single shared wait */
@@ -128,11 +141,27 @@ sensor_reading_t sensors_get(sensor_id_t id)
     return r;
 }
 
+/* One locked pass. Taking g_lock five times (once per sensors_get) let the sweep task
+ * interleave and hand the control loop a mix of pre- and post-sweep fault state. */
 void sensors_fill_faults(sensor_faults_t *o)
 {
-    o->supply = sensors_get(SENS_SUPPLY).fault;
-    o->ret    = sensors_get(SENS_RETURN).fault;
-    o->source = sensors_get(SENS_SOURCE).fault;
-    o->hx_a   = sensors_get(SENS_HX_A).fault;
-    o->hx_b   = sensors_get(SENS_HX_B).fault;
+    uint32_t now = (uint32_t)(esp_timer_get_time() / 1000);
+    bool f[SENS_COUNT];
+
+    xSemaphoreTake(g_lock, portMAX_DELAY);
+    for (int i = 0; i < SENS_COUNT; ++i) {
+        /* last_ok_ms == 0 means "never read a good value"; sensors_start() already boots
+         * that sensor as latched-faulted, so no staleness test is needed (and applying
+         * one would be wrong -- now - 0 is just uptime). */
+        bool stale = (g_read[i].last_ok_ms != 0) &&
+                     ((now - g_read[i].last_ok_ms) > SENSOR_STALE_MS);
+        f[i] = g_read[i].fault || stale;
+    }
+    xSemaphoreGive(g_lock);
+
+    o->supply = f[SENS_SUPPLY];
+    o->ret    = f[SENS_RETURN];
+    o->source = f[SENS_SOURCE];
+    o->hx_a   = f[SENS_HX_A];
+    o->hx_b   = f[SENS_HX_B];
 }

@@ -56,7 +56,7 @@ static valve_dir_t desired_dir(float target){
 }
 
 static void valve_task(void *arg){
-    esp_task_wdt_add(NULL);
+    ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     for (;;) {
         esp_task_wdt_reset();
         uint32_t t = now_ms();
