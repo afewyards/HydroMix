@@ -17,6 +17,23 @@ void test_setpoint_clamped(void){
     tunable_apply(&c, TUNABLE_HEAT_SETPOINT, &v);
     TEST_ASSERT_EQUAL_FLOAT(35.0f, c.heat_setpoint);   /* clamp <=35 */
 }
+void test_setpoint_bounds(void){
+    tunable_cfg_t c; tunable_cfg_defaults(&c);
+    float v = 1.0f; tunable_apply(&c, TUNABLE_HEAT_SETPOINT, &v);
+    TEST_ASSERT_EQUAL_FLOAT(17.0f, c.heat_setpoint);   /* clamp >=17 */
+    v = 99.0f;      tunable_apply(&c, TUNABLE_COOL_SETPOINT, &v);
+    TEST_ASSERT_EQUAL_FLOAT(35.0f, c.cool_setpoint);   /* clamp <=35 */
+    v = 1.0f;       tunable_apply(&c, TUNABLE_COOL_SETPOINT, &v);
+    TEST_ASSERT_EQUAL_FLOAT(17.0f, c.cool_setpoint);   /* clamp >=17 */
+}
+void test_setpoint_nan_rejected(void){
+    tunable_cfg_t c; tunable_cfg_defaults(&c);
+    float nanv = NAN;
+    tunable_apply(&c, TUNABLE_HEAT_SETPOINT, &nanv);
+    TEST_ASSERT_EQUAL_FLOAT(35.0f, c.heat_setpoint);   /* unchanged (default) */
+    tunable_apply(&c, TUNABLE_COOL_SETPOINT, &nanv);
+    TEST_ASSERT_EQUAL_FLOAT(18.0f, c.cool_setpoint);   /* unchanged (default) */
+}
 void test_new_defaults(void){
     tunable_cfg_t c; tunable_cfg_defaults(&c);
     TEST_ASSERT_EQUAL_FLOAT(2.8f,  c.kp);
@@ -68,6 +85,8 @@ int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_heat_threshold_maps);
     RUN_TEST(test_setpoint_clamped);
+    RUN_TEST(test_setpoint_bounds);
+    RUN_TEST(test_setpoint_nan_rejected);
     RUN_TEST(test_new_defaults);
     RUN_TEST(test_gain_bounds);
     RUN_TEST(test_nan_rejected);

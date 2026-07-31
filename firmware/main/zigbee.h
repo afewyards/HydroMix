@@ -27,6 +27,13 @@
 #define ATTR_TRAVEL_SINCE    0x000D
 #define ATTR_DEADTIME_S      0x000E
 #define ATTR_PI_DEADBAND     0x000F
+/* Regulation targets, writable here because the standard thermostat cluster isn't: ZBOSS
+ * enforces heat<=cool-deadband on OccupiedHeating/CoolingSetpoint, and this device keeps
+ * independent seasonal targets (heat 35 / cool 18) that always violate that, so every ZCL
+ * write to those attrs returns INVALID_VALUE before firmware ever sees it. Mirror
+ * g_config.heat_setpoint/cool_setpoint (clamp [17,35], same as config_apply_custom()). */
+#define ATTR_HEAT_SETPOINT   0x0010
+#define ATTR_COOL_SETPOINT   0x0011
 
 void zigbee_start(void);
 void zigbee_steer(void);

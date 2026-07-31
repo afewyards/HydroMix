@@ -159,6 +159,11 @@ void config_apply_custom(uint16_t attr_id, const void *val)
     case ATTR_ALARM_DWELL:    g_config.alarm_dwell_ms = clamp_u32(*(const uint32_t*)val, 10000, 3600000); break;
     case ATTR_DEADTIME_S:     g_config.deadtime_s = sane_f(g_config.deadtime_s, *(const float*)val, 0.0f, 120.0f); break;
     case ATTR_PI_DEADBAND:    g_config.pi_deadband_k = sane_f(g_config.pi_deadband_k, *(const float*)val, 0.0f, 1.0f); break;
+    /* Custom-cluster write path for the two regulation targets — the standard thermostat
+     * cluster rejects them (ZBOSS enforces heat<=cool-deadband; this device's independent
+     * seasonal targets 35/18 always violate it). Same clamp as clamp_config()/tunable_apply(). */
+    case ATTR_HEAT_SETPOINT:  g_config.heat_setpoint = sane_f(g_config.heat_setpoint, *(const float*)val, 17.0f, 35.0f); break;
+    case ATTR_COOL_SETPOINT:  g_config.cool_setpoint = sane_f(g_config.cool_setpoint, *(const float*)val, 17.0f, 35.0f); break;
     default: return; /* read-only or unknown — nothing to persist */
     }
     /* Skip the flash write when the clamped/applied value didn't actually change
