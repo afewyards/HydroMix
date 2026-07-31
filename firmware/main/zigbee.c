@@ -72,7 +72,7 @@ static uint32_t s_attr_alarm_dwell;
 static bool     s_attr_resync;
 static uint16_t s_attr_alarm_bitmap;
 static uint16_t s_attr_fault_bitmap;
-static float    s_attr_travel_since;  /* TODO: no travel-since-resync accessor in valve_hw yet; placeholder 0 */
+static float    s_attr_travel_since;  /* mirrors valve_travel_since_resync(); pushed by zigbee_push_status() */
 static float    s_attr_deadtime_s;
 static float    s_attr_pi_deadband;
 

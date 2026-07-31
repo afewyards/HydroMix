@@ -130,6 +130,7 @@ void ota_note_good_sweep(void){
  * precedes the image bytes in the first block. Writing those 6 bytes would
  * corrupt the image, so the first payload is trimmed. */
 #define OTA_SUBELEMENT_HDR_LEN 6
+#define OTA_FILE_HDR_LEN       56   /* ZCL OTA file header the stack strips before us */
 
 static esp_ota_handle_t       s_dl_handle;
 static const esp_partition_t *s_dl_part;
@@ -205,8 +206,18 @@ esp_err_t ota_zcl_handle(const void *msg)
     }
 
     case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_CHECK:
-        ESP_LOGI(TAG, "OTA image received: %lu bytes written (header size %lu)",
-                 (unsigned long)s_dl_written, (unsigned long)s_dl_total);
+        /* ota_header.image_size is the TOTAL advertised .ota file size (tools/make_ota.py
+         * builds it as OTA_FILE_HDR_LEN + OTA_SUBELEMENT_HDR_LEN + the app binary), while
+         * s_dl_written counts app-binary bytes only -- so a healthy transfer differs by
+         * exactly 62 and must NOT warn. What is never legitimate is writing zero bytes,
+         * or more bytes than the whole file: both mean the trim/accounting is wrong. */
+        if (s_dl_written == 0 || s_dl_written > s_dl_total)
+            ESP_LOGW(TAG, "OTA accounting looks wrong: wrote %lu app bytes for a %lu-byte file",
+                     (unsigned long)s_dl_written, (unsigned long)s_dl_total);
+        ESP_LOGI(TAG, "OTA image received: %lu app bytes written (advertised file size %lu, "
+                      "expected difference %u)",
+                 (unsigned long)s_dl_written, (unsigned long)s_dl_total,
+                 (unsigned)(OTA_FILE_HDR_LEN + OTA_SUBELEMENT_HDR_LEN));
         return ESP_OK;
 
     case ESP_ZB_ZCL_OTA_UPGRADE_STATUS_APPLY:
