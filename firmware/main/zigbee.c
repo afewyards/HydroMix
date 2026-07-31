@@ -509,6 +509,23 @@ void zigbee_leave(void)
 }
 bool zigbee_joined(void){ return s_joined; }
 
+/* ZCL "invalid" sentinel for the int16 temperature attributes -- Temperature
+ * Measurement MeasuredValue and Thermostat LocalTemperature both define 0x8000
+ * (== -32768) as "value not available". add_temp_ep() already seeds the cluster
+ * with it, so the stack accepts it. */
+#define ZCL_TEMP_INVALID ((int16_t)0x8000)
+
+/* A latched-faulted probe holds its last-good value forever -- or 0.0 from BSS if it
+ * never produced one. Publishing that as a live measurement is a lie the coordinator
+ * cannot detect: HA charts a plausible frozen temperature and no automation notices.
+ * Publish the sentinel instead. */
+static int16_t temp_centi(sensor_id_t id)
+{
+    sensor_reading_t r = sensors_get(id);
+    if (r.fault) return ZCL_TEMP_INVALID;
+    return (int16_t)(r.value_c * 100.0f);
+}
+
 void zigbee_report_temps(void)
 {
     struct { uint8_t ep; sensor_id_t id; } map[] = {
@@ -517,7 +534,7 @@ void zigbee_report_temps(void)
     };
     esp_zb_lock_acquire(portMAX_DELAY);
     for (size_t i = 0; i < 5; ++i) {
-        int16_t v = (int16_t)(sensors_get(map[i].id).value_c * 100.0f);
+        int16_t v = temp_centi(map[i].id);
         esp_zb_zcl_set_attribute_val(map[i].ep, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
             ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID, &v, false);
     }
@@ -568,7 +585,7 @@ void zigbee_push_status(void)
 static void set_local_temperature(void)
 {
     esp_zb_lock_acquire(portMAX_DELAY);
-    int16_t lt = (int16_t)(sensors_get(SENS_SUPPLY).value_c * 100.0f);
+    int16_t lt = temp_centi(SENS_SUPPLY);
     esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
         ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_LOCAL_TEMPERATURE_ID, &lt, false);
     esp_zb_lock_release();

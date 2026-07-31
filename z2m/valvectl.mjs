@@ -125,6 +125,22 @@ const fzAnalogOutput = {
 // `water_running` expose — it read Null and writes silently went nowhere. Hand-rolled both
 // directions so the exposed property and the converter key agree, matching the
 // fzAnalogOutput/tzAnalogOutput pattern above.
+// The generic fz.temperature has no guard for the ZCL invalid sentinel and would
+// publish -327.68 °C as a real reading. The firmware sends 0x8000 (-32768) for any
+// probe whose fault is latched (temp_centi() in firmware/main/zigbee.c).
+const fzTemperature = {
+    cluster: 'msTemperatureMeasurement', type: ['attributeReport', 'readResponse'],
+    convert: (model, msg, publish, options, meta) => {
+        if (msg.data.measuredValue === undefined) return;
+        // multiEndpoint postfix built explicitly rather than via postfixWithEndpointName(),
+        // whose signature has changed across zigbee-herdsman-converters versions. The
+        // endpoint map below names endpoints '2'..'6' identically to their IDs, so this
+        // produces exactly the `temperature_<ep>` properties the exposes declare.
+        const property = `temperature_${msg.endpoint.ID}`;
+        if (msg.data.measuredValue === -32768) return {[property]: null};
+        return {[property]: Math.round(msg.data.measuredValue) / 100};
+    },
+};
 const fzWaterRunning = {
     cluster: 'genOnOff', type: ['attributeReport', 'readResponse'],
     convert: (model, msg, publish, options, meta) => {
@@ -160,7 +176,7 @@ export default [{
     model: 'HydroMix',
     vendor: 'Knife',
     description: 'Hydronic 3-way mixing valve controller',
-    fromZigbee: [fzWaterRunning, fz.temperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
+    fromZigbee: [fzWaterRunning, fzTemperature, fz.thermostat, fzRunningMode, fzAnalogOutput, fzCustom],
     toZigbee: [tzWaterRunning, tz.thermostat_occupied_heating_setpoint,
                tz.thermostat_occupied_cooling_setpoint, tzAnalogOutput, tzTunable],
     exposes: [
