@@ -4,68 +4,79 @@
 #include <stdio.h>
 #include <stdint.h>
 
-/* Closed-loop regression for the HX approach coupling -- the mechanism behind the live
- * valve hunting on GF-HydroMix at a 19 C cooling setpoint (diagnosed 2026-08-03).
+/* Closed-loop regression for the source<->valve coupling through the heat exchanger, with
+ * a SWINGING primary -- disturbance rejection, where test_ff_recovery covers the starved
+ * cold start.
  *
- * The mixing law the FF inverts treats t_source as an independent input. On a plate HX
- * fed by a fixed primary it is not: opening the mixing valve raises SECONDARY flow,
- * which collapses the HX approach, which WARMS t_source -- the very quantity the FF
- * divides by. So the FF moves its own denominator, and the closer the setpoint sits to
- * the return temperature the harder that bites, because pos_ff's numerator
- * (t_set - t_ret) shrinks while the denominator swings just as much.
+ * HISTORY, because this file previously argued the opposite and its gate hid a real bug.
  *
- * Measured over 20 h of live cooling telemetry, flowing only (hx_a < 17 C):
- *   d(t_source)/d(valve %)          = +0.0654 K/%   (r = +0.49)
- *   d(approach)/d(valve %)          = +0.036  K/%   (r = +0.40)
- *   HX primary (hx_a)               = 14.25..16.93 C, 2.68 K p2p  <- steady
- *   t_source                        = 7.81 K p2p                  <- 3x its own primary
- *   valve position                  = sd 10.6 %, 98.5 % p2p
+ * Up to 1.5.0 this test asserted `new.travel < 0.50 * old.travel` as "the point of the
+ * change", on a plant whose coupling was +0.0654 K/% (opening the valve WARMS the source).
+ * Both premises were wrong:
  *
- * The plant below reproduces that: source temp is primary + coupling*position behind a
- * lag, supply is the mix behind dead time + probe lag, and the primary carries the
- * genuine slow swing the real one has. What the fix must do is cut VALVE TRAVEL without
- * giving up supply tracking -- the swing is the complaint, the temperature was already
- * being held (live supply sd was 0.37 K). */
+ *  1. THE SIGN. +0.0654 came from a 20 h closed-loop fit at r = +0.49, taken while the HX
+ *     primary itself drifted 14.25 -> 16.93 C -- the controller opens the valve because the
+ *     primary warmed, so valve % and t_source both track hx_a and correlate positively with
+ *     no causal content. The open-loop measurement (2026-08-04, valve held manually at full
+ *     source, primary flat to 0.19 K) gives -0.041 K/%: more source flow COOLS the source,
+ *     because the starved branch stops being cooled at all.
+ *
+ *  2. THE GATE. "Valve travel must more than halve" is trivially won by a valve that has
+ *     stopped moving. Re-running the 1.5.0 configuration on this file's own plant: travel
+ *     0.0 %, position p-p 0.0 %, FF frozen 100 % of the sim, pinned at 48.3 %, supply 1.0 K
+ *     warm -- and it PASSED. Its supply-tracking guards only passed because the baseline it
+ *     compared against was itself railed at 98.3 % with +2.65 K error. "Stopped working" and
+ *     "moves less" are the same measurement, so travel is now bounded on BOTH sides and
+ *     tracking error is capped absolutely rather than relative to a broken baseline. */
 
-#define T_RET        21.2f    /* floor return: live sd was 0.19 K, so effectively fixed */
-#define HX_PRIMARY   15.6f    /* mean of the live 14.25..16.93 primary band */
+#define T_RET        21.2f    /* live return: sd 0.19 K over 869 samples, effectively fixed */
+#define HX_PRIMARY   15.6f    /* mean of the live 14.43..16.62 primary band */
 #define PRIM_AMP     1.34f    /* 2.68 K p2p, the real primary swing */
 #define PRIM_PERIOD  3000.0f  /* s (50 min) — the dominant period in the live data */
-#define T_SET        19.0f    /* the setpoint that misbehaves */
+#define T_SET        18.5f    /* the live cooling setpoint */
 
-/* K per valve %, regressed from live telemetry at +0.0654 — but only r = +0.49, and it
- * is a closed-loop estimate, so the gates below sweep it rather than trusting one value. */
-static float g_coupling = 0.0654f;
-#define COUPLING     g_coupling
+/* HX effectiveness at full secondary flow. Calibrated to the measured pair
+ * {valve 100 % -> t_src 18.12 C} against a 15.6 C primary and a 21.2 C return, i.e. 0.55.
+ * Swept below because it is one operating point, not a characterised curve. */
+static float g_eff_max = 0.55f;
 
 #define TRAVEL_S     120.0f
-#define VALVE_DB     2.0f     /* valve_deadband_pct as configured on the live device */
+#define VALVE_DB     1.5f     /* live valve_deadband_pct */
 #define SRC_TAU_S    120.0f   /* HX approach doesn't shift instantly with flow */
 #define THETA_S      30       /* transport dead time, valve -> supply probe */
 #define TAU_S        45.0f    /* probe lag */
 #define SIM_S        14400    /* 4 h */
-#define WARMUP_S     1800     /* ignore the first 30 min */
-#define INIT_POS     35.0f    /* live mean valve position */
+#define WARMUP_S     7200     /* judge the last 2 h */
+#define INIT_POS     50.0f
 
 typedef struct {
     float pos, src, probe;
     float delay[THETA_S];
     int   di;
-    double travel;            /* cumulative |dpos|, % of travel */
+    double travel;
 } plant_t;
+
+/* Secondary flow tracks valve position and HX effectiveness rises with flow, so the source
+ * is cooled toward the primary in proportion to how far the valve is open. Squared rather
+ * than linear because the observed starvation at 55.7 % was far worse than linear. */
+static float src_ss_of(float primary, float pos){
+    float f = pos / 100.0f;
+    return T_RET - g_eff_max * f * f * (T_RET - primary);
+}
+
+static float primary_at(int t){
+    return HX_PRIMARY + PRIM_AMP * sinf(6.2831853f * (float)t / PRIM_PERIOD);
+}
 
 static void plant_init(plant_t *p){
     memset(p, 0, sizeof(*p));
     p->pos = INIT_POS;
-    p->src = HX_PRIMARY + COUPLING * p->pos;
+    p->src = src_ss_of(HX_PRIMARY, p->pos);
     float t0 = T_RET + p->pos / 100.0f * (p->src - T_RET);
     for (int i = 0; i < THETA_S; i++) p->delay[i] = t0;
     p->probe = t0;
 }
 
-/* One 1 s tick. The valve slews at the real travel rate and ignores commands inside the
- * motor deadband; the source then chases primary + coupling*position through a lag, and
- * the mix rides dead time + probe lag. */
 static void plant_tick(plant_t *p, float target, int t){
     float err = target - p->pos;
     if (fabsf(err) > VALVE_DB){
@@ -77,9 +88,7 @@ static void plant_tick(plant_t *p, float target, int t){
     }
     p->pos = ctrl_clampf(p->pos, 0.0f, 100.0f);
 
-    float primary = HX_PRIMARY + PRIM_AMP * sinf(6.2831853f * (float)t / PRIM_PERIOD);
-    float src_ss  = primary + COUPLING * p->pos;
-    p->src += (src_ss - p->src) * (1.0f / SRC_TAU_S);
+    p->src += (src_ss_of(primary_at(t), p->pos) - p->src) * (1.0f / SRC_TAU_S);
 
     float t_mix = T_RET + p->pos / 100.0f * (p->src - T_RET);
     float delayed = p->delay[p->di];
@@ -88,26 +97,28 @@ static void plant_tick(plant_t *p, float target, int t){
     p->probe += (delayed - p->probe) * (1.0f / TAU_S);
 }
 
-typedef struct { float travel, sup_pp, sup_mean_err, src_pp; } result_t;
+typedef struct { float travel, sup_pp, sup_mean_err, src_pp, pos_min, pos_max; } result_t;
 
-static result_t run_sim(const ff_cfg_t *ff){
+static result_t run_sim(void){
     control_state_t st; control_init(&st);
     control_cfg_t cfg = {
         .heat_setpoint = 35.0f, .cool_setpoint = T_SET, .park_pos = 20.0f,
         .mode_cfg = { 30.0f, 20.0f, 2.0f, 60000, 420000 },
-        .pi_cfg = { 2.8f, 0.5f, 0.0f, 100.0f, 0.25f, 0.0f },  /* live kp/ki/deadband */
-        .ff_cfg = *ff,
+        .pi_cfg = { 2.8f, 0.3f, 0.0f, 100.0f, 0.1f, 0.0f },   /* live kp/ki/deadband */
         .gov_cfg = { 36.0f, 16.0f, 35.0f, 17.0f },
         .alarm_dwell_ms = 300000,
-        .deadtime_s = 20.0f,                                   /* live value */
+        .deadtime_s = 35.0f,                                  /* live value */
     };
+    ff_cfg_defaults(&cfg.ff_cfg);
+
     plant_t p; plant_init(&p);
     control_in_t in = {0};
     in.water_running = true; in.link_up = true;
-    in.t_return_f = T_RET; in.hx_a = 15.0f;                    /* < cool_threshold: cooling */
+    in.t_return_f = T_RET; in.hx_a = 15.6f;                   /* < cool_threshold: cooling */
 
     float target = INIT_POS;
     float smin = 1e9f, smax = -1e9f, srcmin = 1e9f, srcmax = -1e9f;
+    float pmin = 1e9f, pmax = -1e9f;
     double sum = 0.0; long n = 0;
     double travel0 = 0.0;
 
@@ -127,6 +138,8 @@ static result_t run_sim(const ff_cfg_t *ff){
             if (p.probe > smax) smax = p.probe;
             if (p.src   < srcmin) srcmin = p.src;
             if (p.src   > srcmax) srcmax = p.src;
+            if (p.pos   < pmin) pmin = p.pos;
+            if (p.pos   > pmax) pmax = p.pos;
             sum += p.probe; n++;
         }
     }
@@ -135,51 +148,47 @@ static result_t run_sim(const ff_cfg_t *ff){
     r.sup_pp       = smax - smin;
     r.sup_mean_err = (float)(sum / (double)n) - T_SET;
     r.src_pp       = srcmax - srcmin;
+    r.pos_min = pmin; r.pos_max = pmax;
     return r;
 }
 
 void setUp(void){} void tearDown(void){}
 
-/* The complaint is valve/source hunting, not supply error — the live loop was already
- * holding supply to sd 0.37 K. So the gates are: travel and source swing must drop
- * materially, and supply tracking must not be traded away to get it. Swept across a
- * coupling range spanning the measurement uncertainty (0.04 is a well-sized HX that
- * barely droops, 0.09 an undersized one that droops harder than the live regression). */
-void test_hx_coupling_cuts_valve_travel(void){
-    static const float couplings[] = { 0.04f, 0.0654f, 0.09f };
-    ff_cfg_t legacy = { .coupling_pct_k = 0.0f, .auth_min_k = 2.0f,
-                        .auth_max_k = 2.0f, .out_tau_s = 0.0f };
-    ff_cfg_t shipped; ff_cfg_defaults(&shipped);
+void test_hx_coupling_tracks_without_thrash(void){
+    static const float effs[] = { 0.45f, 0.55f, 0.70f };
 
-    for (size_t i = 0; i < sizeof couplings / sizeof couplings[0]; i++){
-        g_coupling = couplings[i];
-        result_t old = run_sim(&legacy);
-        result_t neu = run_sim(&shipped);
+    for (size_t i = 0; i < sizeof effs / sizeof effs[0]; i++){
+        g_eff_max = effs[i];
+        result_t r = run_sim();
 
-        printf("hxfb[coupling=%.4f] legacy: travel %7.1f %%  sup p-p %.2f K  mean err %+.2f K  src p-p %.2f K\n",
-               couplings[i], old.travel, old.sup_pp, old.sup_mean_err, old.src_pp);
-        printf("hxfb[coupling=%.4f] new   : travel %7.1f %%  sup p-p %.2f K  mean err %+.2f K  src p-p %.2f K\n",
-               couplings[i], neu.travel, neu.sup_pp, neu.sup_mean_err, neu.src_pp);
-        printf("hxfb[coupling=%.4f] ratio : travel %.2fx  src p-p %.2fx\n",
-               couplings[i], neu.travel / old.travel, neu.src_pp / old.src_pp);
+        /* Coldest supply this plant can physically make, at full source against the mean
+         * primary. At low effectiveness the setpoint is simply out of reach, which is a
+         * plant-capacity fact and must not be charged to the controller. */
+        float floor_sup = T_RET - g_eff_max * (T_RET - HX_PRIMARY);
+        float unreachable = (floor_sup > T_SET) ? (floor_sup - T_SET) : 0.0f;
 
-        TEST_ASSERT_TRUE(neu.travel < 0.50f * old.travel);   /* the point of the change */
-        TEST_ASSERT_TRUE(neu.src_pp < 0.70f * old.src_pp);   /* less flow modulation */
-        TEST_ASSERT_TRUE(neu.sup_pp <= old.sup_pp + 0.15f);  /* not bought with ripple */
-        /* Mean offset must not meaningfully degrade. 0.20 K rather than ~0, for the same
-         * reason lagsim's gate 5 sits at 0.6 K: the 0.25 K PI deadband makes any offset
-         * smaller than itself structurally uncorrectable, so sub-deadband drift either
-         * way is noise. Observed worst case across this sweep is +0.17 K (at the mildest
-         * coupling, where the loop barely struggles); the other two corners IMPROVE by
-         * 0.24 and 0.41 K, because less valve thrash means less average flow modulation
-         * and so less HX droop to fight. */
-        TEST_ASSERT_TRUE(fabsf(neu.sup_mean_err) <= fabsf(old.sup_mean_err) + 0.20f);
+        printf("hxfb[eff=%.2f] travel %7.1f %%  pos %.1f..%.1f  sup p-p %.2f K  "
+               "mean err %+.2f K (floor %+.2f)  src p-p %.2f K\n",
+               effs[i], r.travel, r.pos_min, r.pos_max, r.sup_pp,
+               r.sup_mean_err, unreachable, r.src_pp);
+
+        /* NOT LATCHED. The gate that 1.5.0 inverted: a valve that stops moving is a
+         * failure, not a win. Over 2 h with a swinging primary it must be working. */
+        TEST_ASSERT_TRUE(r.travel > 20.0f);
+
+        /* NOT THRASHING. 120 s full travel, so 2 h of sane regulation is well under this;
+         * the 1.1.0 limit cycle swept ~96 % every ~260 s, which would be ~2700 %. */
+        TEST_ASSERT_TRUE(r.travel < 1500.0f);
+
+        /* TRACKING, in absolute terms rather than against a broken baseline. */
+        TEST_ASSERT_TRUE(fabsf(r.sup_mean_err) < 0.6f + unreachable);
+        TEST_ASSERT_TRUE(r.sup_pp < 1.5f);
     }
-    g_coupling = 0.0654f;
+    g_eff_max = 0.55f;
 }
 
 int main(void){
     UNITY_BEGIN();
-    RUN_TEST(test_hx_coupling_cuts_valve_travel);
+    RUN_TEST(test_hx_coupling_tracks_without_thrash);
     return UNITY_END();
 }

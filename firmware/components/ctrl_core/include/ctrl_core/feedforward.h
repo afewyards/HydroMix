@@ -2,41 +2,54 @@
 #include "ctrl_core/types.h"
 
 #define FF_DEFAULT_PCT              50.0f
-#define FF_NO_AUTHORITY_PARK_DWELL_MS 600000u
 
-/* Bounds on the authority floor (see ff_authority_floor). FF_AUTHORITY_MIN_K is the
- * fixed floor everything before 1.5.0 used and stays the lower bound, so the derived
- * value can only ever be more conservative. FF_AUTHORITY_MAX_K caps it because the
- * freeze is not free: past ~4 K the FF spends long enough frozen that the 10 min park
- * dwell starts to dominate. Measured against 20 h of GF-HydroMix cooling telemetry
- * (2026-08-03), as a fraction of flowing time spent frozen:
- *   2.0 K -> 3.0 %   2.8 K -> 3.6 %   3.8 K -> 6.4 %   4.6 K -> 17.7 % (20 min runs)
+/* Bounds on the authority floor (see ff_authority_floor).
  *
- * The dwell is now a long backstop for a genuinely stuck plant, not a routine trigger:
- * a freeze on its own is stable (the FF holds last_valid) and no longer escalates to an
- * open-loop park -- control.c holds the current valve position instead. */
+ * Since 1.5.1 the floor no longer gates the controller off -- it LIMITS the denominator
+ * (see ff_step). So its size is not a stability threshold any more, it is how
+ * conservatively the FF is allowed to extrapolate when the source and return converge:
+ * a bigger floor means a SMALLER commanded ratio, i.e. less aggressive. */
 #define FF_AUTHORITY_MIN_K          2.0f
 #define FF_AUTHORITY_MAX_K          4.0f
 
-/* d(t_source)/d(valve %) through the heat exchanger, K per % of travel.
+/* d(t_source)/d(valve %) through the heat exchanger, K per % of travel. Scales the
+ * setpoint-derived floor; 0 disables the derivation so the floor is just auth_min_k.
  *
- * Opening the mixing valve raises secondary flow, which collapses the HX approach and
- * WARMS the source temperature -- the same quantity the FF divides by. So the FF moves
- * its own denominator, and the mixing law is not the open-loop map it assumes.
- * Regressed over 20 h of live cooling (2026-08-03): +0.0654 K/%, r = +0.49, with the
- * approach (t_source - t_hx_a) sweeping -0.57..+6.25 K while the primary side stayed
- * within 14.25..16.93 C. Rounded down to 0.065 -- this is a plant constant, not a
- * universal one. Set to 0 to disable the derived floor (pre-1.5.0 behaviour). */
-#define FF_COUPLING_PCT_K           0.065f
+ * DISABLED (0) since 1.5.1 -- the 1.5.0 value of +0.0654 K/% HAD THE WRONG SIGN.
+ *
+ * It came from a 20 h closed-loop regression at only r = +0.49, taken while the HX
+ * primary (hx_a) itself drifted 14.25 -> 16.93 C. The controller opens the valve BECAUSE
+ * the primary warmed, so valve % and t_source both track hx_a and correlate positively
+ * with no causal content -- a textbook confound.
+ *
+ * The open-loop measurement (2026-08-04, valve held manually at full source while the
+ * primary stayed flat to within 0.19 K) gives the opposite sign: t_source fell 20.87 ->
+ * 19.06 C over ~44 % of travel, about -0.041 K/%. MORE source flow COOLS the source,
+ * because the starved branch stops being cooled at all -- the effect that dominates here
+ * is flow starvation, not the textbook rise in HX approach with secondary flow.
+ *
+ * That inversion invalidates the derivation, not just its magnitude. ff_authority_floor
+ * computes a loop-gain MAGNITUDE and treats |G| > 1 as runaway, but sign is what decides
+ * whether feedback diverges. With the true negative coupling, opening the valve cools the
+ * source, GROWS |denom| and backs the valve off: negative feedback, self-limiting. |G| > 1
+ * under negative feedback is a fast bounded response, not instability. The floor was
+ * guarding a runaway that cannot happen in this plant -- while manufacturing a real latch
+ * (2026-08-04: valve pinned 92 min, 87 % of samples below the floor, supply 2.7 K warm).
+ *
+ * Do NOT re-enable this from another closed-loop fit. It needs an open-loop step test:
+ * park the valve at 2-3 positions for >= 20 min each with the controller out of the loop. */
+#define FF_COUPLING_PCT_K           0.0f
 
-/* Time constant of the EMA on the FF OUTPUT, s.
+/* Time constant of the EMA on the FF OUTPUT, s. 0 disables filtering.
  *
- * Secondary to the authority floor: the floor is what keeps the FF out of the region
- * where it fights itself, this only stops the motor chasing the ripple that remains.
- * 900 s passes ~0.27 of a 26-minute limit cycle and ~0.47 of a 50-minute one, at a lag
- * the PI's +/-20 % trim absorbs easily (the genuine, primary-driven part of the source
- * swing is 2.68 K p2p, worth well under 10 % of travel). 0 disables filtering. */
-#define FF_OUT_TAU_S                900.0f
+ * 1.5.0 used 900 s, which is ~7.5x the 120 s valve travel time and ~26x the 35 s
+ * deadtime -- far slower than the plant it was steering, and slower than the disturbances
+ * it was meant to reject. It was introduced to cut valve travel, but the travel reduction
+ * measured at the time came mostly from the FF freeze pinning the valve, not from the
+ * filter (verified: at 180 s the 1.5.0 sim is still frozen 100 % of the time with zero
+ * travel). 180 s is ~1.5 valve travels: enough to keep the motor off the sensor ripple,
+ * short enough that the loop still answers a real disturbance inside one deadtime. */
+#define FF_OUT_TAU_S                180.0f
 
 /* Runtime-settable so the host tests can drive old and new behaviour through the same
  * code path, and so promoting any of these to a Zigbee tunable later is a small diff.
@@ -48,10 +61,6 @@ typedef struct {
 } ff_cfg_t;
 
 typedef struct {
-    float    last_valid;
-    bool     has_valid;
-    bool     freezing;
-    uint32_t frozen_since_ms;
     float    out;                  /* EMA of pos_ff */
     bool     has_out;
     uint32_t last_ms;
@@ -60,15 +69,14 @@ typedef struct {
 
 typedef struct {
     float pos_ff;
-    bool  frozen;
-    bool  park_requested;
+    bool  frozen;                  /* authority below floor -> denominator was LIMITED */
     float authority_floor_k;       /* floor actually applied this step (telemetry/tests) */
 } ff_result_t;
 
 void  ff_cfg_defaults(ff_cfg_t *c);
 void  ff_init(ff_state_t *s);
-void  ff_reseed(ff_state_t *s);        /* drop the output filter, keep last_valid */
-void  ff_mode_change(ff_state_t *s);   /* heating<->cooling inverts pos_ff: drop both */
+void  ff_reseed(ff_state_t *s);        /* drop the output filter */
+void  ff_mode_change(ff_state_t *s);   /* heating<->cooling inverts pos_ff: drop the filter */
 
 float ff_authority_floor(const ff_cfg_t *c, float t_set, float t_return_f);
 ff_result_t ff_step(ff_state_t *s, const ff_cfg_t *c, float t_set, float t_return_f,

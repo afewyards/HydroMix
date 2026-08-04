@@ -4,6 +4,88 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.5.1 — the authority floor had the wrong sign, and the freeze latched the valve
+
+**1.5.0 broke cooling on the live plant.** On 2026-08-04 the valve sat at 55.7 % for 92
+minutes while supply ran 2.6–2.75 K above an 18.5 °C setpoint and the house stopped being
+cooled. Root-caused from 869 Z2M samples (09:00–10:33).
+
+### What went wrong
+
+Three things compounded:
+
+1. **A freeze disconnected the whole controller, not just the integrator.** `pi.c`'s
+   `if (freeze) return ctrl_clampf(pos_ff, …)` discards **both** P and I, and `control.c`
+   passed `freeze_pi || ff.frozen`. So a low-authority FF handed the valve a bare frozen
+   constant and ran open-loop — while `t_supply`, a perfectly valid measurement, was ignored.
+2. **The floor was placed inside the plant's normal operating range.** At the live 18.5 °C
+   setpoint the derived floor was `sqrt(2.7·100·0.065)` = 4.19, clamped to the 4.0 K ceiling.
+   Measured `|t_src − t_ret|` runs **0.07–4.75 K, mean 1.89** → **87 % of samples treated as
+   no-authority.** The valve moved on exactly 5 occasions in 92 min, *all* of them inside the
+   one window where `|denom|` crossed 4.00.
+3. **The escape hatch was a no-op.** `if (ff.park_requested) target = in->valve_pos;` commands
+   exactly what the freeze already commands. 1.5.0 correctly identified that the old open-loop
+   park to `park_pos` was harmful, but deleted the only thing that broke the latch.
+
+And the latch is self-reinforcing: a pinned valve starves the source branch, a starved branch
+stops being cooled, `t_src` drifts toward `t_ret`, `|denom|` shrinks further. It reached
+**0.07 K**. There was no exit.
+
+### The coupling sign was inverted
+
+`FF_COUPLING_PCT_K = +0.0654 K/%` came from a 20 h **closed-loop** fit at only r = +0.49,
+taken while the HX primary itself drifted 14.25 → 16.93 °C. The controller opens the valve
+*because* the primary warmed, so valve % and `t_source` both track `hx_a` and correlate
+positively with no causal content — a confound.
+
+The open-loop measurement (valve held manually at full source, primary flat to within
+0.19 K) gives the **opposite** sign: `t_src` fell 20.87 → 19.06 °C over ~44 % of travel,
+about **−0.041 K/%**. More source flow *cools* the source; flow starvation dominates the
+textbook rise in HX approach.
+
+That inverts the derivation, not just its magnitude. `ff_authority_floor()` computes a loop
+gain **magnitude** and treats |G| > 1 as runaway — but sign decides whether feedback
+diverges. With the true negative coupling, opening the valve cools the source, *grows*
+`|denom|` and backs the valve off: negative feedback, self-limiting. **The floor guarded a
+runaway that cannot happen in this plant, while manufacturing a real latch.**
+
+### The fix
+
+- **`ff_step` now LIMITS the denominator instead of abandoning the division.** Output stays
+  live, bounded, continuous and correctly signed, and — because the coupling is negative — it
+  points the valve the way that *restores* authority. Saturating toward the source is the
+  correct response to a converging source, not an error to suppress. A source on the wrong
+  side of `t_ret` still clamps to 0; `denom == 0` falls back to the demand direction.
+- **`ff.frozen` no longer freezes the PI.** Only `resync_active` does, where the valve is
+  being driven to an end stop and the output is moot anyway.
+- **`FF_COUPLING_PCT_K` → 0**, so the floor is a fixed 2 K numerical guard. Do *not* re-enable
+  it from another closed-loop fit — it needs an open-loop step test (park the valve at 2–3
+  positions ≥ 20 min each with the controller out of the loop).
+- **`FF_OUT_TAU_S` 900 → 180 s.** 900 s was ~7.5× the valve travel time. The travel reduction
+  it was credited with came mostly from the freeze pinning the valve: at 180 s the 1.5.0 sim
+  is still frozen 100 % of the time with zero travel.
+- **`park_requested` / `FF_NO_AUTHORITY_PARK_DWELL_MS` removed**, along with `last_valid` /
+  `freezing` / `frozen_since_ms` — all dead once the denominator is limited. `water_running`
+  OFF, `MODE_IDLE` and `CTRL_PARK` parks are untouched; those are real safety parks.
+
+### The test that blessed the bug
+
+`test_hx_feedback.c`'s headline gate was `new.travel < 0.50 × old.travel` — *"the valve moved
+less."* Re-run on its own plant at the shipped coupling, 1.5.0 gives **travel 0.0 %, frozen
+100 %, pinned at 48.3 %, supply 1.0 K warm — and it PASSED.** Its supply guards passed only
+because the baseline it compared against was itself railed at 98.3 % with +2.65 K error.
+
+**A latched valve trivially wins a travel-reduction gate.** Travel is now bounded on *both*
+sides and tracking error is capped absolutely, not relative to a broken baseline. The plant
+also carries the measured negative sign, and `test_ff_recovery.c` is new: it starts in the
+observed starved state and fails on 1.5.0 (49.2 %, travel 0, +2.33 K) while 1.5.1 reaches
+95.8 % — the analytic optimum is 95.7 % — at −0.01 K.
+
+Suite 16/16, 105 tests. Build clean, 63 % OTA headroom, embedded app version verified 1.5.1.
+Flashed over USB 2026-08-04. **Still open:** `ff.frozen` and `authority_floor_k` are published
+nowhere, which is why 87 % frozen was invisible in HA and a human had to notice the house was
+warm. Exposing them needs a Zigbee attribute plus a converter deploy — next release.
+
 ## 1.5.0 — feedforward vs. the HX approach coupling; no more open-loop parks
 
 Diagnosed from 20 h of live GF-HydroMix cooling telemetry (2026-08-03), after the valve

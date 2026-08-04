@@ -2,14 +2,17 @@
 #include "ctrl_core/feedforward.h"
 
 static ff_state_t s;
-static ff_cfg_t   cfg;      /* shipped defaults: derived floor + 900 s output EMA */
-static ff_cfg_t   legacy;   /* pre-1.5.0: fixed 2 K floor, no output filter */
+static ff_cfg_t   cfg;      /* shipped defaults: fixed 2 K floor + 180 s output EMA */
+static ff_cfg_t   legacy;   /* fixed 2 K floor, no output filter */
+static ff_cfg_t   derived;  /* the 1.5.0 setpoint-derived floor, kept only to test the math */
 
 void setUp(void){
     ff_init(&s);
     ff_cfg_defaults(&cfg);
-    legacy = (ff_cfg_t){ .coupling_pct_k = 0.0f, .auth_min_k = 2.0f,
-                         .auth_max_k = 2.0f, .out_tau_s = 0.0f };
+    legacy  = (ff_cfg_t){ .coupling_pct_k = 0.0f, .auth_min_k = 2.0f,
+                          .auth_max_k = 2.0f, .out_tau_s = 0.0f };
+    derived = (ff_cfg_t){ .coupling_pct_k = 0.065f, .auth_min_k = 2.0f,
+                          .auth_max_k = 4.0f, .out_tau_s = 0.0f };
 }
 void tearDown(void){}
 
@@ -26,116 +29,115 @@ void test_formula_cooling(void){
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 37.5f, r.pos_ff);
 }
 
-/* Result clamps 0..100. Source must clear the derived floor (4 K here, since
- * sqrt(20*100*0.065) caps at auth_max_k) for the ratio to be computed at all. */
+/* Result clamps 0..100 even with authority to spare: (50-30)/(35-30) = 400 %. */
 void test_clamp(void){
-    ff_result_t r = ff_step(&s, &cfg, 50.0f, 30.0f, 33.0f, 0); /* |3|<4 -> freeze first */
-    TEST_ASSERT_TRUE(r.frozen);
-    r = ff_step(&s, &cfg, 50.0f, 30.0f, 35.0f, 0);             /* (50-30)/5=400% -> clamp 100 */
+    ff_result_t r = ff_step(&s, &cfg, 50.0f, 30.0f, 35.0f, 0);
+    TEST_ASSERT_FALSE(r.frozen);
     TEST_ASSERT_EQUAL_FLOAT(100.0f, r.pos_ff);
 }
 
-/* Low authority: freeze last valid, do NOT zero. */
-void test_freeze_low_authority(void){
-    ff_step(&s, &cfg, 35.0f, 30.0f, 45.0f, 0);                 /* valid ~33.3 stored */
-    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 31.0f, 0); /* |31-30|=1 -> freeze */
+/* ---- low authority: LIMIT the denominator, never hold a stale baseline -------------
+ *
+ * This is the 1.5.1 behaviour change. Up to 1.5.0 a low-authority step returned the last
+ * valid output and control.c drove the valve with that frozen constant, which latched the
+ * valve for 92 minutes live on 2026-08-04. The floor is now applied to the DENOMINATOR, so
+ * the output stays live, bounded and correctly signed. */
+
+/* Cooling with the source converging on the return: the ratio saturates toward the source,
+ * which is the move that RESTORES authority (measured d t_src/d pos < 0). Critically it
+ * must NOT be the stale 33.3 % that the previous valid step produced. */
+void test_low_authority_drives_toward_source_not_stale_baseline(void){
+    ff_step(&s, &cfg, 35.0f, 30.0f, 45.0f, 0);                 /* valid ~33.3 first */
+    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 31.0f, 0); /* |31-30|=1 < 2 -> limited */
     TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_FLOAT_WITHIN(0.1f, 33.33f, r.pos_ff);
+    TEST_ASSERT_EQUAL_FLOAT(100.0f, r.pos_ff);                 /* 5/2*100 = 250 -> clamp */
 }
 
-/* Low authority with no prior valid -> safe mid (50 %), frozen. */
-void test_freeze_no_prior(void){
-    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 0);
+/* Same with no prior valid step at all: still a live answer, not FF_DEFAULT_PCT. */
+void test_low_authority_no_prior_still_computes(void){
+    ff_result_t r = ff_step(&s, &cfg, 18.5f, 21.2f, 20.9f, 0); /* cooling, |denom| 0.3 */
     TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_EQUAL_FLOAT(50.0f, r.pos_ff);
+    TEST_ASSERT_EQUAL_FLOAT(100.0f, r.pos_ff);                 /* -2.7/-2.0*100 = 135 */
 }
 
-/* Freeze latches at first low-authority cycle; park_requested only fires once
- * continuously frozen for >= FF_NO_AUTHORITY_PARK_DWELL_MS. */
-void test_park_requested_after_dwell(void){
-    ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 0);                  /* freeze begins t=0 */
-    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, FF_NO_AUTHORITY_PARK_DWELL_MS - 30000);
+/* A source on the WRONG side of the return cannot help, so it must be shut out entirely --
+ * the ratio goes negative and clamps to 0. This is the unseated-probe case (2026-07-31)
+ * where t_source reads above t_return during cooling. */
+void test_low_authority_wrong_side_source_closes(void){
+    ff_result_t r = ff_step(&s, &cfg, 18.5f, 21.2f, 21.5f, 0);
     TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_FALSE(r.park_requested);
-    r = ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, FF_NO_AUTHORITY_PARK_DWELL_MS + 1000);
-    TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_TRUE(r.park_requested);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, r.pos_ff);
 }
 
-/* Authority recovering mid-freeze resets the dwell clock. */
-void test_authority_recovery_resets_dwell(void){
-    ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 0);
-    ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 40000);
-    ff_step(&s, &cfg, 35.0f, 30.0f, 45.0f, 41000);              /* denom=15 >= floor */
-    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 61000);
+/* denom exactly 0 has no sign of its own: fall back to the demand direction, so cooling
+ * still opens toward the source rather than dividing by zero or picking a rail at random. */
+void test_zero_denominator_uses_demand_direction(void){
+    ff_result_t r = ff_step(&s, &cfg, 18.5f, 21.2f, 21.2f, 0);
     TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_FALSE(r.park_requested);
-}
-
-/* A dip shorter than the dwell just holds last valid; no park requested. */
-void test_brief_dip_shorter_than_dwell_holds_last_valid(void){
-    ff_result_t valid = ff_step(&s, &cfg, 35.0f, 30.0f, 45.0f, 0);
-    ff_result_t r = ff_step(&s, &cfg, 35.0f, 30.0f, 30.5f, 10000);
-    TEST_ASSERT_TRUE(r.frozen);
-    TEST_ASSERT_FALSE(r.park_requested);
-    TEST_ASSERT_FLOAT_WITHIN(0.1f, valid.pos_ff, r.pos_ff);
-}
-
-/* ---- derived authority floor ------------------------------------------------ */
-
-/* floor = sqrt(|t_ret - t_set| * 100 * coupling), clamped to [min,max]. The whole point
- * is that it TRACKS THE SETPOINT: on GF-HydroMix (t_ret 21.2) dropping the cooling
- * setpoint 20 -> 19 doubles the FF's numerator and needs a wider floor, 2.80 -> 3.79 K. */
-void test_authority_floor_tracks_setpoint(void){
-    TEST_ASSERT_FLOAT_WITHIN(0.02f, 2.79f, ff_authority_floor(&cfg, 20.0f, 21.2f));
-    TEST_ASSERT_FLOAT_WITHIN(0.02f, 3.79f, ff_authority_floor(&cfg, 19.0f, 21.2f));
-    /* clamps: a setpoint sitting on the return needs no margin, a far one is capped */
-    TEST_ASSERT_EQUAL_FLOAT(FF_AUTHORITY_MIN_K, ff_authority_floor(&cfg, 21.2f, 21.2f));
-    TEST_ASSERT_EQUAL_FLOAT(FF_AUTHORITY_MAX_K, ff_authority_floor(&cfg, 35.0f, 21.2f));
-}
-
-/* A denominator that clears the old fixed 2 K floor but not the setpoint-derived one is
- * exactly the band where the FF drives its own source warmer and walks to a rail. */
-void test_derived_floor_freezes_where_fixed_floor_did_not(void){
-    ff_step(&s, &cfg, 19.0f, 21.2f, 14.0f, 0);                    /* seed a valid baseline */
-    ff_result_t r = ff_step(&s, &cfg, 19.0f, 21.2f, 18.2f, 1000); /* |denom|=3.0: 2<3<3.79 */
-    TEST_ASSERT_TRUE(r.frozen);
-
+    TEST_ASSERT_EQUAL_FLOAT(100.0f, r.pos_ff);
     ff_state_t s2; ff_init(&s2);
-    ff_step(&s2, &legacy, 19.0f, 21.2f, 14.0f, 0);
-    ff_result_t r2 = ff_step(&s2, &legacy, 19.0f, 21.2f, 18.2f, 1000);
-    TEST_ASSERT_FALSE(r2.frozen);                                 /* old behaviour: sails on */
+    ff_result_t h = ff_step(&s2, &cfg, 35.0f, 30.0f, 30.0f, 0);   /* heating demand */
+    TEST_ASSERT_EQUAL_FLOAT(100.0f, h.pos_ff);
 }
 
-/* coupling 0 disables the derivation entirely -> floor is just auth_min_k. */
-void test_coupling_zero_restores_fixed_floor(void){
+/* ---- authority floor -------------------------------------------------------------- */
+
+/* The derivation itself still computes what it always did -- it is just not shipped.
+ * floor = sqrt(|t_ret - t_set| * 100 * coupling), clamped to [min,max]. */
+void test_authority_floor_derivation_math(void){
+    TEST_ASSERT_FLOAT_WITHIN(0.02f, 2.79f, ff_authority_floor(&derived, 20.0f, 21.2f));
+    TEST_ASSERT_FLOAT_WITHIN(0.02f, 3.79f, ff_authority_floor(&derived, 19.0f, 21.2f));
+    /* clamps: a setpoint sitting on the return needs no margin, a far one is capped */
+    TEST_ASSERT_EQUAL_FLOAT(FF_AUTHORITY_MIN_K, ff_authority_floor(&derived, 21.2f, 21.2f));
+    TEST_ASSERT_EQUAL_FLOAT(FF_AUTHORITY_MAX_K, ff_authority_floor(&derived, 35.0f, 21.2f));
+}
+
+/* coupling 0 (the shipped default) disables the derivation -> floor is just auth_min_k. */
+void test_shipped_floor_is_fixed(void){
+    TEST_ASSERT_EQUAL_FLOAT(2.0f, ff_authority_floor(&cfg, 19.0f, 21.2f));
+    TEST_ASSERT_EQUAL_FLOAT(2.0f, ff_authority_floor(&cfg, 18.5f, 21.2f));
     TEST_ASSERT_EQUAL_FLOAT(2.0f, ff_authority_floor(&legacy, 19.0f, 21.2f));
 }
 
-/* ---- output filter ---------------------------------------------------------- */
+/* REGRESSION (2026-08-04): the derived floor reached 4.0 K at the live 18.5 C setpoint and
+ * put the trip point ABOVE the plant's normal |denom| range (measured 0.07..4.75, mean
+ * 1.89), so 87 % of samples were treated as no-authority. The shipped floor must leave a
+ * 3 K denominator alone -- that is a perfectly usable source. */
+void test_shipped_floor_leaves_usable_denominator_alone(void){
+    ff_result_t r = ff_step(&s, &cfg, 18.5f, 21.2f, 18.2f, 0);   /* |denom| = 3.0 */
+    TEST_ASSERT_FALSE(r.frozen);
+    TEST_ASSERT_FLOAT_WITHIN(0.02f, 4.0f, ff_authority_floor(&derived, 18.5f, 21.2f));
+    ff_state_t s2; ff_init(&s2);
+    ff_result_t old = ff_step(&s2, &derived, 18.5f, 21.2f, 18.2f, 0);
+    TEST_ASSERT_TRUE(old.frozen);                               /* what 1.5.0 did here */
+}
+
+/* ---- output filter ---------------------------------------------------------------- */
 
 /* One tau of elapsed time -> alpha = dt/(tau+dt) = 0.5, so the output moves halfway to
- * the new raw value instead of jumping to it. */
+ * the new raw value instead of jumping to it. Tau is 180 s since 1.5.1 (was 900). */
 void test_output_ema_smooths_step(void){
     ff_result_t a = ff_step(&s, &cfg, 20.0f, 21.2f, 15.34f, 0);
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 20.48f, a.pos_ff);             /* first call reseeds */
 
-    ff_result_t b = ff_step(&s, &cfg, 20.0f, 21.2f, 13.2f, 900000);
+    ff_result_t b = ff_step(&s, &cfg, 20.0f, 21.2f, 13.2f, 180000);
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 17.74f, b.pos_ff);             /* half of 20.48 -> 15.0 */
 
     ff_state_t s2; ff_init(&s2);
     ff_step(&s2, &legacy, 20.0f, 21.2f, 15.34f, 0);
-    ff_result_t c = ff_step(&s2, &legacy, 20.0f, 21.2f, 13.2f, 900000);
+    ff_result_t c = ff_step(&s2, &legacy, 20.0f, 21.2f, 13.2f, 180000);
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 15.0f, c.pos_ff);              /* unfiltered: jumps */
 }
 
-/* The freeze holds the FILTERED baseline, not the last raw ratio. */
-void test_freeze_holds_filtered_value(void){
-    ff_step(&s, &cfg, 20.0f, 21.2f, 15.34f, 0);
-    ff_result_t b = ff_step(&s, &cfg, 20.0f, 21.2f, 13.2f, 900000);
-    ff_result_t f = ff_step(&s, &cfg, 20.0f, 21.2f, 21.0f, 901000);  /* |0.2| -> freeze */
+/* The filter keeps running through a low-authority step, so the output is continuous
+ * across the boundary rather than jumping to a rail the moment the floor is crossed. */
+void test_filter_applies_through_low_authority(void){
+    ff_step(&s, &cfg, 20.0f, 21.2f, 15.34f, 0);                   /* ~20.48 */
+    ff_result_t f = ff_step(&s, &cfg, 20.0f, 21.2f, 21.0f, 180000); /* |0.2| -> limited */
     TEST_ASSERT_TRUE(f.frozen);
-    TEST_ASSERT_FLOAT_WITHIN(0.01f, b.pos_ff, f.pos_ff);
+    /* denom -0.2 limits to -2.0, so raw = -1.2/-2.0*100 = 60 (no clamping needed);
+     * alpha 0.5 -> halfway from 20.48 to 60, i.e. a nudge and not a jump to the rail. */
+    TEST_ASSERT_FLOAT_WITHIN(0.1f, 40.24f, f.pos_ff);
 }
 
 /* Heating<->cooling inverts pos_ff, so the filter must not carry across the flip. */
@@ -146,13 +148,12 @@ void test_mode_change_reseeds_filter(void){
     TEST_ASSERT_FLOAT_WITHIN(0.1f, 33.33f, r.pos_ff);              /* not blended with 20.5 */
 }
 
-/* ff_reseed drops the filter but keeps last_valid available for a subsequent freeze. */
-void test_reseed_keeps_last_valid(void){
-    ff_result_t a = ff_step(&s, &cfg, 20.0f, 21.2f, 15.34f, 0);
+/* ff_reseed drops the filter, so the next step lands on the raw ratio. */
+void test_reseed_drops_filter(void){
+    ff_step(&s, &cfg, 20.0f, 21.2f, 15.34f, 0);
     ff_reseed(&s);
-    ff_result_t f = ff_step(&s, &cfg, 20.0f, 21.2f, 21.0f, 1000);  /* low authority */
-    TEST_ASSERT_TRUE(f.frozen);
-    TEST_ASSERT_FLOAT_WITHIN(0.01f, a.pos_ff, f.pos_ff);
+    ff_result_t r = ff_step(&s, &cfg, 20.0f, 21.2f, 13.2f, 1000);
+    TEST_ASSERT_FLOAT_WITHIN(0.1f, 15.0f, r.pos_ff);
 }
 
 int main(void){
@@ -160,17 +161,16 @@ int main(void){
     RUN_TEST(test_formula_heating);
     RUN_TEST(test_formula_cooling);
     RUN_TEST(test_clamp);
-    RUN_TEST(test_freeze_low_authority);
-    RUN_TEST(test_freeze_no_prior);
-    RUN_TEST(test_park_requested_after_dwell);
-    RUN_TEST(test_authority_recovery_resets_dwell);
-    RUN_TEST(test_brief_dip_shorter_than_dwell_holds_last_valid);
-    RUN_TEST(test_authority_floor_tracks_setpoint);
-    RUN_TEST(test_derived_floor_freezes_where_fixed_floor_did_not);
-    RUN_TEST(test_coupling_zero_restores_fixed_floor);
+    RUN_TEST(test_low_authority_drives_toward_source_not_stale_baseline);
+    RUN_TEST(test_low_authority_no_prior_still_computes);
+    RUN_TEST(test_low_authority_wrong_side_source_closes);
+    RUN_TEST(test_zero_denominator_uses_demand_direction);
+    RUN_TEST(test_authority_floor_derivation_math);
+    RUN_TEST(test_shipped_floor_is_fixed);
+    RUN_TEST(test_shipped_floor_leaves_usable_denominator_alone);
     RUN_TEST(test_output_ema_smooths_step);
-    RUN_TEST(test_freeze_holds_filtered_value);
+    RUN_TEST(test_filter_applies_through_low_authority);
     RUN_TEST(test_mode_change_reseeds_filter);
-    RUN_TEST(test_reseed_keeps_last_valid);
+    RUN_TEST(test_reseed_drops_filter);
     return UNITY_END();
 }

@@ -200,14 +200,14 @@ void test_hold_trim_clamped_on_strategy_flip(void){
     TEST_ASSERT_TRUE(fabsf(o.valve_target - 53.3333f) < 0.05f);
 }
 
-/* Sustained no-authority FF (source ~= return) in CTRL_FULL/HEATING must, past the park
- * dwell, HOLD the valve at its current position -- not park it open-loop -- while
- * preserving the PI integrator so recovery resumes from the last good state. Parking
- * is itself open-loop, and in cooling it actively raises supply temp: it manufactures
- * the very disturbance the loop must then undo. The FF freeze already holds a stable
- * last_valid baseline, so there's nothing to escape from. This replaces the old
- * park-outright behaviour exercised by the live "98 % latched freeze" incident. */
-void test_ff_no_authority_holds_after_dwell(void){
+/* Low-authority FF (source ~= return) in CTRL_FULL must keep the loop CLOSED: the PI goes
+ * on regulating on measured supply error, and the valve is not pinned.
+ *
+ * 1.5.0 did the opposite -- ff.frozen fed pi_step's freeze path, which discards the whole
+ * PI output (both P and I), so the valve took a bare frozen FF constant and the loop ran
+ * open. Live on 2026-08-04 that latched the valve at 55.7 % for 92 minutes while supply sat
+ * 2.7 K above setpoint. t_supply is a valid measurement whatever the FF denominator does. */
+void test_ff_low_authority_keeps_pi_authority(void){
     /* t_supply must move off the fixture default (30, err=+5 K): p alone (kp*err =
      * 4*5 = 20) already equals trim_max (20) there, so pi.c's anti-windup ("pushing")
      * blocks the integrator every cycle regardless of anything else -- same reason
@@ -222,15 +222,28 @@ void test_ff_no_authority_holds_after_dwell(void){
     TEST_ASSERT_TRUE(st.pi.integ != 0.0f);
     float integ_before = st.pi.integ;
 
-    in.t_source_f = 30.2f;                  /* |30.2-30|=0.2 < 2K -> FF freezes from here */
-    control_step(&st, &in, &cfg, t += 10000);   /* freeze begins; frozen_since_ms latches here */
+    in.t_source_f = 30.2f;                  /* |30.2-30|=0.2 < 2K -> denominator gets limited */
+    control_step(&st, &in, &cfg, t += 10000);
+    control_out_t o = control_step(&st, &in, &cfg, t += 10000);
 
-    t += FF_NO_AUTHORITY_PARK_DWELL_MS + 1000;   /* past dwell in one jump -- never hardcode 60000 */
-    control_out_t o = control_step(&st, &in, &cfg, t);
+    /* Not pinned to the current position -- that pin IS the bug. Heating demand with the
+     * source converged on the return saturates the limited ratio toward the source. */
+    TEST_ASSERT_TRUE(fabsf(o.valve_target - in.valve_pos) > 1.0f);
+    TEST_ASSERT_TRUE(o.valve_target > in.valve_pos);
 
-    TEST_ASSERT_EQUAL_FLOAT(in.valve_pos, o.valve_target);  /* held in place, not parked */
-    TEST_ASSERT_TRUE(o.valve_target != cfg.park_pos);
-    TEST_ASSERT_EQUAL_FLOAT(integ_before, st.pi.integ);     /* integrator preserved, not zeroed */
+    /* THE LOOP MUST STILL BE CLOSED ON MEASURED SUPPLY. This is the precise 1.5.0
+     * regression: ff.frozen fed pi_step's freeze path, which returns pos_ff untouched, so
+     * the valve took a bare FF constant and supply error had no effect at all.
+     *
+     * Overshoot the setpoint by 5 K and the target must come DOWN off the FF's rail. Testing
+     * it this way rather than by inspecting trim or integ, because here the limited ratio
+     * saturates pos_ff at out_max, where trim is structurally 0 and the integrator sits at
+     * its anti-windup clamp -- both correct, and both blind to whether the loop is alive. */
+    float railed = o.valve_target;
+    in.t_supply = 40.0f;                    /* 5 K above the 35 C heat setpoint */
+    for (int i = 0; i < 6; i++) o = control_step(&st, &in, &cfg, t += 10000);
+    TEST_ASSERT_TRUE(o.valve_target < railed - 1.0f);
+    (void)integ_before;
 }
 
 /* Supply probe faulted: t_supply is stale or BSS-zero, so the freeze alarm must not
@@ -286,7 +299,7 @@ int main(void){
     RUN_TEST(test_ff_live_during_hold);
     RUN_TEST(test_pi_only_full_authority);
     RUN_TEST(test_hold_trim_clamped_on_strategy_flip);
-    RUN_TEST(test_ff_no_authority_holds_after_dwell);
+    RUN_TEST(test_ff_low_authority_keeps_pi_authority);
     RUN_TEST(test_supply_fault_blocks_false_freeze_alarm);
     RUN_TEST(test_supply_fault_holds_existing_alarm);
     RUN_TEST(test_supply_fault_rearms_dwell_on_recovery);
