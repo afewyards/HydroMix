@@ -126,6 +126,10 @@ static float run_sim(const pi_cfg_t *pi, float deadtime_s, int theta_s, float ta
         .alarm_dwell_ms = 300000,
         .deadtime_s = deadtime_s,
     };
+    /* Source/return/setpoint are all constant here, so the output EMA reseeds on the
+     * first step and then holds — this corner is unaffected by the 1.5.0 FF changes,
+     * which is exactly what these gates should keep proving. */
+    ff_cfg_defaults(&cfg.ff_cfg);
     plant_t p; plant_init(&p, theta_s);
     control_in_t in = {0};
     in.water_running = true; in.link_up = true;

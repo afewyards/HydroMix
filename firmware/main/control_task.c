@@ -74,6 +74,9 @@ static void control_loop(void *arg){
             .alarm_dwell_ms = g_config.alarm_dwell_ms,
             .deadtime_s = g_config.deadtime_s,
         };
+        /* Not Zigbee tunables (yet) — compile-time defaults, set here rather than in the
+         * initializer above so adding a field can't silently zero the whole struct. */
+        ff_cfg_defaults(&cfg.ff_cfg);
 
         control_out_t o = control_step(&s_ctrl, &in, &cfg, now_ms());
         s_mode = o.mode; s_alarm = o.supply_alarm; s_faults = o.fault_bits;

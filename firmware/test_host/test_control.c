@@ -200,19 +200,37 @@ void test_hold_trim_clamped_on_strategy_flip(void){
     TEST_ASSERT_TRUE(fabsf(o.valve_target - 53.3333f) < 0.05f);
 }
 
-/* Sustained no-authority FF (source ~= return) in CTRL_FULL/HEATING must, past
- * the park dwell, park the valve and stop PI windup -- the live "98 % latched
- * freeze" incident. */
-void test_ff_no_authority_parks_after_dwell(void){
+/* Sustained no-authority FF (source ~= return) in CTRL_FULL/HEATING must, past the park
+ * dwell, HOLD the valve at its current position -- not park it open-loop -- while
+ * preserving the PI integrator so recovery resumes from the last good state. Parking
+ * is itself open-loop, and in cooling it actively raises supply temp: it manufactures
+ * the very disturbance the loop must then undo. The FF freeze already holds a stable
+ * last_valid baseline, so there's nothing to escape from. This replaces the old
+ * park-outright behaviour exercised by the live "98 % latched freeze" incident. */
+void test_ff_no_authority_holds_after_dwell(void){
+    /* t_supply must move off the fixture default (30, err=+5 K): p alone (kp*err =
+     * 4*5 = 20) already equals trim_max (20) there, so pi.c's anti-windup ("pushing")
+     * blocks the integrator every cycle regardless of anything else -- same reason
+     * test_transit_hold and friends all override t_supply to 32+ instead of leaving
+     * it at 30. valve_pos is set to its held value BEFORE warmup and never changes
+     * again, so the transit hold (movement > TRANSIT_MOVE_PCT) never arms -- nothing
+     * to release, so it can't suppress pi_step during buildup either. */
+    in.t_supply = 32.0f;                    /* err = 35-32 = 3 K; p = 12 < trim_max 20 */
+    in.valve_pos = 35.0f;                   /* != cfg.park_pos (50) -> held vs parked distinguishable */
     uint32_t t = warmup_heating();          /* CTRL_FULL, PI active, FF has authority */
+    control_step(&st, &in, &cfg, t += 10000);   /* one more cycle, same as test_transit_hold */
+    TEST_ASSERT_TRUE(st.pi.integ != 0.0f);
+    float integ_before = st.pi.integ;
+
     in.t_source_f = 30.2f;                  /* |30.2-30|=0.2 < 2K -> FF freezes from here */
-    control_out_t o = {0};
-    for (int i = 0; i < 7; i++){            /* 7*10s = 70s > 60s dwell */
-        t += 10000;
-        o = control_step(&st, &in, &cfg, t);
-    }
-    TEST_ASSERT_EQUAL_FLOAT(cfg.park_pos, o.valve_target);
-    TEST_ASSERT_EQUAL_FLOAT(0.0f, st.pi.integ);   /* no windup while parked */
+    control_step(&st, &in, &cfg, t += 10000);   /* freeze begins; frozen_since_ms latches here */
+
+    t += FF_NO_AUTHORITY_PARK_DWELL_MS + 1000;   /* past dwell in one jump -- never hardcode 60000 */
+    control_out_t o = control_step(&st, &in, &cfg, t);
+
+    TEST_ASSERT_EQUAL_FLOAT(in.valve_pos, o.valve_target);  /* held in place, not parked */
+    TEST_ASSERT_TRUE(o.valve_target != cfg.park_pos);
+    TEST_ASSERT_EQUAL_FLOAT(integ_before, st.pi.integ);     /* integrator preserved, not zeroed */
 }
 
 /* Supply probe faulted: t_supply is stale or BSS-zero, so the freeze alarm must not
@@ -268,7 +286,7 @@ int main(void){
     RUN_TEST(test_ff_live_during_hold);
     RUN_TEST(test_pi_only_full_authority);
     RUN_TEST(test_hold_trim_clamped_on_strategy_flip);
-    RUN_TEST(test_ff_no_authority_parks_after_dwell);
+    RUN_TEST(test_ff_no_authority_holds_after_dwell);
     RUN_TEST(test_supply_fault_blocks_false_freeze_alarm);
     RUN_TEST(test_supply_fault_holds_existing_alarm);
     RUN_TEST(test_supply_fault_rearms_dwell_on_recovery);

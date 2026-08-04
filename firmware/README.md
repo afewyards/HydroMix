@@ -4,6 +4,122 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.5.0 — feedforward vs. the HX approach coupling; no more open-loop parks
+
+Diagnosed from 20 h of live GF-HydroMix cooling telemetry (2026-08-03), after the valve
+began hunting once the cooling setpoint moved from 20 °C toward 19 °C.
+
+> **Version note.** The 2026-08-03 bench build shipped everything below but still
+> self-identified as **1.4.0**, because `version.txt` was never bumped — a different
+> failure from the 1.3.x `PROJECT_VER` CMake-cache trap, with the same symptom. When you
+> need to know which source a flashed image really is, check for a version-unique symbol
+> (`nm build/valvecontroller.elf | grep ff_authority_floor`) rather than trusting the
+> reported version, `version.txt`, or Z2M's `installed_version`.
+
+### The 60 s park was worse than the freeze it escalated (2026-08-04)
+
+Live follow-up on the build above: the valve kept dropping to ~22 % for ~90 s at a time.
+Not a spike and not a reporting artefact — a *commanded* move, every step exactly
+8.3 %/10 s (full slew at `travel_time_s 120`), bottoming just short of `park_pos 20`
+because `valve_deadband_pct 2` stops the motor within 2 % of target.
+
+- **Cause: the derived floor made the freeze reachable, and the freeze escalated to a
+  park.** The floor tracks the setpoint, so moving from 20 °C to 19 °C raised it from
+  2.79 K to **3.51 K** (at `t_ret ≈ 20.9`), while the plant's live `|t_src − t_ret|` runs
+  3.31…6.75 K — it dips under 3.51 K but never under the old fixed 2.0 K. Replaying the
+  freeze predicate over 3 h 13 m of telemetry: **exactly two freezes ≥ the 60 s dwell,
+  exactly two observed parks, zero false positives in 2316 samples.** So the fix for
+  hunting at 19 °C is what introduced parking at 19 °C.
+- **`park_requested` now holds position instead of driving `park_pos`, and no longer
+  resets the PI.** Parking is open-loop, and in cooling it *raises* supply temp (+0.7 K
+  measured per event) — it manufactures the disturbance the loop then has to undo. A
+  freeze is already stable on its own: the FF holds `last_valid`. Recovery from a hold
+  resumes on the integrator it left, rather than rebuilding from zero.
+- **`FF_NO_AUTHORITY_PARK_DWELL_MS` 60 s → 600 s**, demoted to a backstop for a genuinely
+  stuck plant now that the sustained case no longer parks.
+- The `water_running` OFF, `MODE_IDLE`, and `CTRL_PARK` degradation parks are unchanged —
+  those are real safety parks. The governor still applies after the hold.
+
+### Investigated and REJECTED: splitting the PI deadband off the integral path
+
+Supply sits at **+0.39 K** against a 19 °C setpoint (user-visible as "19.5 instead of
+19"); the parks above account for only +0.025 K of it. `pi_step()` zeroes `e_eff` inside
+±`deadband_k` and uses it for **both** the proportional and integral paths, so on paper
+every point in `[setpoint − deadband_k, setpoint + deadband_k]` is an equilibrium with a
+frozen integrator — a textbook permanent offset. The live minimum over a 3 h capture was
+exactly **18.75** = 19 − 0.25, sitting precisely on the deadband edge, with 52 % of
+samples inside the band. That looked conclusive.
+
+**It did not survive simulation, and the change was reverted.** `test_lagsim`'s FOPDT
+loop, 6 h per run, comparing the shipped code against a variant whose integrator runs on
+true error, plus two intermediate variants (integral deadband at 0.4× and 0.6× the
+proportional one):
+
+- At **4 of the 5 corners the offset is identical to three decimal places** across every
+  variant and every `ki` in 0.9…0.2. The residual offsets there (+0.17, −0.50, +0.17,
+  −0.05) are plant and valve-quantisation artifacts the integral path cannot influence.
+- At **θ=40 / τ=60 removing the integral deadband is materially worse**: the loop settles
+  at **−0.94 K** where the shipped code sits at **+0.06 K**. That is integral windup
+  through the 40 s deadtime — the deadband is acting as a brake against it, not merely
+  buying the offset. This is the corner closest to the real GF-HydroMix plant.
+- It also breaks the existing `new_pp < 0.8` gate at the shipped `ki=0.9` (1.21 K) and
+  would have needed a `ki` retune to 0.5 purely to compensate.
+
+Why the live signature misleads: in the lagsim's geometry (`T_SRC` 45 / `T_RET` 27, an
+18 K span) 2 % of valve travel is worth ~0.54 K of supply, which swamps the 0.25 K
+deadband. On the real plant the span is only ~4.8 K, so 2 % of travel is ~0.13 K and the
+deadband edge becomes visible in the data — but visible is not the same as binding, and
+no variant of relaxing it actually moved the number.
+
+**If the offset is worth chasing, do it with the existing `pi_deadband_k` tunable
+(custom-cluster 0x000F, live-writable over Zigbee) as a reversible experiment on the real
+plant — not with a structural change to the controller.** Note the 1.4.0 five-corner
+sweep already found ripple *non-monotonic* in `pi_deadband_k` between 0.15 and 0.25
+(limit-cycle regime hopping), so do not bisect it; test discrete values and watch.
+
+- **The FF was driving its own denominator.** `ff_step()` inverts a mixing law that treats
+  `t_source` as an independent input. On a plate HX fed by a fixed primary it is not:
+  opening the mixing valve raises *secondary* flow, collapses the HX approach, and warms
+  `t_source` — the quantity `pos_ff = (t_set − t_ret)/(t_src − t_ret)` divides by.
+  Regressed live: **d(t_source)/d(valve %) = +0.0654 K/%** (r = +0.49), approach sweeping
+  −0.57…+6.25 K while the primary side (`hx_a`) stayed inside 14.25…16.93 °C. Net effect:
+  `t_source` swung **7.81 K p2p, 3× its own primary**, and the valve swung 98.5 % p2p.
+  Supply itself was never the problem (sd 0.37 K) — valve travel was.
+- **Authority floor is now derived from the setpoint** instead of the fixed
+  `FF_MIN_AUTHORITY_K 2.0`. Chaining the coupling through the mixing law gives loop gain
+  `G = |t_ret − t_set| · 100 · coupling / denom²`, so `G = 1` at
+  `denom = sqrt(|t_ret − t_set| · 100 · coupling)`. That tracks the setpoint, which is
+  exactly what a constant gets wrong: at `t_ret ≈ 21.2` the floor is **2.80 K at a 20 °C
+  setpoint but 3.79 K at 19 °C**. Clamped to `[FF_AUTHORITY_MIN_K 2.0,
+  FF_AUTHORITY_MAX_K 4.0]` — past ~4 K the freeze stops being free (measured share of
+  flowing time spent frozen: 2.0 K → 3.0 %, 2.8 K → 3.6 %, 3.8 K → 6.4 %, but
+  4.6 K → 17.7 % in runs long enough for the 60 s park dwell to dominate).
+- **The FF output carries a 900 s EMA** (`FF_OUT_TAU_S`), applied to `pos_ff`, *not* to
+  `t_source`/`t_return`. The mixing law divides by `(t_src − t_ret)`, so filtering the
+  inputs and then dividing does not land where dividing and then filtering does — and
+  with the denominator swinging several K that gap is not second-order. Filtering after
+  the division also leaves the low-authority test on the live reading, so a collapse in
+  authority is still caught the instant it happens. This is the *secondary* fix: the
+  floor is what keeps the FF out of the region where it fights itself; the EMA only stops
+  the motor chasing the ripple that remains.
+- **A zeroed `ff_cfg_t` degrades to the pre-1.5.0 fixed 2 K floor, not to no floor.**
+  `control_cfg_t` is brace-initialised in several places (including `test_control.c`), and
+  a zero `auth_max_k` would otherwise disable the low-authority freeze altogether.
+- `ff_reseed()` on a resync falling edge drops the output filter but keeps `last_valid`;
+  `ff_mode_change()` drops both, since heating and cooling put `pos_ff` on opposite sides
+  of `t_ret`.
+- Not Zigbee tunables. They live in `ff_cfg_t` (filled by `ff_cfg_defaults()` in
+  `control_task.c`) purely so the host tests can drive old and new behaviour through one
+  code path — and so promoting any of them to a custom-cluster attribute later is a small
+  diff. **No NVS bump**, so no downgrade hazard this time.
+
+`test_hx_feedback.c` is the new closed-loop regression: the plant reproduces the measured
+coupling, and the coefficient is swept {0.04, 0.0654, 0.09} because 0.0654 is a
+closed-loop estimate at only r = 0.49. Across that sweep, valve travel falls to
+**0.28–0.39×** and source p2p to **0.40–0.51×**, while supply p2p and mean offset improve
+at the two stiffer couplings. `test_lagsim.c` is unaffected by construction — its source,
+return and setpoint are constant, so the EMA reseeds on the first step and then holds.
+
 ## 1.4.0 — valve deadband tunable + RunningMode push
 
 - **Motor stop deadband is now a runtime Zigbee tunable** (`0x0012 valve_deadband_pct`,

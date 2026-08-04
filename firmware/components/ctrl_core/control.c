@@ -74,12 +74,18 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
         /* 3-cycle FF-only hold stretches in wall-clock time while a transit hold is
          * latched (pi_step, which decrements pi.hold, isn't called during a hold). */
         pi_mode_change(&s->pi); s->last_mode = mode;
+        /* Cooling and heating put pos_ff on opposite sides of t_ret, so both the output
+         * filter and last_valid describe the wrong mode the instant this flips. */
+        ff_mode_change(&s->ff);
         s->holding = false; s->latched_trim = 0.0f;
     }
 
-    /* Resync falling edge -> re-seed FF fresh with integrator 0. */
+    /* Resync falling edge -> re-seed FF fresh with integrator 0. Only the output filter
+     * is dropped, not last_valid: the mode is unchanged, so the last good baseline is
+     * still the right thing to hold if authority is low on the next step. */
     if (s->prev_resync && !in->resync_active){
         pi_reset(&s->pi);
+        ff_reseed(&s->ff);
         s->holding = false; s->latched_trim = 0.0f;
     }
     s->prev_resync = in->resync_active;
@@ -132,8 +138,8 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
         o.valve_target = deg.park_pos;
         return o;
     case CTRL_FF_ONLY: {
-        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f, now);
-        target = ff.park_requested ? cfg->park_pos
+        ff_result_t ff = ff_step(&s->ff, &cfg->ff_cfg, t_set, in->t_return_f, in->t_source_f, now);
+        target = ff.park_requested ? in->valve_pos
                                     : ctrl_clampf(ff.pos_ff + deg.ff_bias_pct, 0.0f, 100.0f);
         break;                                              /* no supply -> no PI, no gov */
     }
@@ -146,14 +152,20 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     case CTRL_FULL:
     default: {
-        ff_result_t ff = ff_step(&s->ff, t_set, in->t_return_f, in->t_source_f, now);
+        ff_result_t ff = ff_step(&s->ff, &cfg->ff_cfg, t_set, in->t_return_f, in->t_source_f, now);
         bool freeze = freeze_pi || ff.frozen;               /* low authority freezes integrator */
         pi_cfg_t pc = cfg->pi_cfg;                          /* trim_max stays 0 -> default ±20, FF carries the baseline */
         if (ff.park_requested){
-            /* Sustained no-authority freeze: park outright, no windup while parked. */
-            pi_reset(&s->pi);
-            s->holding = false; s->latched_trim = 0.0f;
-            target = cfg->park_pos;
+            /* Sustained no-authority freeze: hold the current valve position rather
+             * than parking outright. Parking is open-loop, and in cooling it actively
+             * raises supply temp -- it manufactures the very disturbance the loop then
+             * has to undo. The FF freeze already holds a stable last_valid baseline, so
+             * there is nothing to escape from. pi_step is never reached on this path
+             * (freeze already routes it to an early return), so the integrator simply
+             * stops advancing on its own -- no pi_reset needed, and holding/
+             * latched_trim are left alone so recovery resumes from the last good
+             * state instead of restarting from scratch. */
+            target = in->valve_pos;
         } else {
             target = pi_transit(s, in, cfg, &pc, ff.pos_ff, t_set, cooling, freeze, dt_s, prev_pos, had_pos, now);
         }

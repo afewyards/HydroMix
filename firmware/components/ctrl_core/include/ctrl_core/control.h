@@ -49,6 +49,7 @@ typedef struct {
     float      park_pos;
     mode_cfg_t mode_cfg;
     pi_cfg_t   pi_cfg;
+    ff_cfg_t   ff_cfg;
     gov_cfg_t  gov_cfg;
     uint32_t   alarm_dwell_ms;
     float      deadtime_s;

@@ -1,4 +1,5 @@
 #pragma once
+#include <stddef.h>
 #include <stdint.h>
 #include <stdbool.h>
 #include "ctrl_core/degradation.h"
@@ -15,3 +16,5 @@ typedef struct {
 void            sensors_start(void);
 sensor_reading_t sensors_get(sensor_id_t id);
 void            sensors_fill_faults(sensor_faults_t *out);
+/* Per-reason 1-Wire failure tallies for this run and the previous one. */
+void            sensors_format_stats(char *out, size_t n);
