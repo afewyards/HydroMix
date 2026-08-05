@@ -2061,6 +2061,172 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Device:D_Zener"
+			(pin_numbers
+				(hide yes)
+			)
+			(pin_names
+				(offset 1.016)
+				(hide yes)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "D"
+				(at 0 2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Value" "D_Zener"
+				(at 0 -2.54 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Footprint" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" ""
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" "Zener diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "diode"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "TO-???* *_Diode_* *SingleDiode* D_*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "D_Zener_0_1"
+				(polyline
+					(pts
+						(xy -1.27 -1.27) (xy -1.27 1.27) (xy -0.762 1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 0) (xy -1.27 0)
+					)
+					(stroke
+						(width 0)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 1.27 -1.27) (xy 1.27 1.27) (xy -1.27 0) (xy 1.27 -1.27)
+					)
+					(stroke
+						(width 0.254)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+			)
+			(symbol "D_Zener_1_1"
+				(pin passive line
+					(at -3.81 0 0)
+					(length 2.54)
+					(name "K"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin passive line
+					(at 3.81 0 180)
+					(length 2.54)
+					(name "A"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+			(embedded_fonts no)
+		)
 		(symbol "Kleist:0PTF0078P"
 			(pin_names
 				(offset 0.254)
@@ -4368,7 +4534,7 @@
 					(at 0 -7.62 90)
 					(length 2.54)
 					(hide yes)
-					(name "EP"
+					(name "S"
 						(effects
 							(font
 								(size 1.27 1.27)
@@ -17406,6 +17572,107 @@
 		)
 	)
 	(symbol
+		(lib_id "Device:D_Zener")
+		(at 335.28 213.36 180)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(uuid "a7325e35-0194-4a21-9b75-10e033a35666")
+		(property "Reference" "D7"
+			(at 338.28 210.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Value" "BZT52B27"
+			(at 338.28 216.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Footprint" "Diode_SMD:D_SOD-123F"
+			(at 335.28 213.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Datasheet" "https://diotec.com/request/datasheet/bzt52b2v4.pdf"
+			(at 335.28 213.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "Description" "24V rail Zener clamp (FB-open fault protection, TPS61040 has no internal OVP)"
+			(at 335.28 213.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "BZT52B27"
+			(at 335.28 213.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/diotec-semiconductor/BZT52B27/22191724"
+			(at 335.28 213.36 0)
+			(show_name no)
+			(do_not_autoplace no)
+			(hide yes)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "14a9654c-ff25-41d3-88ca-a75bb47189d6")
+		)
+		(pin "2"
+			(uuid "45db703a-97c4-4927-8090-6ab31f865b72")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "D7")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
 		(lib_id "C_dev")
 		(at 309.88 213.36 0)
 		(unit 1)
@@ -17628,7 +17895,7 @@
 				)
 			)
 		)
-		(property "Value" "1M"
+		(property "Value" "249k"
 			(at 264.62 234.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17671,7 +17938,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0402FR-071ML"
+		(property "MPN" "RC0402FR-07249KL"
 			(at 261.62 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17682,7 +17949,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/RC0402FR-071ML/726515"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/RC0402FR-07249KL/726570"
 			(at 261.62 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17729,7 +17996,7 @@
 				)
 			)
 		)
-		(property "Value" "22pF"
+		(property "Value" "82pF"
 			(at 277.32 234.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17772,7 +18039,7 @@
 				)
 			)
 		)
-		(property "MPN" "GRM1555C1H220JA01D"
+		(property "MPN" "GRM1555C1H820JA01D"
 			(at 274.32 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17783,7 +18050,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/murata-electronics/GRM1555C1H220JA01D/3175187"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/murata-electronics/GRM1555C1H820JA01D/3175198"
 			(at 274.32 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17830,7 +18097,7 @@
 				)
 			)
 		)
-		(property "Value" "53.6k"
+		(property "Value" "13.3k"
 			(at 291.29 234.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17873,7 +18140,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0402FR-0753K6L"
+		(property "MPN" "RC0402FR-0713K3L"
 			(at 288.29 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17884,7 +18151,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/RC0402FR-0753K6L/726634"
+		(property "DigiKey" "https://www.digikey.com/en/products/result?keywords=RC0402FR-0713K3L"
 			(at 288.29 231.14 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18140,6 +18407,50 @@
 			(justify left)
 		)
 		(uuid "d4354172-df44-4dc1-ab82-52886496ff32")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.88 266.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "24V"
+		(shape input)
+		(at 339.09 213.36 180)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify right)
+		)
+		(uuid "dd580787-22eb-410e-bf0f-23e65b1ce25a")
+		(property "Intersheetrefs" "${INTERSHEET_REFS}"
+			(at 182.88 266.7 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+	)
+	(global_label "GND"
+		(shape input)
+		(at 331.47 213.36 0)
+		(effects
+			(font
+				(size 1.27 1.27)
+			)
+			(justify left)
+		)
+		(uuid "7c9b66e6-93bc-43d6-96b0-64498aea0b07")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 182.88 266.7 0)
 			(hide yes)
@@ -18920,7 +19231,7 @@
 				)
 			)
 		)
-		(property "Value" "5.6k"
+		(property "Value" "10k"
 			(at 263.35 121.11 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18963,7 +19274,7 @@
 				)
 			)
 		)
-		(property "MPN" "RC0402FR-075K6L"
+		(property "MPN" "AC0402FR-0710KL"
 			(at 260.35 118.11 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18974,7 +19285,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/RC0402FR-075K6L/2827590"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/yageo/AC0402FR-0710KL/5895030"
 			(at 260.35 118.11 0)
 			(show_name no)
 			(do_not_autoplace no)
