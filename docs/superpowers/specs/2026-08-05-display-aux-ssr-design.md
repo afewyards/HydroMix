@@ -28,10 +28,11 @@
 | DS1 | 8×8 20 mm dot-matrix block, single **green** (KWM-20881 class) | THT; **must be low-Vf yellow-green/GaP chemistry (Vf ≈ 2.1 V), NOT InGaN pure-green (Vf ≈ 3.2 V — no headroom from 3V3 drive)**; exact MPN + row/col pinout matched to driver at implementation |
 | U7 | IS31FL3730 (or equivalent 3.3 V-native I2C 8×8 matrix driver) | I2C addr strap per datasheet; brightness via current register |
 | R18, R19 | 4.7 k 0402 | I2C pull-ups to 3V3 |
-| C14 | 100 nF 0402 (+ bulk per datasheet) | U7 decoupling |
+| C14 | 100 nF 0402 | U7 decoupling (high-frequency) |
+| C15 | 1 µF 0402 | U7 decoupling (bulk) — fitted, required per datasheet Fig. 1 typical application circuit (not optional) |
 | SW2 | momentary switch to GND on IO11 | internal pull-up, firmware debounce |
 
-New nets: `I2C_SDA`, `I2C_SCL`, `BTN_PAGE`. Power: 3V3 rail; firmware caps driver current register + scan duty so worst-case display draw ≤ ~40 mA (5 V PSU headroom after pump leaf ≈ 150 mA).
+New nets: `I2C_SDA`, `I2C_SCL`, `BTN_PAGE`. Power: 3V3 rail; firmware caps driver current register + scan duty so worst-case display draw ≤ ~40 mA (5 V PSU headroom after pump leaf ≈ 150 mA). U7 pin 3 (SDB, hardware shutdown, active-low) is tied directly to 3V3 — no GPIO is allocated for it (approved pin list is IO6/7/11/22/23 only), so the driver is permanently out of hardware shutdown; firmware controls brightness/on-off entirely via I2C registers.
 
 ### Block 2 — AUX SSR channels
 
@@ -64,6 +65,11 @@ PCB placement/routing (follow-up task), enclosure window/light-pipe, display Zig
 
 ## Open items (settle at implementation)
 
-- Exact MPNs: matrix block (pinout/orientation), driver package availability, PhotoMOS final part, 4-pos PTSM part number.
-- Zigbee endpoint numbers from the existing endpoint map.
-- Whether temp pages cover only supply/return or all five sensors (default: two; trivial to extend).
+- ~~Exact MPNs~~ — resolved:
+  - DS1 = **KWM-20881AGB** (row-anode, GaP yellow-green/low-Vf chemistry per Device Selection Guide, Vf 2.2 V typ / 2.8 V max — confirms Decision 1's headroom requirement); footprint = custom `Kleist2:LED_Matrix_8x8_20mm`, 2.5 mm pin pitch, 15.0 mm row spacing. Sourced via TME; no verified DigiKey listing exists for this MPN (DigiKey field intentionally left empty in the BOM, MPN populated).
+  - U7 = **IS31FL3730-QFLS2-TR**, QFN-24 (only ordering option available — no SOP variant exists).
+  - Q6, Q7 = **CPC1017N**, instantiated from the official `Relay_SolidState:CPC1017N` KiCad symbol (no hand-embedded symbol needed; pins 1–4 match datasheet 1:1).
+  - J15 = Phoenix **1770979** (4-pos PTSM 0.5/4-2.5-V-THR) — the plan's placeholder candidate "1770967" does not exist as a part; corrected during Task 1 research.
+- Zigbee endpoint numbers from the existing endpoint map — still open, belongs to the firmware plan.
+- Whether temp pages cover only supply/return or all five sensors (default: two; trivial to extend) — still open, belongs to the firmware plan.
+- Carried to firmware plan: IS31FL3730 powers up with its current-register default at 40 mA/row (Lighting Effect Register 0Dh = `0000`), which exceeds the KWM-20881AGB's 25 mA/dot absolute maximum in single-lit-dot cases. Firmware must program the current register to a safe value *before* enabling the display (SDB is hard-wired high, so this is a software gate, not a hardware one).
