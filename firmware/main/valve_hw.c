@@ -27,6 +27,7 @@ static bool              s_resync_req = false;
 static resync_policy_state_t s_rspol;
 static bool               s_gate_ok = false, s_gate_hard = true;   /* boot default recirc-only until control publishes */
 static bool               s_rs_toward_src = false;
+static uint32_t            s_rs_extra_ms = 0;
 /* Latched copies of the motion-affecting config, refreshed only while idle (see
  * valve_task), so a runtime config change never flips the open/close mapping, rescales
  * the stall/position math mid-stroke or mid-resync, nor moves the stop criterion under a
@@ -70,6 +71,7 @@ static void valve_task(void *arg){
         if (s_rs == RS_IDLE){
             if (s_resync_req){                       /* boot + manual valve_resync(): forced recirc */
                 s_rs = RS_DRIVING; s_rs_toward_src = false; s_rs_start_ms = t; s_resync_req = false;
+                s_rs_extra_ms = 0;
             } else {
                 resync_action_t act = resync_policy_step(&s_rspol, pos_est_needs_resync(&s_pos),
                                                          s_gate_ok, s_pos.position_pct, t);
@@ -77,6 +79,7 @@ static void valve_task(void *arg){
                     s_rs = RS_DRIVING;
                     s_rs_toward_src = (act == RESYNC_ACT_START_SOURCE);
                     s_rs_start_ms = t;
+                    s_rs_extra_ms = 0;
                 }
             }
         }
@@ -87,9 +90,12 @@ static void valve_task(void *arg){
              * valve_note_resync_gate from control_step's resync_src_ok/hard_fail) --
              * see docs/superpowers/specs/2026-08-05-gated-bidirectional-resync-design.md */
             if (resync_policy_mid_stroke_abort(s_rs_toward_src, s_gate_hard)){
-                s_rs_toward_src = false; s_rs_start_ms = t;   /* fresh full recirc stroke */
+                s_rs_toward_src = false; s_rs_start_ms = t;
+                /* Deadline extended by the interlock reversal blackout: interlock finishes
+                 * the source pulse, stops, then anti-dithers before recirc drive begins. */
+                s_rs_extra_ms = INTERLOCK_MIN_PULSE_MS + INTERLOCK_DEAD_TIME_MS + INTERLOCK_ANTI_DITHER_MS;
             }
-            uint32_t stall_ms = (uint32_t)(s_travel_latched_s * 1000.0f * RESYNC_STALL_MULT);
+            uint32_t stall_ms = (uint32_t)(s_travel_latched_s * 1000.0f * RESYNC_STALL_MULT) + s_rs_extra_ms;
             if (t - s_rs_start_ms >= stall_ms){
                 pos_est_resync_done(&s_pos, s_rs_toward_src ? 100.0f : 0.0f);
                 s_rs = RS_IDLE;
