@@ -285,6 +285,24 @@ void test_supply_fault_rearms_dwell_on_recovery(void){
     TEST_ASSERT_TRUE(o.supply_alarm);
 }
 
+/* Resync source-end gate published every cycle: cooling committed, src at setpoint ->
+ * gate ok; src well below gov_low (16) -> hard fail. */
+void test_resync_gate_published(void){
+    in.hx_a = 10.0f;                                    /* cooling */
+    control_step(&st, &in, &cfg, 0);
+    control_step(&st, &in, &cfg, 60000);                /* COOLING committed */
+    in.t_source_f = cfg.cool_setpoint;                  /* at setpoint -> gate ok */
+    control_out_t o = control_step(&st, &in, &cfg, 70000);
+    TEST_ASSERT_EQUAL(MODE_COOLING, o.mode);
+    TEST_ASSERT_TRUE(o.resync_src_ok);
+    TEST_ASSERT_FALSE(o.resync_src_hard_fail);
+
+    in.t_source_f = 10.0f;                              /* below gov_low 16 -> hard fail */
+    o = control_step(&st, &in, &cfg, 80000);
+    TEST_ASSERT_FALSE(o.resync_src_ok);
+    TEST_ASSERT_TRUE(o.resync_src_hard_fail);
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_water_off_parks);
@@ -303,5 +321,6 @@ int main(void){
     RUN_TEST(test_supply_fault_blocks_false_freeze_alarm);
     RUN_TEST(test_supply_fault_holds_existing_alarm);
     RUN_TEST(test_supply_fault_rearms_dwell_on_recovery);
+    RUN_TEST(test_resync_gate_published);
     return UNITY_END();
 }

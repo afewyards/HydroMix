@@ -1,4 +1,5 @@
 #include "ctrl_core/control.h"
+#include "ctrl_core/resync_policy.h"
 #include <math.h>
 
 void control_init(control_state_t *s){
@@ -69,6 +70,17 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     /* Mode (HX-A). Fault -> hold last mode (mode_detect handles invalid). */
     ctrl_mode_t mode = mode_detect_step(&s->mode, in->hx_a, !in->faults.hx_a, &cfg->mode_cfg, now);
     o.mode = mode;
+
+    /* Resync source-end gate: published every cycle, incl. non-regulating paths, so the
+     * valve task always has a current verdict for strokes it starts on its own clock. */
+    {
+        float eff_cool_g = cooling_link_guard(cfg->cool_setpoint, mode, in->link_last_seen_ms, now);
+        float t_set_g = (mode == MODE_COOLING) ? ctrl_clampf(eff_cool_g, 17.0f, 35.0f)
+                                               : ctrl_clampf(cfg->heat_setpoint, 17.0f, 35.0f);
+        resync_gate_eval(in->t_source_f, in->faults.source, mode != MODE_IDLE, t_set_g,
+                         cfg->gov_cfg.gov_low, cfg->gov_cfg.gov_high,
+                         &o.resync_src_ok, &o.resync_src_hard_fail);
+    }
 
     if (mode != s->last_mode){
         /* 3-cycle FF-only hold stretches in wall-clock time while a transit hold is

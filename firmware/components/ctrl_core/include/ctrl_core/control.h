@@ -62,6 +62,8 @@ typedef struct {
     bool            supply_alarm;
     uint16_t        fault_bits;
     ctrl_strategy_t strategy;
+    bool            resync_src_ok;
+    bool            resync_src_hard_fail;
 } control_out_t;
 
 void          control_init(control_state_t *s);
