@@ -11987,7 +11987,7 @@
 				)
 			)
 		)
-		(property "Value" "22nF X2"
+		(property "Value" "4.7nF X1"
 			(at 161.544 166.37 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12028,7 +12028,7 @@
 				)
 			)
 		)
-		(property "MPN" "R463I22204001M"
+		(property "MPN" "ECQ-UBAF472V5"
 			(at 154.94 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -12039,7 +12039,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/kemet/R463I22204001M/9561553"
+		(property "DigiKey" "https://www.digikey.nl/nl/products/detail/panasonic-industry/ECQ-UBAF472V5/13280231"
 			(at 154.94 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -13149,7 +13149,7 @@
 				)
 			)
 		)
-		(property "Value" "22nF X2"
+		(property "Value" "4.7nF X1"
 			(at 161.29 129.54 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13190,7 +13190,7 @@
 				)
 			)
 		)
-		(property "MPN" "R463I22204001M"
+		(property "MPN" "ECQ-UBAF472V5"
 			(at 154.94 129.54 0)
 			(hide yes)
 			(show_name no)
@@ -13201,7 +13201,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/kemet/R463I22204001M/9561553"
+		(property "DigiKey" "https://www.digikey.nl/nl/products/detail/panasonic-industry/ECQ-UBAF472V5/13280231"
 			(at 154.94 129.54 0)
 			(hide yes)
 			(show_name no)
