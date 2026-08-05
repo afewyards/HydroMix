@@ -44,13 +44,13 @@ Record baseline ERC violation count/types (pre-existing warnings NOT ours to fix
 **Interfaces — Produces:** confirmed MPN/DigiKey PN/footprint/pinout for every new ref; U7↔DS1 row/col polarity map; final Task 2/3 pin numbers.
 
 - [ ] **Step 1: U7 driver datasheet** (kicad-happy:datasheets; DigiKey API creds absent → web fetch fallback). IS31FL3730: confirm package availability (QFN vs SOP), pin count/names (SDA, SCL, VCC, GND, AD, audio pin, matrix drive pins), I2C addr with AD→GND, current-limit register range, decoupling recommendation (100 nF + bulk? → C15 iff required), whether matrix pins source rows/sink columns or inverse. If IS31FL3730 unbuyable: fall back to another 2.7–5.5 V I2C 8×8 driver (IS31FL3731 subset use) and redo this step for it. Record exact pin↔net table for Task 2.
-- [ ] **Step 2: DS1 matrix block** — KWM-20881AVA class 20 mm single-color. From datasheet: 16-pin map (row/col per pin), common-anode vs common-cathode variant. **Pick the variant whose polarity matches U7's drive orientation from Step 1.** Record pin map + mechanical (pin grid, outline) for footprint.
+- [ ] **Step 2: DS1 matrix block** — KWM-20881 class 20 mm single **green**. **Chemistry constraint: yellow-green/GaP, Vf ≈ 2.1 V @ 20 mA. REJECT InGaN pure-green (Vf ≈ 3.0–3.2 V — no headroom from 3V3 drive).** From datasheet: 16-pin map (row/col per pin), common-anode vs common-cathode variant. **Pick the variant whose polarity matches U7's drive orientation from Step 1.** Record pin map + mechanical (pin grid, outline) for footprint.
 - [ ] **Step 3: Q6/Q7 PhotoMOS** — CPC1017N: confirm ≥60 V blocking / ≥100 mA / SOP-4 pinout (expected, VERIFY: 1=A, 2=K, 3+4=MOS out), stock; alternates AQY211EH, TLP3406-class if out. Check KiCad official `Relay_SolidState` lib for existing symbol; else hand-embed 4-pin.
 - [ ] **Step 4: Remaining parts stock check:**
 
 | Ref | Value | Candidate MPN | Footprint |
 |---|---|---|---|
-| DS1 | 8×8 20 mm red | KWM-20881AVA (variant per Step 2) | `Kleist2:LED_Matrix_8x8_20mm` (created Task 2) |
+| DS1 | 8×8 20 mm green (low-Vf) | KWM-20881 green variant (per Step 2) | `Kleist2:LED_Matrix_8x8_20mm` (created Task 2) |
 | U7 | IS31FL3730 | IS31FL3730-QFLS2-TR (pkg per stock) | per package |
 | Q6, Q7 | PhotoMOS 60 V/100 mA | CPC1017N | SOP-4 per datasheet |
 | R18, R19 | 4.7 k 0402 | RC0402FR-074K7L | R_0402_1005Metric |
@@ -155,8 +155,18 @@ git add -- docs/superpowers/specs/2026-08-05-display-aux-ssr-design.md && git co
 
 ---
 
+### Task 5: Design review gate
+
+**Files:** none (fixes, if any, follow house edit+diff+commit rules)
+
+- [ ] **Step 1: Run kicad-happy:kicad full schematic analysis** over `pcb/ValveController.kicad_sch`.
+- [ ] **Step 2: Triage findings** — pre-existing issues: report only, do NOT fix. Issues in new display/AUX blocks: fix via the Task 2/3 edit method (expected-delta → edit → ERC → netlist diff → committing-skill commit).
+- [ ] **Step 3: Final report** — review verdict, fixes made, remaining known-issues list.
+
+---
+
 ## Unresolved questions (owner)
 
-1. Firmware + Z2M converter = separate plan, written after this schematic lands (mirrors pump-project split). OK, or want it drafted in parallel now?
-2. DS1 color: assumed **red** (stock/lowest Vf). Green/yellow/white preference instead?
-3. Optional extra gate after Task 4: kicad-skill design review over the finished schematic (beyond ERC + netlist diff)?
+*(all resolved at plan handoff 2026-08-05)*
+
+1. Firmware + Z2M plan: **after** schematic lands. 2. DS1 color: **green, low-Vf chemistry only**. 3. Design review gate: **yes** (Task 5).

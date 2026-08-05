@@ -25,7 +25,7 @@
 
 | Ref | Part | Notes |
 |---|---|---|
-| DS1 | 8×8 20 mm dot-matrix block, single red (KWM-20881AVA class) | THT; exact MPN + row/col pinout matched to driver at implementation |
+| DS1 | 8×8 20 mm dot-matrix block, single **green** (KWM-20881 class) | THT; **must be low-Vf yellow-green/GaP chemistry (Vf ≈ 2.1 V), NOT InGaN pure-green (Vf ≈ 3.2 V — no headroom from 3V3 drive)**; exact MPN + row/col pinout matched to driver at implementation |
 | U7 | IS31FL3730 (or equivalent 3.3 V-native I2C 8×8 matrix driver) | I2C addr strap per datasheet; brightness via current register |
 | R18, R19 | 4.7 k 0402 | I2C pull-ups to 3V3 |
 | C14 | 100 nF 0402 (+ bulk per datasheet) | U7 decoupling |
