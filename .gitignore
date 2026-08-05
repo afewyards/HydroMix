@@ -17,3 +17,6 @@ build/
 sdkconfig
 sdkconfig.old
 managed_components/
+
+# Claude worktrees
+.claude/worktrees/
