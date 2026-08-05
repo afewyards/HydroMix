@@ -12777,7 +12777,7 @@
 				)
 			)
 		)
-		(property "Value" "4.7nF X1"
+		(property "Value" "4.7nF X1/Y2"
 			(at 161.544 166.37 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -12787,7 +12787,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Rect_L18.0mm_W5.0mm_P15.00mm_FKS3_FKP3"
+		(property "Footprint" "Capacitor_THT:C_Rect_L13.0mm_W5.0mm_P10.00mm_FKS3_FKP3_MKS4"
 			(at 154.94 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -12818,7 +12818,7 @@
 				)
 			)
 		)
-		(property "MPN" "ECQ-UBAF472V5"
+		(property "MPN" "R413F147050T1K"
 			(at 154.94 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -12829,7 +12829,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.nl/nl/products/detail/panasonic-industry/ECQ-UBAF472V5/13280231"
+		(property "DigiKey" "https://www.digikey.nl/en/products/detail/kemet/R413F147050T1K/12715757"
 			(at 154.94 166.37 0)
 			(hide yes)
 			(show_name no)
@@ -13939,7 +13939,7 @@
 				)
 			)
 		)
-		(property "Value" "4.7nF X1"
+		(property "Value" "4.7nF X1/Y2"
 			(at 161.29 129.54 0)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13949,7 +13949,7 @@
 				)
 			)
 		)
-		(property "Footprint" "Capacitor_THT:C_Rect_L18.0mm_W5.0mm_P15.00mm_FKS3_FKP3"
+		(property "Footprint" "Capacitor_THT:C_Rect_L13.0mm_W5.0mm_P10.00mm_FKS3_FKP3_MKS4"
 			(at 154.94 129.54 0)
 			(hide yes)
 			(show_name no)
@@ -13980,7 +13980,7 @@
 				)
 			)
 		)
-		(property "MPN" "ECQ-UBAF472V5"
+		(property "MPN" "R413F147050T1K"
 			(at 154.94 129.54 0)
 			(hide yes)
 			(show_name no)
@@ -13991,7 +13991,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.nl/nl/products/detail/panasonic-industry/ECQ-UBAF472V5/13280231"
+		(property "DigiKey" "https://www.digikey.nl/en/products/detail/kemet/R413F147050T1K/12715757"
 			(at 154.94 129.54 0)
 			(hide yes)
 			(show_name no)
