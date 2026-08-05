@@ -237,4 +237,15 @@
 		(uuid "dd2d8930-cac4-426c-9d2c-85084d4231b1")
 	)
 	(embedded_fonts no)
+	(model "${KIPRJMOD}/3dmodels/KWM-20881AGB.stp"
+		(offset
+			(xyz 0 0 0)
+		)
+		(scale
+			(xyz 1 1 1)
+		)
+		(rotate
+			(xyz 0 0 0)
+		)
+	)
 )
