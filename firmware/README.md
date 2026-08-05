@@ -4,6 +4,72 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.6.0 — resync can now target the source end, gated by comfort
+
+Diagnosed from 19 h of live GF-HydroMix telemetry (16:29Z–01:47Z, 2026-08-05): in the
+current cooling regime the valve regulates at 85–100 %, so every position resync —
+previously always a drive to the 0 %/recirculation end-stop — was a ~200 % round trip
+with ~3 min of forced recirc and a ~2 K supply excursion. Three such events tripped
+in that window, preferentially right after source cold slugs, i.e. exactly when the
+plant was already disturbed. "Valve goes to 0 for no reason" was the live symptom.
+
+- **A resync may now target the 100 %-source end-stop** when the valve is already near
+  it and a comfort gate passes, instead of unconditionally driving to recirc. New pure
+  module `ctrl_core/resync_policy.c` decides the end each cycle:
+  - position < `RESYNC_NEAR_END_PCT` (50 %) → recirc-end immediately (cheap; the mix
+    is mostly recirc already).
+  - position ≥ 50 % and the gate passes → source-end.
+  - position ≥ 50 % and the gate fails → deferred, re-checked every control cycle:
+    source-end the instant the gate passes, or recirc-end after
+    `RESYNC_DEFER_MAX_MS` (30 min) — whichever comes first. Position dropping below
+    50 % while deferring also forces recirc-end immediately, since it just got cheap.
+  - The accumulated-travel / reversal counters that trigger a resync keep accumulating
+    through deferral; they only reset on resync completion, unchanged.
+- **The comfort gate** (`resync_gate_eval()`, computed once per cycle in `control_step`
+  and published to `valve_hw` via `valve_note_resync_gate()`) requires: mode is HEATING
+  or COOLING, the source probe is unfaulted, `|t_src − setpoint| ≤ RESYNC_SRC_GATE_K`
+  (2.0 K), and `t_src` sits inside the governor band with a `RESYNC_GATE_GOV_MARGIN_K`
+  (1.0 K) margin on both sides. A dew-guard-raised setpoint tightens the gate along
+  with it automatically. All four thresholds are compile-time constants — no new
+  Zigbee tunables.
+- **Mid-stroke abort:** resync ignores regulation targets while driving, so a
+  source-end stroke that starts at the edge of a cold slug can carry `t_src` below the
+  governor band with nothing to stop it. If the source leaves the raw governor band
+  during a source-end stroke, the stroke aborts and restarts as a fresh full
+  recirc-end stroke — its stall deadline extended by the interlock's reversal
+  blackout (`INTERLOCK_MIN_PULSE_MS + INTERLOCK_DEAD_TIME_MS +
+  INTERLOCK_ANTI_DITHER_MS`) so the deadline accounts for the pulse-finish,
+  dead-time and anti-dither the interlock imposes before the reversed drive actually
+  starts. Recirc-end strokes never abort. Worst case equals pre-1.6.0 behavior; never
+  worse.
+- **Boot resyncs and manual resyncs (console `resync` / Z2M switch) stay forced
+  recirc-end**, unconditionally — sensors boot latched-faulted, and bench use wants a
+  predictable end-stop. A manual resync requested while an autonomous source-end
+  stroke is already driving is **latched, not dropped**: `valve_task` only consumes
+  the pending manual-resync flag once the drive returns to idle, so it fires as a
+  forced recirc-end stroke the moment the in-flight autonomous stroke completes.
+- Stroke duration stays `travel_time_s × RESYNC_STALL_MULT` in both directions (plus
+  the abort extension above) — drift is why a resync happens at all, so no
+  distance-based shortening. `pos_est_resync_done()` now takes the end-stop seed (0.0
+  recirc / 100.0 source) instead of always seeding 0.
+- This deliberately supersedes the 2026-07-13 "resync only toward the
+  0 %/recirculation end-stop" rule and the `NEVER toward source` comment it left in
+  `valve_hw.c`. The original rationale — 100 % source is the dangerous end — now
+  holds via the gate, the governor-band bound and the mid-stroke abort, not a blanket
+  prohibition.
+- Not yet Zigbee-exposed: resync events, the chosen end, and gate state publish
+  nowhere — pairs with the still-open `ff.frozen`/authority-floor telemetry gap from
+  1.5.1, next release.
+
+New constants (`components/ctrl_core/include/ctrl_core/resync_policy.h`):
+`RESYNC_SRC_GATE_K` 2.0 K, `RESYNC_GATE_GOV_MARGIN_K` 1.0 K, `RESYNC_DEFER_MAX_MS`
+1 800 000 (30 min), `RESYNC_NEAR_END_PCT` 50.0 %.
+
+Design spec: `docs/superpowers/specs/2026-08-05-gated-bidirectional-resync-design.md`.
+
+Suite 17/17, 119 tests. Build clean, 63 % OTA headroom, embedded app version verified
+1.6.0.
+
 ## 1.5.1 — the authority floor had the wrong sign, and the freeze latched the valve
 
 **1.5.0 broke cooling on the live plant.** On 2026-08-04 the valve sat at 55.7 % for 92
