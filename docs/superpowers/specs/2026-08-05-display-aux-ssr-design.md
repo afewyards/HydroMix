@@ -15,7 +15,7 @@
 1. **Single 8×8 20 mm THT matrix block + I2C driver.** Considered and rejected: 2× 8×8 blocks (16×8 — more space/cost than needed once scrolling UI accepted); discrete 0402 on-PCB matrix (128 hand-placements, alignment risk); 0.91″ OLED (loses matrix look, sourced module). Off-the-shelf SMD 8×8 grids effectively don't exist (~$60 RGB exception) — the THT block is the one deviation from the all-SMD preference.
 2. **Driver = IS31FL3730 class (native 2.7–5.5 V)** so the whole display runs from 3V3 with no level shifting. HT16K33 rejected: officially a 4.5–5.5 V part; running it at 3.3 V is out of spec, and at 5 V its VIH exceeds 3.3 V I2C levels.
 3. **PhotoMOS (1-Form-A solid-state relay) per AUX channel.** The board's existing MOC3063+Z0103 triac pattern rejected: triac holding current (~5 mA) is unreliable at signal-level loads. Mechanical signal relay rejected: coil power, audible, taller.
-4. **Pins (all non-strapping):** IO6 = `I2C_SDA`, IO7 = `I2C_SCL`, IO11 = `BTN_PAGE`, IO22 = `AUX1_EN`, IO23 = `AUX2_EN`. Remaining free after this: IO4, IO5, IO8, IO16, IO17.
+4. **Pins (all non-strapping):** IO6 = `I2C_SDA`, IO7 = `I2C_SCL`, IO22 = `AUX1_EN`, IO23 = `AUX2_EN`. Remaining free after this: IO4, IO5, IO8, IO11, IO16, IO17. *(Revised 2026-08-05: dedicated page button SW2 on IO11 was implemented, then dropped by owner decision — paging consolidated onto SW1/IO9, commit d14ea38. Accepted trade-off: SW1 presses coinciding with a reset can enter USB download mode, since IO9 is the boot strap.)*
 5. **One 4-position PTSM terminal (J15)** for both channels: `IN1 | OUT1 | IN2 | OUT2`. No common terminal needed without sensing.
 6. **AUX channels default OFF** at boot/reset/crash — 10 k pulldowns on the enable GPIOs guarantee it in hardware; HA re-commands after rejoin.
 
@@ -30,9 +30,9 @@
 | R18, R19 | 4.7 k 0402 | I2C pull-ups to 3V3 |
 | C14 | 100 nF 0402 | U7 decoupling (high-frequency) |
 | C15 | 1 µF 0402 | U7 decoupling (bulk) — fitted, required per datasheet Fig. 1 typical application circuit (not optional) |
-| SW2 | momentary switch to GND on IO11 | internal pull-up, firmware debounce |
+| ~~SW2~~ | ~~momentary switch to GND on IO11~~ | REMOVED (d14ea38) — paging uses SW1 (existing BOOT/commissioning button, IO9); IO11 back to no-connect |
 
-New nets: `I2C_SDA`, `I2C_SCL`, `BTN_PAGE`. Power: 3V3 rail; firmware caps driver current register + scan duty so worst-case display draw ≤ ~40 mA (5 V PSU headroom after pump leaf ≈ 150 mA). U7 pin 3 (SDB, hardware shutdown, active-low) is tied directly to 3V3 — no GPIO is allocated for it (approved pin list is IO6/7/11/22/23 only), so the driver is permanently out of hardware shutdown; firmware controls brightness/on-off entirely via I2C registers.
+New nets: `I2C_SDA`, `I2C_SCL` (`BTN_PAGE` removed with SW2). Power: 3V3 rail; firmware caps driver current register + scan duty so worst-case display draw ≤ ~40 mA (5 V PSU headroom after pump leaf ≈ 150 mA). U7 pin 3 (SDB, hardware shutdown, active-low) is tied directly to 3V3 — no GPIO is allocated for it (approved pin list is IO6/7/11/22/23 only), so the driver is permanently out of hardware shutdown; firmware controls brightness/on-off entirely via I2C registers.
 
 ### Block 2 — AUX SSR channels
 
@@ -49,7 +49,7 @@ New nets: `AUX1_EN`, `AUX2_EN`, `AUX1_IN/OUT`, `AUX2_IN/OUT`. Placement in the L
 
 - **Zigbee:** two on/off switch endpoints (numbers assigned from the existing endpoint map at implementation). State default OFF at boot; no persistence of last state.
 - **Display engine:** I2C master + 8×8 framebuffer, 3×5 digit font, horizontal scroll routine. Pages: ① valve % (default; 0–99 static two-digit, 100 = full-frame icon), ② state icon (idle/moving/resync/error/Zigbee-lost), ③ supply temp, ④ return temp (temps scroll "21.4°" once, then park integer). Scroll advances in whole-pixel steps at a 30 ms tick (≈33 px/s) — a single tunable constant; I2C runs at 400 kHz so bus load is negligible. Button short-press cycles; auto-return to page ① after 15 s on another page; dim to minimum brightness after 60 s without a button press; wake to full brightness on button or state change.
-- **Button:** IO11 active-low, internal pull-up, debounced in firmware.
+- **Button (revised — SW1/IO9 does everything, SW2 dropped):** short press = display page cycle; hold 10 s = factory reset (was 5 s), with display countdown warning from ~3 s so an accidental hold is visible before it commits; **network-steering gesture removed** — instead firmware auto-steers on every factory-new boot with periodic retry until joined (commissioning flow becomes: hold 10 s → reset → auto-join), and steering stays available as a USB console command. Power-up bootloader entry via SW1 unchanged (IO9 strap).
 - **Z2M:** extend the live external converter (ESM) with the two switch entities; display/button are local-only, no Zigbee exposure.
 - **Host tests:** page state machine, scroll/render, endpoint command handling in `firmware/test_host`.
 
