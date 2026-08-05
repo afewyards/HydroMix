@@ -43,7 +43,7 @@ New nets: `I2C_SDA`, `I2C_SCL` (`BTN_PAGE` removed with SW2). Power: 3V3 rail; f
 | RL3, RL4 | 680 Ω 0402 | LED drive ≈ 3 mA from 3.3 V GPIO |
 | R20, R21 | 10 k 0402 | pulldowns on IO22/IO23 (board convention; hardware-off at boot) |
 | J15, J16 | Phoenix PTSM 0,5/2-2,5-H THR 2-pos angled (1770885), one per channel | J15: `AUX1_IN, AUX1_OUT` · J16: `AUX2_IN, AUX2_OUT` |
-| U8 | LTV-824S-TA1 dual AC-input opto (SMDIP-8) | ch1 LED via R22 10k + R23 4.7k across AUX1 pair; ch2 via R24/R25 across AUX2 pair |
+| U8 | LTV-824S dual AC-input opto (SMDIP-8; tube-packaging MPN — the -TA1 tape variant was out of stock 2026-08-05) | ch1 LED via R22 10k + R23 4.7k across AUX1 pair; ch2 via R24/R25 across AUX2 pair |
 | SW3 | Omron A6S-1102-H 1-pos SPST DIP (25 mA/24 VDC) | gates 24V→`WET_24V` wetting feed, both channels at once |
 | R26–R29 | 10 k 0402 ×2 per channel | wetting `WET_24V`→IN (≈1.1 mA closed-loop wetting) |
 | R30, R31 | 1 k 0402 | permanent OUT→GND wetting returns |

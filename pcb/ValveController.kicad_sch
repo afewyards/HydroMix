@@ -27398,7 +27398,7 @@
 				)
 			)
 		)
-		(property "Value" "LTV-824S-TA1"
+		(property "Value" "LTV-824S"
 			(at 397.51000000000005 17.78 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -27419,7 +27419,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S-TA1/322776"
+		(property "Datasheet" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S/385817"
 			(at 397.51000000000005 17.78 0)
 			(hide yes)
 			(show_name no)
@@ -27441,7 +27441,7 @@
 				)
 			)
 		)
-		(property "MPN" "LTV-824S-TA1"
+		(property "MPN" "LTV-824S"
 			(at 397.51000000000005 17.78 0)
 			(hide yes)
 			(show_name no)
@@ -27452,7 +27452,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S-TA1/322776"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S/385817"
 			(at 397.51000000000005 17.78 0)
 			(hide yes)
 			(show_name no)
@@ -27506,7 +27506,7 @@
 				)
 			)
 		)
-		(property "Value" "LTV-824S-TA1"
+		(property "Value" "LTV-824S"
 			(at 397.51000000000005 27.94 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -27527,7 +27527,7 @@
 				)
 			)
 		)
-		(property "Datasheet" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S-TA1/322776"
+		(property "Datasheet" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S/385817"
 			(at 397.51000000000005 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -27549,7 +27549,7 @@
 				)
 			)
 		)
-		(property "MPN" "LTV-824S-TA1"
+		(property "MPN" "LTV-824S"
 			(at 397.51000000000005 27.94 0)
 			(hide yes)
 			(show_name no)
@@ -27560,7 +27560,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S-TA1/322776"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/lite-on-inc/LTV-824S/385817"
 			(at 397.51000000000005 27.94 0)
 			(hide yes)
 			(show_name no)
