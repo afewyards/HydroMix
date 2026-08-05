@@ -16,7 +16,7 @@
 2. **Driver = IS31FL3730 class (native 2.7–5.5 V)** so the whole display runs from 3V3 with no level shifting. HT16K33 rejected: officially a 4.5–5.5 V part; running it at 3.3 V is out of spec, and at 5 V its VIH exceeds 3.3 V I2C levels.
 3. **PhotoMOS (1-Form-A solid-state relay) per AUX channel.** The board's existing MOC3063+Z0103 triac pattern rejected: triac holding current (~5 mA) is unreliable at signal-level loads. Mechanical signal relay rejected: coil power, audible, taller.
 4. **Pins (all non-strapping):** IO6 = `I2C_SDA`, IO7 = `I2C_SCL`, IO22 = `AUX1_EN`, IO23 = `AUX2_EN`. Remaining free after this: IO4, IO5, IO8, IO11, IO16, IO17. *(Revised 2026-08-05: dedicated page button SW2 on IO11 was implemented, then dropped by owner decision — paging consolidated onto SW1/IO9, commit d14ea38. Accepted trade-off: SW1 presses coinciding with a reset can enter USB download mode, since IO9 is the boot strap.)*
-5. **One 4-position PTSM terminal (J15)** for both channels: `IN1 | OUT1 | IN2 | OUT2`. No common terminal needed without sensing.
+5. ~~**One 4-position PTSM terminal (J15)** for both channels: `IN1 | OUT1 | IN2 | OUT2`.~~ *(Revised 2026-08-05, owner decision: **two 2-position angled PTSM terminals** — J15 = AUX1, J16 = AUX2, Phoenix 1770885, horizontal wire entry — one block per channel instead of a shared 4-pos vertical.)* No common terminal needed without sensing.
 6. **AUX channels default OFF** at boot/reset/crash — 10 k pulldowns on the enable GPIOs guarantee it in hardware; HA re-commands after rejoin.
 
 ## Circuit
@@ -41,7 +41,7 @@ New nets: `I2C_SDA`, `I2C_SCL` (`BTN_PAGE` removed with SW2). Power: 3V3 rail; f
 | Q6, Q7 | PhotoMOS 1-Form-A, ≥60 V blocking, ≥100 mA load (CPC1017N) | 24 VAC peaks ±34 V → 60 V min |
 | RL3, RL4 | 680 Ω 0402 | LED drive ≈ 3 mA from 3.3 V GPIO |
 | R20, R21 | 10 k 0402 | pulldowns on IO22/IO23 (board convention; hardware-off at boot) |
-| J15 | Phoenix PTSM 4-pos, same family as J8–J14 (1770979) | `AUX1_IN, AUX1_OUT, AUX2_IN, AUX2_OUT` |
+| J15, J16 | Phoenix PTSM 0,5/2-2,5-H THR 2-pos angled (1770885), one per channel | J15: `AUX1_IN, AUX1_OUT` · J16: `AUX2_IN, AUX2_OUT` |
 
 New nets: `AUX1_EN`, `AUX2_EN`, `AUX1_IN/OUT`, `AUX2_IN/OUT`. Placement in the LV zone, clear of the mains/triac section per existing `.kicad_dru` rules; the PhotoMOS provides the channel↔logic isolation barrier.
 
@@ -69,7 +69,7 @@ PCB placement/routing (follow-up task), enclosure window/light-pipe, display Zig
   - DS1 = **KWM-20881AGB** (row-anode, GaP yellow-green/low-Vf chemistry per Device Selection Guide, Vf 2.2 V typ / 2.8 V max — confirms Decision 1's headroom requirement); footprint = custom `Kleist2:LED_Matrix_8x8_20mm`, 2.5 mm pin pitch, 15.0 mm row spacing. Sourced via TME; no verified DigiKey listing exists for this MPN (DigiKey field intentionally left empty in the BOM, MPN populated).
   - U7 = **IS31FL3730-QFLS2-TR**, QFN-24 (only ordering option available — no SOP variant exists).
   - Q6, Q7 = **CPC1017N**, instantiated from the official `Relay_SolidState:CPC1017N` KiCad symbol (no hand-embedded symbol needed; pins 1–4 match datasheet 1:1).
-  - J15 = Phoenix **1770979** (4-pos PTSM 0.5/4-2.5-V-THR) — the plan's placeholder candidate "1770967" does not exist as a part; corrected during Task 1 research.
+  - J15, J16 = Phoenix **1770885** (2-pos PTSM 0,5/2-2,5-H THR, angled/horizontal entry) — revised 2026-08-05 from the original single 4-pos 1770979 (itself corrected from the plan's nonexistent "1770967" during Task 1 research).
 - Zigbee endpoint numbers from the existing endpoint map — still open, belongs to the firmware plan.
 - Whether temp pages cover only supply/return or all five sensors (default: two; trivial to extend) — still open, belongs to the firmware plan.
 - Carried to firmware plan: IS31FL3730 powers up with its current-register default at 40 mA/row (Lighting Effect Register 0Dh = `0000`), which exceeds the KWM-20881AGB's 25 mA/dot absolute maximum in single-lit-dot cases. Firmware must program the current register to a safe value *before* enabling the display (SDB is hard-wired high, so this is a software gate, not a hardware one).

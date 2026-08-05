@@ -9221,6 +9221,256 @@
 			)
 			(embedded_fonts no)
 		)
+		(symbol "Kleist:1770885"
+			(pin_names
+				(offset 0.254)
+			)
+			(exclude_from_sim no)
+			(in_bom yes)
+			(on_board yes)
+			(in_pos_files yes)
+			(duplicate_pin_numbers_are_jumpers no)
+			(property "Reference" "J"
+				(at 8.89 6.35 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Value" "1770885"
+				(at 0 0 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.524 1.524)
+					)
+				)
+			)
+			(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-2-2.5-H-THR_1x02_P2.50mm_Horizontal"
+				(at 0 0 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
+				(at 0 0 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "Description" ""
+				(at 0 0 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_locked" ""
+				(at 0 0 0)
+				(show_name yes)
+				(do_not_autoplace no)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_keywords" "1770885"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(property "ki_fp_filters" "PTSM-0,5-2-2.5-H-THR*"
+				(at 0 0 0)
+				(show_name no)
+				(do_not_autoplace no)
+				(hide yes)
+				(effects
+					(font
+						(size 1.27 1.27)
+					)
+				)
+			)
+			(symbol "1770885_1_1"
+				(polyline
+					(pts
+						(xy 5.08 2.54) (xy 5.08 -5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 5.08 -5.08) (xy 12.7 -5.08)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 0) (xy 5.08 0)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 0) (xy 8.89 0.8467)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 0) (xy 8.89 -0.8467)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -2.54) (xy 5.08 -2.54)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -2.54) (xy 8.89 -1.6933)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 10.16 -2.54) (xy 8.89 -3.3867)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 12.7 2.54) (xy 5.08 2.54)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(polyline
+					(pts
+						(xy 12.7 -5.08) (xy 12.7 2.54)
+					)
+					(stroke
+						(width 0.127)
+						(type default)
+					)
+					(fill
+						(type none)
+					)
+				)
+				(pin unspecified line
+					(at 0 0 0)
+					(length 5.08)
+					(name "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "1"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+				(pin unspecified line
+					(at 0 -2.54 0)
+					(length 5.08)
+					(name "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+					(number "2"
+						(effects
+							(font
+								(size 1.27 1.27)
+							)
+						)
+					)
+				)
+			)
+		)
 		(symbol "Kleist:1770979"
 			(pin_names
 				(offset 0.254)
@@ -21427,7 +21677,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1770966"
+		(property "Value" "1770898"
 			(at 254.0 99.0599 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -21438,7 +21688,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-3-2.5-V-THR_1x03_P2.50mm_Vertical"
+		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-3-2.5-H-THR_1x03_P2.50mm_Horizontal"
 			(at 254.0 101.5999 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -21449,7 +21699,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770966/2192468"
+		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770898/2192461"
 			(at 254.0 104.1399 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -21471,7 +21721,7 @@
 				)
 			)
 		)
-		(property "MPN" "1770966"
+		(property "MPN" "1770898"
 			(at 240.03 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -21482,7 +21732,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770966/2192468"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770898/2192461"
 			(at 240.03 97.79 0)
 			(hide yes)
 			(show_name no)
@@ -23333,7 +23583,7 @@
 		)
 	)
 	(symbol
-		(lib_id "Kleist:1770979")
+		(lib_id "Kleist:1770885")
 		(at 313.69 15.24 0)
 		(unit 1)
 		(body_style 1)
@@ -23355,7 +23605,7 @@
 				(justify left)
 			)
 		)
-		(property "Value" "1770979"
+		(property "Value" "1770885"
 			(at 327.66 16.51 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -23366,7 +23616,7 @@
 				(justify left)
 			)
 		)
-		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-4-2.5-V-THR_1x04_P2.50mm_Vertical"
+		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-2-2.5-H-THR_1x02_P2.50mm_Horizontal"
 			(at 327.66 19.05 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -23377,7 +23627,7 @@
 				(justify left)
 			)
 		)
-		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770979/2192469"
+		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
 			(at 327.66 21.59 0)
 			(show_name yes)
 			(do_not_autoplace no)
@@ -23399,7 +23649,7 @@
 				)
 			)
 		)
-		(property "MPN" "1770979"
+		(property "MPN" "1770885"
 			(at 313.69 15.24 0)
 			(hide yes)
 			(show_name no)
@@ -23410,7 +23660,7 @@
 				)
 			)
 		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770979/2192469"
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
 			(at 313.69 15.24 0)
 			(hide yes)
 			(show_name no)
@@ -23427,16 +23677,114 @@
 		(pin "2"
 			(uuid "40458ef4-a01b-4263-b8c8-6e20d2edc9e1")
 		)
-		(pin "3"
-			(uuid "04cebef0-d061-464b-8ee1-90bc5e6c85d2")
-		)
-		(pin "4"
-			(uuid "f6df9a40-a97a-40ba-a35e-941d94e235b3")
-		)
 		(instances
 			(project "ValveController"
 				(path "/996e7a69-443b-4feb-9505-1512f377356d"
 					(reference "J15")
+					(unit 1)
+				)
+			)
+		)
+	)
+	(symbol
+		(lib_id "Kleist:1770885")
+		(at 313.69 25.4 0)
+		(unit 1)
+		(body_style 1)
+		(exclude_from_sim no)
+		(in_bom yes)
+		(on_board yes)
+		(in_pos_files yes)
+		(dnp no)
+		(fields_autoplaced yes)
+		(uuid "0f8bab53-e536-4c79-82fe-09371b46f9c7")
+		(property "Reference" "J16"
+			(at 327.66 24.13 0)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Value" "1770885"
+			(at 327.66 26.67 0)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.524 1.524)
+				)
+				(justify left)
+			)
+		)
+		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-2-2.5-H-THR_1x02_P2.50mm_Horizontal"
+			(at 327.66 29.21 0)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
+			(at 327.66 31.75 0)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+				(justify left)
+			)
+		)
+		(property "Description" ""
+			(at 313.69 25.4 0)
+			(hide yes)
+			(show_name yes)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "MPN" "1770885"
+			(at 313.69 25.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
+			(at 313.69 25.4 0)
+			(hide yes)
+			(show_name no)
+			(do_not_autoplace no)
+			(effects
+				(font
+					(size 1.27 1.27)
+				)
+			)
+		)
+		(pin "1"
+			(uuid "109b41a0-6440-417a-9ce9-20cafc9dba04")
+		)
+		(pin "2"
+			(uuid "7edc9b6e-61a0-4b68-8021-668a09f13511")
+		)
+		(instances
+			(project "ValveController"
+				(path "/996e7a69-443b-4feb-9505-1512f377356d"
+					(reference "J16")
 					(unit 1)
 				)
 			)
@@ -24940,7 +25288,7 @@
 	)
 	(global_label "AUX2_IN"
 		(shape input)
-		(at 313.69 20.32 0)
+		(at 313.69 25.4 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -24949,7 +25297,7 @@
 		)
 		(uuid "fac4c9b8-b5be-4a33-b819-0a51329099ec")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 313.69 20.32 0)
+			(at 313.69 25.4 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -24962,7 +25310,7 @@
 	)
 	(global_label "AUX2_OUT"
 		(shape input)
-		(at 313.69 22.86 0)
+		(at 313.69 27.94 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -24971,7 +25319,7 @@
 		)
 		(uuid "63c5acad-a78a-4af5-9ab8-a89fb137bcbb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 313.69 22.86 0)
+			(at 313.69 27.94 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)

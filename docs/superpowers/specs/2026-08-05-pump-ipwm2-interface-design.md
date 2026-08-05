@@ -56,7 +56,7 @@ Levels: high 3.3 V (≥ 3 V spec min), low ≈ 0.3 V (470 Ω + 100 Ω vs 10 k; w
 
 ### Connector — J14
 
-Phoenix PTSM 0,5/3-2,5-V THR, MPN 1770966 (same as J8–J12; next column slot y = 97.79, x = 240.03).
+Phoenix PTSM 0,5/3-2,5-H THR, MPN 1770898 (next column slot y = 97.79, x = 240.03). *(Revised 2026-08-05: owner switched J14 from the vertical 1770966 to the horizontal/angled sibling 1770898 — wire entry parallel to the PCB; same PTSM 0,5 family, 2.5 mm pitch, 0.5 mm² max. The Wilo 4222049 cable's 0.35–0.5 mm² ferrules still fit; a considered upgrade to a ≥1.5 mm² family (PT/SPT/PTS) was dropped in favor of family consistency.)*
 Pin order **matches Wilo cable-core numbering**, not the sensor GND-on-pin-1 convention:
 
 | Pin | Net | Wilo core |
