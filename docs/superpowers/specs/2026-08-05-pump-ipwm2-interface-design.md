@@ -56,7 +56,7 @@ Levels: high 3.3 V (≥ 3 V spec min), low ≈ 0.3 V (470 Ω + 100 Ω vs 10 k; w
 
 ### Connector — J14
 
-Phoenix PTSM 0,5/3-2,5-H THR, MPN 1770898 (next column slot y = 97.79, x = 240.03). *(Revised 2026-08-05: owner switched J14 from the vertical 1770966 to the horizontal/angled sibling 1770898 — wire entry parallel to the PCB; same PTSM 0,5 family, 2.5 mm pitch, 0.5 mm² max. The Wilo 4222049 cable's 0.35–0.5 mm² ferrules still fit; a considered upgrade to a ≥1.5 mm² family (PT/SPT/PTS) was dropped in favor of family consistency.)*
+Phoenix SPT 2,5/3-H-5,0, MPN 1990986 (next column slot y = 97.79, x = 240.03) — same push-in terminal as J2/J3, footprint `Kleist2:TerminalBlock_Phoenix_SPT-2,5-3-H-5.0_1x03_P5.00mm_Horizontal` (hand-built, 6 pads numbered 1,1,2,2,3,3 — SPT has 2 solder pins per position). *(Revised 2026-08-05 twice, owner decisions: vertical PTSM 1770966 → angled PTSM 1770898 → **SPT 2,5/3-H-5,0 1990986** — horizontal wire entry, push-in, 250 V/24 A, 0.2–2.5 mm² (AWG 24–12), so the Wilo 4222049 cable's 0.35–0.5 mm² ferrules fit with room to spare.)*
 Pin order **matches Wilo cable-core numbering**, not the sensor GND-on-pin-1 convention:
 
 | Pin | Net | Wilo core |
@@ -65,8 +65,7 @@ Pin order **matches Wilo cable-core numbering**, not the sensor GND-on-pin-1 con
 | 2 | GND (PWM Common) | 2, blue/grey |
 | 3 | Feedback (via R17) | 3, black |
 
-Mis-plug consequences (same PTSM housing as J8–J12): pump cable in a sensor port → pump input grounded → pump stops, no damage; sensor cable in J14 → sensor sees the PWM line current-limited to ~10 mA by R14 — no damage path either way; 24 V never reaches an ESP32 pin.
-Add a PUMP silk callout at layout.
+Mis-plug consequences — REVISED with the SPT swap: J14 no longer shares a housing with the sensor row (that analysis is obsolete); it now looks identical to the 230 V blocks J2/J3. Wires landed on the wrong SPT block are the new hazard: mains cores into J14 put 230 V onto the PWM divider/boost node (destructive), pump cores into J2/J3 put mains on the pump signal wires. Mitigate at layout: place J14 in the LV zone well away from the J2/J3 mains edge, and give it an unmissable PUMP silk callout (carried from the original note, now load-bearing).
 
 ### GPIO map addition
 
