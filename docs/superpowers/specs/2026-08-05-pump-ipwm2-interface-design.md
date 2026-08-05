@@ -29,19 +29,20 @@
 
 | Ref | Part | Notes |
 |---|---|---|
-| U6 | TPS61040DBVR (SOT-23-5) | hysteretic boost, 28 V max |
-| L1 | 10 µH, Isat ≥ 500 mA (MPN at implementation, e.g. NR4018T100M) | |
+| U6 | TPS61040DRVR (WSON-6, U2's footprint) | hysteretic boost, 28 V max |
+| L1 | LSXND4040TKL100MDG (Isat 1.3 A; renamed successor of NRS4018/NR4018 — TY 2021 renumbering) | 10 µH |
 | D6 | B5819W-TP | existing BOM MPN, 40 V Schottky |
-| C9 | 4.7 µF/16 V 0805 | Cin, from `5V` net |
-| C10, C11 | 2.2 µF/50 V 1206 X7R | Cout |
-| R10/R11 | 1 M / 53.6 k (E96) | FB divider → V_out ≈ 24.2 V; feedforward cap only if TI typical app shows one (verify at implementation) |
+| C9 | 4.7 µF/16 V 0805, GRM21BR71C475KE51K | Cin, from `5V` net |
+| C10, C11 | 2.2 µF/50 V 1206 X7R, GCM31CR71H225KA55L | Cout |
+| R10/R11 | 1 M / 53.6 k (E96) | FB divider → V_out ≈ 24.2 V |
+| C13 | 22 pF C0G 0402, GRM1555C1H220JA01D | FB feedforward across R10 (TI SLVS413K §8.2.2.2; bench-verify vs double-pulsing) |
 
 EN tied to `5V` (always on). Input = `5V` net (post diode-OR) → 24 V also available on USB-only bench power. Load ≤ ~11 mA (~75 mA at 5 V) — inside the IRM's ~230 mA headroom.
 
 ### Block 2 — drive (Wilo fig. 8), IO20
 
 `24V` → **R14 2.2 kΩ ERJ-P08J222V (0.5 W 1206)** → line node → **R15 100 Ω ERJ-P08J101V** (existing MPN) → J14.1.
-**Q5 BSS138** drain on line node, source GND. Gate: **R12 100 Ω** series from IO20 (net `PUMP_PWM`) + **R13 10 k pull-up to 3V3**.
+**Q5 CSD17313Q2** (TI NexFET, SON 2×2 mm, hand-authored `Kleist2:CSD17313Q2` footprint; G=3, S=4+7/EP, D=1,2,5,6,8; BSS138 SOT-23 documented fallback) drain on line node, source GND. Gate: **R12 100 Ω** series from IO20 (net `PUMP_PWM`) + **R13 10 k pull-up to 3V3**.
 
 - GPIO floats (reset/flash/crash) → FET on → line low → pump stopped. Board unpowered → line ~0 V → stopped.
 - R14 sized 0.5 W: dissipates 262 mW continuously whenever pump is commanded off.
@@ -49,7 +50,7 @@ EN tied to `5V` (always on). Input = `5V` net (post diode-OR) → 24 V also avai
 
 ### Block 3 — feedback (Wilo fig. 11), IO21
 
-3V3 → **R16 5.6 k 0402** → node (net `PUMP_FB`, direct to IO21) → **R17 100 Ω ERJ-P08J101V** → J14.3. **C12 10 nF 0402** node→GND.
+3V3 → **R16 5.6 k 0402** → node (net `PUMP_FB`, direct to IO21) → **R17 100 Ω ERJ-P08J101V** → J14.3. **C12 10 nF 0402, C0402C103K5RECAUTO** node→GND.
 Levels: high 3.3 V (≥ 3 V spec min), low ≈ 0.3 V (470 Ω + 100 Ω vs 5.6 k). No level shifter.
 
 ### Connector — J14
@@ -72,7 +73,7 @@ Pin order **matches Wilo cable-core numbering**, not the sensor GND-on-pin-1 con
 
 IO22/IO23 remain free. IO4/IO5 avoided (strapping).
 
-New references used: U6, Q5, D6, J14, L1, R10–R17, C9–C12 — verified non-colliding.
+New references used: U6, Q5, D6, J14, L1, R10–R17, C9–C13 — verified non-colliding.
 
 ## Deliberately omitted
 
@@ -93,4 +94,4 @@ LEDC 1 kHz inverted output; duty map 15–95 % = min→max, park at 0 % for stop
 
 1. Flow feedback full scale 1.4 vs 2.1 m³/h — Wilo docs conflict; settle by bench calibration (or Wilo Intec support).
 2. Wilo factory article number for Para ST 15-7-50 iPWM2 not published — confirm from the physical pump label when it arrives.
-3. Exact inductor MPN + optional FB feedforward cap — settle at implementation against the TI datasheet.
+3. ~~Exact inductor MPN + optional FB feedforward cap — settle at implementation against the TI datasheet.~~ **Resolved 2026-08-05:** L1 = LSXND4040TKL100MDG (Taiyo Yuden, Isat 1.3 A; renamed successor of NRS4018T100MDGJ/NR4018T100M per Taiyo Yuden's 2021 renumbering — same footprint, no fit/form/function change). Feedforward cap needed per TI SLVS413K §8.2.2.2 (prevents double-pulsing) — added as C13, 22 pF C0G 0402 across R10, TI's own reference-design value; bench-verify against double-pulsing once built.
