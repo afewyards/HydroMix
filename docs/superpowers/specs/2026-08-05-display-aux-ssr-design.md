@@ -25,8 +25,8 @@
 
 | Ref | Part | Notes |
 |---|---|---|
-| DS1 | 8×8 20 mm dot-matrix block, single **green** (KWM-20881 class) | THT; **must be low-Vf yellow-green/GaP chemistry (Vf ≈ 2.1 V), NOT InGaN pure-green (Vf ≈ 3.2 V — no headroom from 3V3 drive)**; exact MPN + row/col pinout matched to driver at implementation |
-| U7 | IS31FL3730 (or equivalent 3.3 V-native I2C 8×8 matrix driver) | I2C addr strap per datasheet; brightness via current register |
+| DS1 | 8×8 20 mm dot-matrix block, single **green** (KWM-20881AGB) | THT; **must be low-Vf yellow-green/GaP chemistry (Vf ≈ 2.1 V), NOT InGaN pure-green (Vf ≈ 3.2 V — no headroom from 3V3 drive)** |
+| U7 | IS31FL3730-QFLS2-TR (QFN-24) | I2C addr strap per datasheet; brightness via current register |
 | R18, R19 | 4.7 k 0402 | I2C pull-ups to 3V3 |
 | C14 | 100 nF 0402 | U7 decoupling (high-frequency) |
 | C15 | 1 µF 0402 | U7 decoupling (bulk) — fitted, required per datasheet Fig. 1 typical application circuit (not optional) |
@@ -38,10 +38,10 @@ New nets: `I2C_SDA`, `I2C_SCL`, `BTN_PAGE`. Power: 3V3 rail; firmware caps drive
 
 | Ref | Part | Notes |
 |---|---|---|
-| Q6, Q7 | PhotoMOS 1-Form-A, ≥60 V blocking, ≥100 mA load (CPC1017N default; alternates AQY211EH / TLP3406-class verified at implementation) | 24 VAC peaks ±34 V → 60 V min |
+| Q6, Q7 | PhotoMOS 1-Form-A, ≥60 V blocking, ≥100 mA load (CPC1017N) | 24 VAC peaks ±34 V → 60 V min |
 | RL3, RL4 | 680 Ω 0402 | LED drive ≈ 3 mA from 3.3 V GPIO |
 | R20, R21 | 10 k 0402 | pulldowns on IO22/IO23 (board convention; hardware-off at boot) |
-| J15 | Phoenix PTSM 4-pos, same family as J8–J14 (MPN at implementation) | `AUX1_IN, AUX1_OUT, AUX2_IN, AUX2_OUT` |
+| J15 | Phoenix PTSM 4-pos, same family as J8–J14 (1770979) | `AUX1_IN, AUX1_OUT, AUX2_IN, AUX2_OUT` |
 
 New nets: `AUX1_EN`, `AUX2_EN`, `AUX1_IN/OUT`, `AUX2_IN/OUT`. Placement in the LV zone, clear of the mains/triac section per existing `.kicad_dru` rules; the PhotoMOS provides the channel↔logic isolation barrier.
 
