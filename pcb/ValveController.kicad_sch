@@ -20574,6 +20574,10 @@
 		(at 285.75 213.36)
 		(uuid "d11b2dbc-3a9d-4049-bc1d-9343b428521e")
 	)
+	(no_connect
+		(at 93.98 63.5)
+		(uuid "de9ee503-1fb8-49e2-a1b6-00d35707a591")
+	)
 	(symbol
 		(lib_id "R_dev")
 		(at 260.35 100.33 0)
@@ -22305,107 +22309,6 @@
 		)
 	)
 	(symbol
-		(lib_id "Switch:SW_Push")
-		(at 365.76 137.16 0)
-		(unit 1)
-		(body_style 1)
-		(exclude_from_sim no)
-		(in_bom yes)
-		(on_board yes)
-		(in_pos_files yes)
-		(dnp no)
-		(uuid "97b79f7e-a326-4207-b901-eb4ee2e595d5")
-		(property "Reference" "SW2"
-			(at 368.76 134.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Value" "TL9320AF400QG"
-			(at 368.76 140.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Footprint" "Kleist2:SW_SPST_TL9320"
-			(at 365.76 137.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Datasheet" "https://configured-product-images.s3.amazonaws.com/Datasheets/TL9320.pdf"
-			(at 365.76 137.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "Description" "Tactile switch SPST-NO, sealed IP67, matrix page-cycle button"
-			(at 365.76 137.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "MPN" "TL9320AF400QG"
-			(at 365.76 137.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(property "DigiKey" "https://www.digikey.com/en/products/detail/e-switch/TL9320AF400QG/11698099"
-			(at 365.76 137.16 0)
-			(show_name no)
-			(do_not_autoplace no)
-			(hide yes)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-		(pin "1"
-			(uuid "70fc5f11-f785-41fa-8344-05c2462bc807")
-		)
-		(pin "2"
-			(uuid "40689bef-341a-4b09-8fe4-8ac8f8853fc9")
-		)
-		(instances
-			(project "ValveController"
-				(path "/996e7a69-443b-4feb-9505-1512f377356d"
-					(reference "SW2")
-					(unit 1)
-				)
-			)
-		)
-	)
-	(symbol
 		(lib_id "R_dev")
 		(at 375.92 144.78 0)
 		(unit 1)
@@ -23583,28 +23486,6 @@
 			)
 		)
 	)
-	(global_label "BTN_PAGE"
-		(shape input)
-		(at 93.98 63.5 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "57b7d793-5c12-461e-b744-393df147fa2e")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 93.98 63.5 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
 	(global_label "I2C_SDA"
 		(shape input)
 		(at 360.68 64.77 180)
@@ -24475,50 +24356,6 @@
 		(uuid "eb814152-1d7d-45c2-835a-e8f2a950fa78")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
 			(at 392.43 102.87 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "BTN_PAGE"
-		(shape input)
-		(at 360.68 137.16 180)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify right)
-		)
-		(uuid "96160cdf-8601-4a11-94b0-d2933f6f9a79")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 360.68 137.16 0)
-			(hide yes)
-			(show_name no)
-			(do_not_autoplace no)
-			(effects
-				(font
-					(size 1.27 1.27)
-				)
-			)
-		)
-	)
-	(global_label "GND"
-		(shape input)
-		(at 370.84 137.16 0)
-		(effects
-			(font
-				(size 1.27 1.27)
-			)
-			(justify left)
-		)
-		(uuid "254407d6-c6b3-4baa-abd2-9a446a995186")
-		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 370.84 137.16 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
