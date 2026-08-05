@@ -47,7 +47,7 @@ New nets: `AUX1_EN`, `AUX2_EN`, `AUX1_IN/OUT`, `AUX2_IN/OUT`. Placement in the L
 ## Firmware
 
 - **Zigbee:** two on/off switch endpoints (numbers assigned from the existing endpoint map at implementation). State default OFF at boot; no persistence of last state.
-- **Display engine:** I2C master + 8×8 framebuffer, 3×5 digit font, horizontal scroll routine. Pages: ① valve % (default; 0–99 static two-digit, 100 = full-frame icon), ② state icon (idle/moving/resync/error/Zigbee-lost), ③ supply temp, ④ return temp (temps scroll "21.4°" once, then park integer). Button short-press cycles; auto-return to page ① after 15 s on another page; dim to minimum brightness after 60 s without a button press; wake to full brightness on button or state change.
+- **Display engine:** I2C master + 8×8 framebuffer, 3×5 digit font, horizontal scroll routine. Pages: ① valve % (default; 0–99 static two-digit, 100 = full-frame icon), ② state icon (idle/moving/resync/error/Zigbee-lost), ③ supply temp, ④ return temp (temps scroll "21.4°" once, then park integer). Scroll advances in whole-pixel steps at a 30 ms tick (≈33 px/s) — a single tunable constant; I2C runs at 400 kHz so bus load is negligible. Button short-press cycles; auto-return to page ① after 15 s on another page; dim to minimum brightness after 60 s without a button press; wake to full brightness on button or state change.
 - **Button:** IO11 active-low, internal pull-up, debounced in firmware.
 - **Z2M:** extend the live external converter (ESM) with the two switch entities; display/button are local-only, no Zigbee exposure.
 - **Host tests:** page state machine, scroll/render, endpoint command handling in `firmware/test_host`.
