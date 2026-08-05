@@ -8,6 +8,7 @@
 #include "esp_task_wdt.h"
 #include "ctrl_core/interlock.h"
 #include "ctrl_core/pos_estimator.h"
+#include "ctrl_core/resync_policy.h"
 
 #define PIN_OPEN  GPIO_NUM_2
 #define PIN_CLOSE GPIO_NUM_3
@@ -23,6 +24,9 @@ static float             s_target = 50.0f;
 static resync_state_t    s_rs = RS_IDLE;
 static uint32_t          s_rs_start_ms = 0;
 static bool              s_resync_req = false;
+static resync_policy_state_t s_rspol;
+static bool               s_gate_ok = false, s_gate_hard = true;   /* boot default recirc-only until control publishes */
+static bool               s_rs_toward_src = false;
 /* Latched copies of the motion-affecting config, refreshed only while idle (see
  * valve_task), so a runtime config change never flips the open/close mapping, rescales
  * the stall/position math mid-stroke or mid-resync, nor moves the stop criterion under a
@@ -63,21 +67,38 @@ static void valve_task(void *arg){
         uint32_t t = now_ms();
         xSemaphoreTake(s_lock, portMAX_DELAY);
 
-        if (s_resync_req && s_rs == RS_IDLE){ s_rs = RS_DRIVING; s_rs_start_ms = t; s_resync_req = false; }
+        if (s_rs == RS_IDLE){
+            if (s_resync_req){                       /* boot + manual valve_resync(): forced recirc */
+                s_rs = RS_DRIVING; s_rs_toward_src = false; s_rs_start_ms = t; s_resync_req = false;
+            } else {
+                resync_action_t act = resync_policy_step(&s_rspol, pos_est_needs_resync(&s_pos),
+                                                         s_gate_ok, s_pos.position_pct, t);
+                if (act != RESYNC_ACT_NONE){
+                    s_rs = RS_DRIVING;
+                    s_rs_toward_src = (act == RESYNC_ACT_START_SOURCE);
+                    s_rs_start_ms = t;
+                }
+            }
+        }
 
         valve_dir_t want;
         if (s_rs == RS_DRIVING){
+            /* Direction toward source is gated on comfort (s_gate_ok/s_gate_hard, set via
+             * valve_note_resync_gate from control_step's resync_src_ok/hard_fail) --
+             * see docs/superpowers/specs/2026-08-05-gated-bidirectional-resync-design.md */
+            if (resync_policy_mid_stroke_abort(s_rs_toward_src, s_gate_hard)){
+                s_rs_toward_src = false; s_rs_start_ms = t;   /* fresh full recirc stroke */
+            }
             uint32_t stall_ms = (uint32_t)(s_travel_latched_s * 1000.0f * RESYNC_STALL_MULT);
             if (t - s_rs_start_ms >= stall_ms){
-                pos_est_resync_done(&s_pos, 0.0f);              /* position := 0 % */
+                pos_est_resync_done(&s_pos, s_rs_toward_src ? 100.0f : 0.0f);
                 s_rs = RS_IDLE;
                 want = VALVE_STOP;
             } else {
-                want = dir_toward_recirc();               /* NEVER toward source */
+                want = s_rs_toward_src ? dir_toward_source() : dir_toward_recirc();
             }
         } else {
             want = desired_dir(s_target);
-            if (pos_est_needs_resync(&s_pos)) s_resync_req = true;
         }
 
         triac_cmd_t c = interlock_step(&s_ilk,
@@ -107,6 +128,7 @@ void valve_start(void){
     s_lock = xSemaphoreCreateMutex();
     interlock_init(&s_ilk);
     pos_est_init(&s_pos);
+    resync_policy_init(&s_rspol);
     s_swap_latched     = g_config.direction_swap;          /* initial latch at boot */
     s_travel_latched_s = g_config.travel_time_s;
     s_deadband_latched = g_config.valve_deadband_pct;
@@ -133,6 +155,11 @@ void valve_stop(void){ valve_set_target(valve_get_position()); }
 bool valve_resync_active(void){
     xSemaphoreTake(s_lock, portMAX_DELAY); bool a = (s_rs == RS_DRIVING); xSemaphoreGive(s_lock);
     return a;
+}
+void valve_note_resync_gate(bool ok, bool hard_fail){
+    xSemaphoreTake(s_lock, portMAX_DELAY);
+    s_gate_ok = ok; s_gate_hard = hard_fail;
+    xSemaphoreGive(s_lock);
 }
 float valve_travel_since_resync(void){
     xSemaphoreTake(s_lock, portMAX_DELAY); float t = s_pos.accum_travel_pct; xSemaphoreGive(s_lock);

@@ -80,6 +80,7 @@ static void control_loop(void *arg){
 
         control_out_t o = control_step(&s_ctrl, &in, &cfg, now_ms());
         s_mode = o.mode; s_alarm = o.supply_alarm; s_faults = o.fault_bits;
+        valve_note_resync_gate(o.resync_src_ok, o.resync_src_hard_fail);
 
         if (o.regulating) {
             valve_set_target(o.valve_target);
