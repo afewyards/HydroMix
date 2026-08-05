@@ -34,8 +34,9 @@
 | D6 | B5819W-TP | existing BOM MPN, 40 V Schottky |
 | C9 | 4.7 µF/16 V 0805, GRM21BR71C475KE51K | Cin, from `5V` net |
 | C10, C11 | 2.2 µF/50 V 1206 X7R, GCM31CR71H225KA55L | Cout |
-| R10/R11 | 1 M / 53.6 k (E96) | FB divider → V_out ≈ 24.2 V |
-| C13 | 22 pF C0G 0402, GRM1555C1H220JA01D | FB feedforward across R10 (TI SLVS413K §8.2.2.2; bench-verify vs double-pulsing) |
+| R10/R11 | 249 k / 13.3 k (E96) | FB divider → V_out ≈ 24.3 V, worst-case ≤ 25.5 V incl. I_FB |
+| C13 | 82 pF C0G 0402, GRM1555C1H820JA01D | FB feedforward across R10 (TI SLVS413K §8.2.2.2; bench-verify vs double-pulsing) |
+| D7 | BZT52B27 (Diotec, SOD-123F, 26.46–27.54 V, 500 mW) | 24 V rail clamp — TPS61040 has no internal OVP; FB-open fault otherwise runs U6+Q5 to their shared 30 V breakdown |
 
 EN tied to `5V` (always on). Input = `5V` net (post diode-OR) → 24 V also available on USB-only bench power. Load ≤ ~11 mA (~75 mA at 5 V) — inside the IRM's ~230 mA headroom.
 
@@ -44,14 +45,14 @@ EN tied to `5V` (always on). Input = `5V` net (post diode-OR) → 24 V also avai
 `24V` → **R14 2.2 kΩ ERJ-P08J222V (0.5 W 1206)** → line node → **R15 100 Ω ERJ-P08J101V** (existing MPN) → J14.1.
 **Q5 CSD17313Q2** (TI NexFET, SON 2×2 mm, hand-authored `Kleist2:CSD17313Q2` footprint; G=3, S=4+7/EP, D=1,2,5,6,8; BSS138 SOT-23 documented fallback) drain on line node, source GND. Gate: **R12 100 Ω** series from IO20 (net `PUMP_PWM`) + **R13 10 k pull-up to 3V3**.
 
-- GPIO floats (reset/flash/crash) → FET on → line low → pump stopped. Board unpowered → line ~0 V → stopped.
+- GPIO floats (reset/flash/crash) → FET on → line low → pump stopped. Board unpowered → line floats to the pump's own ~7 V open-circuit level (its wire-break signature, no edges) → stopped. Known uncovered corner (accepted): 3V3 rail dead while 5 V alive → gate pull-up limp → line driven high ~17 V → pump runs at max; benign (over-circulation only, valve outputs are dark in the same failure).
 - R14 sized 0.5 W: dissipates 262 mW continuously whenever pump is commanded off.
 - Logic inverted: line duty = complement of GPIO duty (LEDC hardware invert).
 
 ### Block 3 — feedback (Wilo fig. 11), IO21
 
-3V3 → **R16 5.6 k 0402** → node (net `PUMP_FB`, direct to IO21) → **R17 100 Ω ERJ-P08J101V** → J14.3. **C12 10 nF 0402, C0402C103K5RECAUTO** node→GND.
-Levels: high 3.3 V (≥ 3 V spec min), low ≈ 0.3 V (470 Ω + 100 Ω vs 5.6 k). No level shifter.
+3V3 → **R16 10 k 0402** → node (net `PUMP_FB`, direct to IO21) → **R17 100 Ω ERJ-P08J101V** → J14.3. **C12 10 nF 0402, C0402C103K5RECAUTO** node→GND.
+Levels: high 3.3 V (≥ 3 V spec min), low ≈ 0.3 V (470 Ω + 100 Ω vs 10 k; worst-case V_low 0.68 V at IO21, +146 mV margin under VIL vs the prior 5.6 k). No level shifter.
 
 ### Connector — J14
 
@@ -64,24 +65,27 @@ Pin order **matches Wilo cable-core numbering**, not the sensor GND-on-pin-1 con
 | 2 | GND (PWM Common) | 2, blue/grey |
 | 3 | Feedback (via R17) | 3, black |
 
+Mis-plug consequences (same PTSM housing as J8–J12): pump cable in a sensor port → pump input grounded → pump stops, no damage; sensor cable in J14 → sensor sees the PWM line current-limited to ~10 mA by R14 — no damage path either way; 24 V never reaches an ESP32 pin.
+Add a PUMP silk callout at layout.
+
 ### GPIO map addition
 
 | GPIO | Net | Direction | Peripheral |
 |---|---|---|---|
-| IO20 | PUMP_PWM | out | LEDC 1 kHz, inverted |
+| IO20 | PUMP_PWM | out | LEDC ≤ 500 Hz, inverted (rise-time margin: 1 kHz leaves only +12 % vs Wilo's T/500 with 3 m cable) |
 | IO21 | PUMP_FB | in | 75 Hz duty capture (GPIO ISR or RMT RX) |
 
 IO22/IO23 remain free. IO4/IO5 avoided (strapping).
 
-New references used: U6, Q5, D6, J14, L1, R10–R17, C9–C13 — verified non-colliding.
+New references used: U6, Q5, D6, D7, J14, L1, R10–R17, C9–C13 — verified non-colliding.
 
 ## Deliberately omitted
 
-TVS diodes (Wilo reference has none; cable ≤ 3 m), switchable boost EN, pump mains switching, level shifters.
+TVS diodes (Wilo reference has none; cable ≤ 3 m; field-side TVS on J14 re-examined and re-declined at final review 2026-08-05; the 24 V rail clamp D7 covers the internal FB-open fault, which is a different risk), switchable boost EN, pump mains switching, level shifters.
 
 ## Firmware implications (informational, out of scope)
 
-LEDC 1 kHz inverted output; duty map 15–95 % = min→max, park at 0 % for stop, never command 7–12 %; feedback decode per the table above with per-state reaction times (80 % state lags up to 60 s); flow full-scale needs bench calibration; new Zigbee attrs + Z2M expose for pump speed/flow/status later.
+LEDC ≤ 500 Hz inverted output; duty map 15–95 % = min→max, park at 0 % for stop, never command 7–12 %; feedback decode per the table above with per-state reaction times (80 % state lags up to 60 s); flow full-scale needs bench calibration; signal cable ≤ 3 m, unshielded (shielded/5 m fails the rise-time budget); new Zigbee attrs + Z2M expose for pump speed/flow/status later.
 
 ## Verification plan
 
