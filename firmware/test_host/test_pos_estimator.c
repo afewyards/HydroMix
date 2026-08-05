@@ -37,10 +37,20 @@ void test_resync_on_reversals(void){
 /* resync_done zeroes position, accum, reversals. */
 void test_resync_done_clears(void){
     pos_est_update(&s, +1, 60000, 120.0f);
-    pos_est_resync_done(&s);
+    pos_est_resync_done(&s, 0.0f);
     TEST_ASSERT_EQUAL_FLOAT(0.0f, s.position_pct);
     TEST_ASSERT_EQUAL_FLOAT(0.0f, s.accum_travel_pct);
     TEST_ASSERT_EQUAL_UINT32(0, s.reversals);
+}
+
+void test_resync_done_seeds_position(void){
+    pos_est_update(&s, +1, 60000, 120.0f);
+    pos_est_resync_done(&s, 100.0f);
+    TEST_ASSERT_EQUAL_FLOAT(100.0f, s.position_pct);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f,  s.accum_travel_pct);
+    TEST_ASSERT_EQUAL_UINT32(0,    s.reversals);
+    pos_est_resync_done(&s, 0.0f);
+    TEST_ASSERT_EQUAL_FLOAT(0.0f, s.position_pct);
 }
 
 int main(void){
@@ -50,5 +60,6 @@ int main(void){
     RUN_TEST(test_resync_on_travel);
     RUN_TEST(test_resync_on_reversals);
     RUN_TEST(test_resync_done_clears);
+    RUN_TEST(test_resync_done_seeds_position);
     return UNITY_END();
 }

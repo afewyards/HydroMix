@@ -18,6 +18,7 @@ bool pos_est_needs_resync(const pos_est_state_t *s){
     return s->accum_travel_pct >= POS_RESYNC_TRAVEL_PCT || s->reversals >= POS_RESYNC_REVERSALS;
 }
 
-void pos_est_resync_done(pos_est_state_t *s){
-    s->position_pct = 0.0f; s->accum_travel_pct = 0.0f; s->reversals = 0; s->last_sign = 0;
+void pos_est_resync_done(pos_est_state_t *s, float seed_pct){
+    s->position_pct = ctrl_clampf(seed_pct, 0.0f, 100.0f);
+    s->accum_travel_pct = 0.0f; s->reversals = 0; s->last_sign = 0;
 }

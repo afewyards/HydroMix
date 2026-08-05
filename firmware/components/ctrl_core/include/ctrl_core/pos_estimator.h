@@ -14,4 +14,4 @@ typedef struct {
 void pos_est_init(pos_est_state_t *s);
 void pos_est_update(pos_est_state_t *s, int8_t travel_sign, uint32_t dt_ms, float travel_time_s);
 bool pos_est_needs_resync(const pos_est_state_t *s);
-void pos_est_resync_done(pos_est_state_t *s);
+void pos_est_resync_done(pos_est_state_t *s, float seed_pct);

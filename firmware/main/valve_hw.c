@@ -69,7 +69,7 @@ static void valve_task(void *arg){
         if (s_rs == RS_DRIVING){
             uint32_t stall_ms = (uint32_t)(s_travel_latched_s * 1000.0f * RESYNC_STALL_MULT);
             if (t - s_rs_start_ms >= stall_ms){
-                pos_est_resync_done(&s_pos);              /* position := 0 % */
+                pos_est_resync_done(&s_pos, 0.0f);              /* position := 0 % */
                 s_rs = RS_IDLE;
                 want = VALVE_STOP;
             } else {
