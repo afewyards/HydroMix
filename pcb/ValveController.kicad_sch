@@ -13324,7 +13324,7 @@
 	)
 	(global_label "GND"
 		(shape input)
-		(at 308.61 58.42 0)
+		(at 308.61 26.67 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13333,7 +13333,7 @@
 		)
 		(uuid "4ef8a425-e8b2-426b-abd9-ff2c7bc9f515")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 308.61 58.42 0)
+			(at 308.61 26.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13830,16 +13830,16 @@
 	)
 	(global_label "AUX2_OUT"
 		(shape input)
-		(at 205.74 49.53 0)
+		(at 205.74 54.61 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "63c5acad-a78a-4af5-9ab8-a89fb137bcbb")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.74 49.53 0)
+			(at 205.74 54.61 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -13940,7 +13940,7 @@
 	)
 	(global_label "GND"
 		(shape input)
-		(at 308.61 26.67 0)
+		(at 308.61 58.42 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -13949,7 +13949,7 @@
 		)
 		(uuid "694569a9-8780-4e8b-8f70-c0c5c257ef99")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 308.61 26.67 0)
+			(at 308.61 58.42 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14050,7 +14050,7 @@
 	)
 	(global_label "AUX2_OUT"
 		(shape input)
-		(at 293.37 58.42 180)
+		(at 293.37 26.67 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14059,7 +14059,7 @@
 		)
 		(uuid "6ab2e455-4e47-4b1f-b2b3-9271b5ff90f8")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 293.37 58.42 0)
+			(at 293.37 26.67 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14072,16 +14072,16 @@
 	)
 	(global_label "AUX1_IN"
 		(shape input)
-		(at 205.74 36.83 0)
+		(at 205.74 46.99 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "6ac64365-bae5-44df-a76a-4ee1f72cb738")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.74 36.83 0)
+			(at 205.74 46.99 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14226,7 +14226,7 @@
 	)
 	(global_label "AUX1_OUT"
 		(shape input)
-		(at 293.37 26.67 180)
+		(at 293.37 58.42 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14235,7 +14235,7 @@
 		)
 		(uuid "6e13979f-db2e-4981-a30b-ce69c83d0291")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 293.37 26.67 0)
+			(at 293.37 58.42 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -14424,7 +14424,7 @@
 	)
 	(global_label "DET2_L"
 		(shape input)
-		(at 293.37 53.34 180)
+		(at 293.37 21.59 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -14433,7 +14433,7 @@
 		)
 		(uuid "79fabb79-2b2b-436a-bfad-6bfead5556a0")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 293.37 53.34 0)
+			(at 293.37 21.59 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -15590,7 +15590,7 @@
 	)
 	(global_label "DET1_L"
 		(shape input)
-		(at 293.37 21.59 180)
+		(at 293.37 53.34 180)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -15599,7 +15599,7 @@
 		)
 		(uuid "a931902e-e075-4738-bb95-77270a178d0c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 293.37 21.59 0)
+			(at 293.37 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16360,7 +16360,7 @@
 	)
 	(global_label "AUX2_DET"
 		(shape input)
-		(at 308.61 53.34 0)
+		(at 308.61 21.59 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -16369,7 +16369,7 @@
 		)
 		(uuid "d37398ce-8206-41f4-9281-24001ca9e00c")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 308.61 53.34 0)
+			(at 308.61 21.59 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -16932,7 +16932,7 @@
 	)
 	(global_label "AUX1_DET"
 		(shape input)
-		(at 308.61 21.59 0)
+		(at 308.61 53.34 0)
 		(effects
 			(font
 				(size 1.27 1.27)
@@ -16941,7 +16941,7 @@
 		)
 		(uuid "e98c3d47-251e-42c4-9fa6-a3155fad8e82")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 308.61 21.59 0)
+			(at 308.61 53.34 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17064,16 +17064,16 @@
 	)
 	(global_label "AUX1_OUT"
 		(shape input)
-		(at 205.74 39.37 0)
+		(at 205.74 44.45 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "edb495aa-27e8-435d-8f6a-2b0cb6fceb4f")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.74 39.37 0)
+			(at 205.74 44.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -17394,16 +17394,16 @@
 	)
 	(global_label "AUX2_IN"
 		(shape input)
-		(at 205.74 46.99 0)
+		(at 205.74 57.15 180)
 		(effects
 			(font
 				(size 1.27 1.27)
 			)
-			(justify left)
+			(justify right)
 		)
 		(uuid "fac4c9b8-b5be-4a33-b819-0a51329099ec")
 		(property "Intersheetrefs" "${INTERSHEET_REFS}"
-			(at 205.74 46.99 0)
+			(at 205.74 57.15 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18069,7 +18069,7 @@
 	)
 	(symbol
 		(lib_id "Kleist:1770885")
-		(at 205.74 46.99 0)
+		(at 205.74 54.61 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -18080,7 +18080,7 @@
 		(fields_autoplaced yes)
 		(uuid "0f8bab53-e536-4c79-82fe-09371b46f9c7")
 		(property "Reference" "J16"
-			(at 219.71 45.72 0)
+			(at 219.71 53.34 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -18091,7 +18091,7 @@
 			)
 		)
 		(property "Value" "1770885"
-			(at 220.98 48.26 0)
+			(at 220.98 55.88 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -18102,7 +18102,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-2-2.5-H-THR_1x02_P2.50mm_Horizontal"
-			(at 219.71 50.8 0)
+			(at 219.71 58.42 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18114,7 +18114,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
-			(at 219.71 53.34 0)
+			(at 219.71 60.96 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18126,7 +18126,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 205.74 46.99 0)
+			(at 205.74 54.61 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18137,7 +18137,7 @@
 			)
 		)
 		(property "MPN" "1770885"
-			(at 205.74 46.99 0)
+			(at 205.74 54.61 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -18148,7 +18148,7 @@
 			)
 		)
 		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
-			(at 205.74 46.99 0)
+			(at 205.74 54.61 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28018,7 +28018,7 @@
 	)
 	(symbol
 		(lib_id "Kleist:1770885")
-		(at 205.74 36.83 0)
+		(at 205.74 44.45 0)
 		(unit 1)
 		(body_style 1)
 		(exclude_from_sim no)
@@ -28029,7 +28029,7 @@
 		(fields_autoplaced yes)
 		(uuid "f4454a50-706b-47c7-9335-64d1e1e316c4")
 		(property "Reference" "J15"
-			(at 219.71 35.56 0)
+			(at 219.71 43.18 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28040,7 +28040,7 @@
 			)
 		)
 		(property "Value" "1770885"
-			(at 220.98 38.1 0)
+			(at 220.98 45.72 0)
 			(show_name no)
 			(do_not_autoplace no)
 			(effects
@@ -28051,7 +28051,7 @@
 			)
 		)
 		(property "Footprint" "TerminalBlock_Phoenix:TerminalBlock_Phoenix_PTSM-0,5-2-2.5-H-THR_1x02_P2.50mm_Horizontal"
-			(at 219.71 40.64 0)
+			(at 219.71 48.26 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28063,7 +28063,7 @@
 			)
 		)
 		(property "Datasheet" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
-			(at 219.71 43.18 0)
+			(at 219.71 50.8 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28075,7 +28075,7 @@
 			)
 		)
 		(property "Description" ""
-			(at 205.74 36.83 0)
+			(at 205.74 44.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28086,7 +28086,7 @@
 			)
 		)
 		(property "MPN" "1770885"
-			(at 205.74 36.83 0)
+			(at 205.74 44.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
@@ -28097,7 +28097,7 @@
 			)
 		)
 		(property "DigiKey" "https://www.digikey.com/en/products/detail/phoenix-contact/1770885/2192460"
-			(at 205.74 36.83 0)
+			(at 205.74 44.45 0)
 			(hide yes)
 			(show_name no)
 			(do_not_autoplace no)
