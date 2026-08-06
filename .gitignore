@@ -5,6 +5,13 @@ _autosave-*
 *.kicad_prl
 .history/
 
+# SnapMagic-derived USB4145 connector model. Their licence permits building and
+# distributing boards that use it, but not redistributing the model files -- and
+# this repo is public. Regenerate from your own SnapMagic download:
+#   python3 tools/import_usb4145.py <vendor.kicad_mod> <vendor.step>
+pcb/Kleist2.pretty/USB_C_Receptacle_GCT_USB4145-03-0170-C_Vertical_SMT.kicad_mod
+pcb/3dmodels/usb4145-03-0170-c.stp
+
 # Local manual backups (git history already preserves prior states)
 pcb/backups/
 ValveController-backups/

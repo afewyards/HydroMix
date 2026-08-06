@@ -105,13 +105,12 @@ the affected steps above as an expected/known gap, not a hardware problem.
       init messages.
 - [ ] **1.4** With a multimeter, confirm GPIO2 and GPIO3 both read **≈0 V**
       at idle.
-- [ ] **1.5** Watch the status LED (GPIO15, active-low): confirm the "idle"
-      breathing-off pattern is running — a brief lit pulse roughly every few
-      seconds, not steady-on or steady-off. (Once mode/join state settles,
-      the exact pattern is one of those in the LED legend under Checkpoint
-      4 — at this very early boot moment, expect the "not joined" single
-      blink: 100 ms on / 100 ms off, repeating.) If the LED is dark or
-      permanently lit, re-check the active-low wiring (drive LOW = lit).
+- [ ] **1.5** Confirm the board is alive over the console rather than by
+      watching an LED — the status LED was removed once the 8×8 matrix
+      landed, and the matrix driver is not written yet. At the `valvectl>`
+      prompt, `status` should respond immediately. (Reaching the prompt at
+      all also proves the USB Serial/JTAG path: GPIO15 is left unconnected,
+      which is correct only while `JTAG_SEL_ENABLE` is unburned.)
 - [ ] **1.6** At the `valvectl>` prompt, run each of:
       - `status` → prints a line like
         `supply=xx.xx ret=xx.xx src=xx.xx hxa=xx.xx hxb=xx.xx faults=00000`

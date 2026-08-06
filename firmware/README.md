@@ -458,8 +458,35 @@ toward the recirculation end.
 | TEMP_HX_A | GPIO18 | DS18B20, mode detection |
 | TEMP_HX_B | GPIO19 | DS18B20, monitoring only |
 | Button | GPIO9 | active-low, pull-up; short = Zigbee steering, hold ≥5 s = leave + factory reset |
-| Status LED | GPIO15 | **active-low** (drive LOW = lit) |
 | Console / flash / JTAG | GPIO12/13 | native USB-Serial-JTAG (USB-C), no separate config needed |
+| *(spare)* | GPIO15 | Unconnected. Nominally the JTAG-source strap, but ignored while `JTAG_SEL_ENABLE` is unburned (the default), so the C6 always uses the USB Serial/JTAG controller. One of only two free non-strapping pins, along with GPIO16. **If you ever burn `JTAG_SEL_ENABLE`, this pin must be pulled high externally** — the C6 has no internal pull here, and a floating strap could divert JTAG to the MTDI/MTCK/MTMS/MTDO pads |
+
+## Display: driver-output → panel mapping
+
+The IS31FL3730's outputs are **not** wired straight through to the KWM-20881AGB.
+The panel's pinout interleaves rows and columns down both of its edges, so a
+straight-through wiring produced an unroutable ratsnest (40 crossings). The
+outputs were permuted to make the fan-out planar (6 crossings). Rows were only
+ever swapped with rows and columns with columns — the driver sources on rows and
+the panel is common-row-anode, so the two groups cannot be interchanged.
+
+**The display driver must undo this in the framebuffer.** To light the LED at
+panel (row *r*, column *c*), set the bit at driver output (R, C):
+
+| Panel row | Driver | | Panel col | Driver |
+|---|---|---|---|---|
+| ROW1 | **R3** | | COL1 | **C3** |
+| ROW2 | **R1** | | COL2 | **C6** |
+| ROW3 | **R4** | | COL3 | **C7** |
+| ROW4 | **R2** | | COL4 | **C1** |
+| ROW5 | **R8** | | COL5 | **C8** |
+| ROW6 | **R5** | | COL6 | **C2** |
+| ROW7 | **R7** | | COL7 | **C4** |
+| ROW8 | **R6** | | COL8 | **C5** |
+
+Net names follow the **driver** side: `DISP_R3` is the driver's R3 output, which
+lands on panel ROW8. Two constant lookup tables in the display driver are enough;
+there is no runtime cost beyond the indirection.
 
 ## Sensor sweep (`firmware/main/sensors_hw.c`)
 
@@ -490,21 +517,20 @@ A sensor is marked **faulted** after **3 consecutive** failed sweeps
 | `mode` | Print detected mode, alarm state, fault bitmap, and position |
 | `factory-reset` | Zigbee leave + NVS wipe (defaults reload on next boot) |
 
-## Zigbee join / factory-reset gestures and LED legend
+## Zigbee join / factory-reset gestures
 
 - **Short button press** (GPIO9) → network steering (join).
 - **Hold ≥5 s** → Zigbee leave + factory reset (NVS erased, defaults reload).
 
-Status LED (GPIO15, active-low) pattern priority, highest first:
+**Status indication.** The single status LED was removed from the board once the
+8×8 matrix landed; local state now belongs to the display. The matrix driver is
+not written yet, so until it is, the USB-Serial-JTAG console is the only local
+readout — `status` and `mode` report everything the LED used to encode.
 
-1. **Identify** — fast single blink (60 ms on / 60 ms off), repeating.
-2. **Alarm or sensor fault** — triple blink (80 ms on / 120 ms off ×3), then a
-   600 ms pause.
-3. **Not joined** (steering) — single blink (100 ms on / 100 ms off), repeating.
-4. **Mode** (once joined, no alarm/fault):
-   - HEATING — one 150 ms flash, then ~2.5 s off.
-   - COOLING — two 150 ms flashes (200 ms gap), then ~2.5 s off.
-   - IDLE — one short 50 ms flash, then ~5 s off.
+`ui.c` still contains the old `led_task` driving GPIO15. It is inert (the LED is
+gone) and harmless — the pin only sees the 10 k strap pull-up, and the strapping
+latch is sampled at Chip Reset, so runtime toggling cannot affect JTAG selection.
+It gets replaced wholesale by the display work.
 
 ## Zigbee endpoints
 

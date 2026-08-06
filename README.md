@@ -48,7 +48,7 @@ Custom single-board design in KiCad (`pcb/`). Rev A highlights:
 | Valve drive | 2× channel: **MOC3063S** zero-cross opto-triac → **Z0103MN** triac, switching the 230 V 3-point actuator; RC snubbers + X2 safety caps |
 | Mains protection | Varistor (B72210S) + fuse |
 | Sensing | 5× **DS18B20** on dedicated 1-Wire connectors (4.7 k pull-ups) |
-| I/O | Tactile button, status LED (**active-low**), **USB-C** — native USB-Serial-JTAG (power, flash, console, JTAG in one port) |
+| I/O | Tactile button, 8×8 LED matrix (**KWM-20881AGB** + **IS31FL3730** driver), **USB-C** — native USB-Serial-JTAG (power, flash, console, JTAG in one port) |
 | Connectors | Phoenix pluggable terminal blocks (mains in, actuator) + 5 sensor headers |
 
 Full parts list: [`pcb/ValveController.csv`](pcb/ValveController.csv). Custom 3D component models
@@ -57,7 +57,7 @@ live in `pcb/3dmodels/`; `board.step` (repo root) is the assembled-board export.
 ## Firmware
 
 ESP-IDF 5.5.x, plain C on FreeRTOS. See **[`firmware/README.md`](firmware/README.md)** for the
-full build/flash/monitor guide, GPIO map, partition/OTA scheme, console commands, and LED legend.
+full build/flash/monitor guide, GPIO map, partition/OTA scheme, console commands, and gestures.
 
 The control logic lives in a **pure-C, IDF-free component** (`firmware/components/ctrl_core/`) so
 it compiles and unit-tests on the host (macOS/Linux) before any hardware is involved:
@@ -125,7 +125,7 @@ convention in mind: the safe idle is **mid-travel**, not "closed."
 
 ## Documentation
 
-- [Firmware guide](firmware/README.md) — build, GPIO map, OTA, console, LED legend
+- [Firmware guide](firmware/README.md) — build, GPIO map, OTA, console, gestures
 - [Design spec](docs/superpowers/specs/2026-07-13-firmware-design.md) — control theory, safety, Zigbee model
 - [Implementation plan](docs/superpowers/plans/2026-07-13-firmware.md)
 - [Bench checklist](firmware/BENCH_CHECKLIST.md)
