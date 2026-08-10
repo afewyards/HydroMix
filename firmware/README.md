@@ -4,6 +4,50 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.6.1 — the feedforward no longer picks a rail on probe noise
+
+Diagnosed from live GF-HydroMix history over 2026-08-07..10. The cooling plant lost
+output for ~4.5 h on 08-08 (01:40–06:30Z): source, supply, return and hx_b all
+equilibrated at ~21 °C and hx_a — normally the coldest point at ~15 °C — rose to
+23.4 °C. With `t_src ≈ t_ret` the mixing law had no authority, and dT(return−source)
+sat inside ±0.05 K for the whole window.
+
+The feedforward computes `clamp((t_set − t_ret)/(t_src − t_ret) · 100, 0, 100)`.
+`want` cannot change sign within a mode, so at low authority the sign of the
+denominator alone decided which rail the output clamped to. 1.5.1 limited the
+denominator's magnitude to the authority floor but kept its measured sign, which
+left a step discontinuity at `denom = 0` the width of the entire output range: at
+t_ret 20.9 / t_set 18.5, t_src 20.89 commanded 100 % and 20.91 commanded 0 % — two
+readings 0.02 K apart, well inside DS18B20 pair-to-pair disagreement.
+
+Live, the valve chattered rail to rail with the 180 s output EMA turning it into a
+sawtooth: **2906 % of travel on 08-08 against ~750 % on each neighbouring day**, and
+six end-stop resyncs between 02:34 and 09:51. Closing was also the self-defeating
+move — at the measured −0.041 K/% coupling, shutting the valve drives `t_src` further
+past `t_ret`, deepening the condition that closed it.
+
+1.6.1 blends the two available answers instead of switching between them: the
+measured-sign answer, and the demand direction that restores authority, weighted by
+`w = |denom| / floor` and only inside the band. Where the source is on the useful
+side both terms are the same expression, so the healthy operating band is unchanged
+bit for bit; only near-zero readings, where the sign is noise, are reinterpreted. A
+source genuinely past the floor — the unseated-probe case — still clamps to 0 %.
+
+Continuity sweep, worst adjacent output jump per 0.05 K of probe movement: **100.00
+→ 2.50**, the blend ramp's own maximum slope.
+
+The demand-direction fallback rests on the source↔valve coupling being negative,
+which is a property of the **fixed-speed pump** — valve position is the only thing
+modulating source-branch flow, so starvation dominates. A pump that modulates flow
+independently invalidates the premise; re-measure open-loop before carrying it over.
+See `FF_COUPLING_PCT_K` in `feedforward.h`.
+
+Known-unfixed, found in the same investigation: `travel_since_resync` is written
+every 10 s by `zigbee_push_status()` and is declared reportable, but
+`configure_reporting_on_join()` never arms a reporting record for it — so it only
+ever reaches the coordinator on an explicit read at `configure()` time and reads
+frozen in HA.
+
 ## 1.6.0 — resync can now target the source end, gated by comfort
 
 Diagnosed from 19 h of live GF-HydroMix telemetry (16:29Z–01:47Z, 2026-08-05): in the
