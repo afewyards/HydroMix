@@ -8,7 +8,13 @@
  * Since 1.5.1 the floor no longer gates the controller off -- it LIMITS the denominator
  * (see ff_step). So its size is not a stability threshold any more, it is how
  * conservatively the FF is allowed to extrapolate when the source and return converge:
- * a bigger floor means a SMALLER commanded ratio, i.e. less aggressive. */
+ * a bigger floor means a SMALLER commanded ratio, i.e. less aggressive.
+ *
+ * It is also the width of the band over which ff_step blends the measured sign of
+ * (t_src - t_ret) against the demand direction, so it doubles as the |denom| at which that
+ * sign is considered fully trustworthy. 2 K is comfortably above DS18B20 pair-to-pair
+ * disagreement and comfortably below the plant's normal |denom| range (measured 0.07..4.75,
+ * mean 1.89), which is what keeps the blend confined to the genuinely ambiguous readings. */
 #define FF_AUTHORITY_MIN_K          2.0f
 #define FF_AUTHORITY_MAX_K          4.0f
 
@@ -37,7 +43,14 @@
  * (2026-08-04: valve pinned 92 min, 87 % of samples below the floor, supply 2.7 K warm).
  *
  * Do NOT re-enable this from another closed-loop fit. It needs an open-loop step test:
- * park the valve at 2-3 positions for >= 20 min each with the controller out of the loop. */
+ * park the valve at 2-3 positions for >= 20 min each with the controller out of the loop.
+ *
+ * The measured SIGN is also scoped to a fixed-speed pump, where valve position is the only
+ * thing modulating source-branch flow -- that is why starvation dominates and more source
+ * flow cools the source. ff_step leans on this sign to pick which way to open when authority
+ * runs out. A pump that modulates flow independently of the valve invalidates the premise,
+ * so both the sign and this constant have to be re-measured (open loop, as above) before any
+ * of it carries over. */
 #define FF_COUPLING_PCT_K           0.0f
 
 /* Time constant of the EMA on the FF OUTPUT, s. 0 disables filtering.
@@ -69,7 +82,8 @@ typedef struct {
 
 typedef struct {
     float pos_ff;
-    bool  frozen;                  /* authority below floor -> denominator was LIMITED */
+    bool  frozen;                  /* authority below floor -> denominator LIMITED and the
+                                    * answer blended toward the demand direction (ff_step) */
     float authority_floor_k;       /* floor actually applied this step (telemetry/tests) */
 } ff_result_t;
 
