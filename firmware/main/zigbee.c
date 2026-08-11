@@ -617,27 +617,46 @@ static int16_t temp_centi(sensor_id_t id)
  * The five measurement endpoints published the ZCL invalid sentinel for 13 h on
  * 2026-08-10 while the thermostat LocalTemperature on EP1 -- fed by temp_centi() from
  * the SAME sensor, in the same telemetry iteration, microseconds apart -- carried a
- * live, rising value. The reporting engine transmits straight from the ZCL attribute
- * table, so a report of 0x8000 means the table still holds the add_temp_ep() seed:
- * the write is not landing. esp_zb_zcl_set_attribute_val()'s return was discarded, so
- * which of the five failed, and with what status, was unknowable from outside.
+ * live, rising value. esp_zb_zcl_set_attribute_val() returns a status and every call
+ * site discarded it, so which endpoint failed, and why, was unknowable from outside.
  *
- * RTC_NOINIT for the same reason as the 1-Wire tally in sensors_hw.c: opening the USB
- * console resets this board, so the only way to inspect a misbehaving run is to have it
- * survive the reset that inspecting it causes. */
-#define ZB_TEMP_STATS_MAGIC 0x2B7E1509u
+ * Three things are recorded per run, because each rules out a different layer:
+ *   ok/fail + status  -- did the write get accepted at all;
+ *   mismatch/read     -- did the ZCL table actually TAKE the value. SUCCESS on the write
+ *                        is not evidence of that, and the table is what the reporting
+ *                        engine transmits from;
+ *   ticks/sweeps/faults -- what the plant was doing at the time, so "writes all
+ *                        succeeded" does not just move the question somewhere else.
+ *
+ * RTC_NOINIT, and a HISTORY rather than a single previous run. Reaching this board's
+ * console costs two resets -- plugging the cable in is one, opening the port is another
+ * -- so a one-deep record is destroyed before it can ever be read. That is precisely how
+ * the 1-Wire tally for the 13 h outage was lost, and then how the first cut of this tally
+ * lost the 2026-08-11 mains-only reproduction. Depth 4 means two resets cannot reach the
+ * run under investigation. */
+#define ZB_TEMP_STATS_MAGIC 0x2B7E150Au
+#define ZB_RUN_HISTORY 4
+
+typedef struct {
+    uint32_t ok[5];
+    uint32_t fail[5];
+    uint32_t mismatch[5];      /* write returned SUCCESS but the table held something else */
+    int32_t  last_err[5];      /* esp_zb_zcl_status_t of the most recent failure */
+    int16_t  last_val[5];      /* value the write attempted */
+    int16_t  last_read[5];     /* what the table held immediately after */
+    uint32_t ticks;            /* telemetry iterations completed this run */
+    uint32_t sweeps;           /* sensor sweeps completed this run */
+    uint16_t faults;           /* control_task_faults() at the last tick */
+} zb_run_t;
 
 typedef struct {
     uint32_t magic;
-    uint32_t ok[5];
-    uint32_t fail[5];
-    int32_t  last_err[5];      /* esp_err_t of the most recent failure */
-    int16_t  last_val[5];      /* value that write attempted */
+    uint32_t seq;                         /* boot counter; identifies runs across resets */
+    zb_run_t cur;
+    zb_run_t hist[ZB_RUN_HISTORY];        /* hist[0] = most recently ended run */
 } zb_temp_stats_t;
 
-static RTC_NOINIT_ATTR zb_temp_stats_t s_zb_temp;
-static zb_temp_stats_t s_zb_temp_prev;
-static bool            s_zb_temp_prev_valid;
+static RTC_NOINIT_ATTR zb_temp_stats_t s_zb;
 
 static const char *const TEMP_EP_NAME[5] = { "supply", "return", "source", "hx_a", "hx_b" };
 
@@ -654,68 +673,97 @@ void zigbee_report_temps(void)
             map[i].ep, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
             ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID, &v, false);
         if (st == ESP_ZB_ZCL_STATUS_SUCCESS) {
-            s_zb_temp.ok[i]++;
+            s_zb.cur.ok[i]++;
+            /* Read straight back out of the ZCL table -- the same place the reporting
+             * engine sources from. */
+            esp_zb_zcl_attr_t *a = esp_zb_zcl_get_attribute(
+                map[i].ep, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID);
+            int16_t back = (a && a->data_p) ? *(int16_t *)a->data_p : (int16_t)0x7FFF;
+            s_zb.cur.last_read[i] = back;
+            if (back != v) {
+                s_zb.cur.mismatch[i]++;
+                if (s_zb.cur.mismatch[i] == 1)
+                    ESP_LOGE(TAG, "ep%u %s attr MISMATCH: wrote %d, table holds %d",
+                             (unsigned)map[i].ep, TEMP_EP_NAME[i], (int)v, (int)back);
+            }
         } else {
-            s_zb_temp.fail[i]++;
-            s_zb_temp.last_err[i] = (int32_t)st;
-            s_zb_temp.last_val[i] = v;
+            s_zb.cur.fail[i]++;
+            s_zb.cur.last_err[i] = (int32_t)st;
+            s_zb.cur.last_val[i] = v;
             /* First failure per endpoint is loud; after that the tally carries it, so a
-             * persistent fault cannot bury the rest of the log at 6 lines per minute. */
-            if (s_zb_temp.fail[i] == 1)
+             * persistent fault cannot bury the rest of the log at 30 lines a minute. */
+            if (s_zb.cur.fail[i] == 1)
                 ESP_LOGE(TAG, "set_attribute_val(ep%u %s) failed: status=0x%02x value=%d",
                          (unsigned)map[i].ep, TEMP_EP_NAME[i], (unsigned)st, (int)v);
         }
     }
     esp_zb_lock_release();
+    s_zb.cur.ticks++;
+    s_zb.cur.sweeps = sensors_sweep_count();
+    s_zb.cur.faults = control_task_faults();
 }
 
-/* Console `zbtemp`: this run plus the previous one, including the run that opening the
- * console just ended. */
+/* Console `zbtemp`: the live run plus the last ZB_RUN_HISTORY completed ones. Read the
+ * history, not `run` -- by the time you can type this, the run that mattered is two
+ * resets back. */
+static size_t fmt_run_block(char *o, size_t n, size_t u, const char *label, const zb_run_t *r)
+{
+    int k = snprintf(o + u, n - u, "%s ticks=%lu sweeps=%lu faults=0x%02x\n",
+                     label, (unsigned long)r->ticks, (unsigned long)r->sweeps,
+                     (unsigned)r->faults);
+    if (k > 0) u += (size_t)k;
+    if (u >= n) return n - 1;
+    for (int i = 0; i < 5; ++i) {
+        k = snprintf(o + u, n - u,
+                     "  %-6s ok=%lu fail=%lu mism=%lu err=0x%02lx val=%d read=%d\n",
+                     TEMP_EP_NAME[i], (unsigned long)r->ok[i], (unsigned long)r->fail[i],
+                     (unsigned long)r->mismatch[i], (unsigned long)(uint32_t)r->last_err[i],
+                     (int)r->last_val[i], (int)r->last_read[i]);
+        if (k > 0) u += (size_t)k;
+        if (u >= n) return n - 1;
+    }
+    return u;
+}
+
 void zigbee_format_temp_stats(char *o, size_t n)
 {
     if (!o || n == 0) return;
-    size_t u = 0;
-    int k = snprintf(o, n, "run:\n");
-    if (k > 0) u += (size_t)k;
-    for (int i = 0; i < 5 && u < n - 1; ++i) {
-        k = snprintf(o + u, n - u, "  %-6s ok=%lu fail=%lu last_err=0x%02lx last_val=%d\n",
-                     TEMP_EP_NAME[i], (unsigned long)s_zb_temp.ok[i],
-                     (unsigned long)s_zb_temp.fail[i],
-                     (unsigned long)(uint32_t)s_zb_temp.last_err[i], (int)s_zb_temp.last_val[i]);
-        if (k > 0) u += (size_t)k;
-    }
-    if (!s_zb_temp_prev_valid) {
-        if (u < n - 1) snprintf(o + u, n - u, "prev: none (cold power-on)\n");
-        return;
-    }
-    k = snprintf(o + u, n - u, "prev:\n");
-    if (k > 0) u += (size_t)k;
-    for (int i = 0; i < 5 && u < n - 1; ++i) {
-        k = snprintf(o + u, n - u, "  %-6s ok=%lu fail=%lu last_err=0x%02lx last_val=%d\n",
-                     TEMP_EP_NAME[i], (unsigned long)s_zb_temp_prev.ok[i],
-                     (unsigned long)s_zb_temp_prev.fail[i],
-                     (unsigned long)(uint32_t)s_zb_temp_prev.last_err[i],
-                     (int)s_zb_temp_prev.last_val[i]);
-        if (k > 0) u += (size_t)k;
+    char lbl[28];
+    snprintf(lbl, sizeof lbl, "run#%lu:", (unsigned long)s_zb.seq);
+    size_t u = fmt_run_block(o, n, 0, lbl, &s_zb.cur);
+    for (int h = 0; h < ZB_RUN_HISTORY && u < n - 1; ++h) {
+        if (!s_zb.hist[h].ticks && !s_zb.hist[h].sweeps) continue;   /* slot never used */
+        snprintf(lbl, sizeof lbl, "prev-%d (run#%lu):", h + 1,
+                 (unsigned long)(s_zb.seq - (uint32_t)(h + 1)));
+        u = fmt_run_block(o, n, u, lbl, &s_zb.hist[h]);
     }
 }
 
 static void zb_temp_stats_init(void)
 {
-    if (s_zb_temp.magic == ZB_TEMP_STATS_MAGIC) {
-        s_zb_temp_prev = s_zb_temp;
-        s_zb_temp_prev_valid = true;
+    if (s_zb.magic == ZB_TEMP_STATS_MAGIC) {
+        for (int h = ZB_RUN_HISTORY - 1; h > 0; --h) s_zb.hist[h] = s_zb.hist[h - 1];
+        s_zb.hist[0] = s_zb.cur;
+        s_zb.seq++;
+        const zb_run_t *p = &s_zb.hist[0];
+        ESP_LOGW(TAG, "previous run#%lu: ticks=%lu sweeps=%lu faults=0x%02x",
+                 (unsigned long)(s_zb.seq - 1), (unsigned long)p->ticks,
+                 (unsigned long)p->sweeps, (unsigned)p->faults);
         for (int i = 0; i < 5; ++i) {
-            if (!s_zb_temp_prev.fail[i]) continue;
-            ESP_LOGW(TAG, "previous run: ep%d %s attr-write ok=%lu fail=%lu last_err=0x%02lx last_val=%d",
-                     i + 2, TEMP_EP_NAME[i], (unsigned long)s_zb_temp_prev.ok[i],
-                     (unsigned long)s_zb_temp_prev.fail[i],
-                     (unsigned long)(uint32_t)s_zb_temp_prev.last_err[i],
-                     (int)s_zb_temp_prev.last_val[i]);
+            if (!p->fail[i] && !p->mismatch[i]) continue;
+            ESP_LOGW(TAG, "  ep%d %s ok=%lu fail=%lu mism=%lu err=0x%02lx val=%d read=%d",
+                     i + 2, TEMP_EP_NAME[i], (unsigned long)p->ok[i], (unsigned long)p->fail[i],
+                     (unsigned long)p->mismatch[i], (unsigned long)(uint32_t)p->last_err[i],
+                     (int)p->last_val[i], (int)p->last_read[i]);
         }
+    } else {
+        memset(&s_zb, 0, sizeof s_zb);
+        s_zb.magic = ZB_TEMP_STATS_MAGIC;
+        s_zb.seq   = 1;
+        ESP_LOGI(TAG, "no previous attr-write history (cold power-on)");
     }
-    memset(&s_zb_temp, 0, sizeof s_zb_temp);
-    s_zb_temp.magic = ZB_TEMP_STATS_MAGIC;
+    memset(&s_zb.cur, 0, sizeof s_zb.cur);
 }
 
 /* configure_reporting_running_mode() below only arms the ZCL reporting engine's

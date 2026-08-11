@@ -17,6 +17,9 @@ void            sensors_start(void);
 /* True when the sweep task has stopped completing iterations -- or never started one.
    Distinct from every sensor being faulted: that is what a dead sweep LOOKS like. */
 bool            sensors_sweep_dead(void);
+/* Sweeps completed this run. Lets a snapshot elsewhere record what the sweep was doing
+   without that code having to reach into the sensor internals. */
+uint32_t        sensors_sweep_count(void);
 sensor_reading_t sensors_get(sensor_id_t id);
 void            sensors_fill_faults(sensor_faults_t *out);
 /* Per-reason 1-Wire failure tallies for this run and the previous one. */

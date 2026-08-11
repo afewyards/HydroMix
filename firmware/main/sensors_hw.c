@@ -260,6 +260,8 @@ void sensors_start(void)
     }
 }
 
+uint32_t sensors_sweep_count(void){ return s_stats.sweeps; }
+
 bool sensors_sweep_dead(void)
 {
     uint32_t now = (uint32_t)(esp_timer_get_time() / 1000);
