@@ -1,0 +1,593 @@
+IS31FL3730
+AUDIO MODULATED MATRIX LED DRIVER
+                                                                                                                 October 2024
+GENERAL DESCRIPTION                                                      FEATURES
+IS31FL3730 is a LED matrix driver which features an                           2.7V to 5.5V supply
+audio modulation display mode and a general LED dot                           I2C interface, automatic address increment
+matrix display mode. The default configuration of                              function
+IS31FL3730 is to drive a single 8×8 LED matrix.                               Rising edge of SDB reset I2C module
+However, IS31FL3730 may be configured to drive
+                                                                              Internal reset register
+either one or two 8×8, 7×9, 6×10, or 5×11 dot matrix
+display(s). The intensity of any matrix picture can be                        Programmable single or dual 8×8, 7×9, 6×10, or
+modulated by an audio signal.                                                  5×11 LED matrix display mode
+                                                                              One-time programming, internal scan
+In matrix display mode, the rows and columns of the
+                                                                              Audio modulated display intensity with digitally
+matrix are internally scanned, requiring only one time
+                                                                               programmable input gain
+programming of the individual LED on or off state, thus
+eliminating the need for real time system resource                            Internal registers to digitally adjust display
+utilization to perform the row and column scanning                             intensity
+function.                                                                     Modulate LED brightness with 128 different items
+                                                                               in PWM
+In the general purpose mode, the ON or OFF condition
+                                                                              One address pin with 4 options to allow four I2C
+of each individual LED in the display matrix is
+                                                                               slave addresses
+programmed via an I2C interface.
+                                                                              Over-temperature protection
+IS31FL3730 is available in QFN-24 (4mm × 4mm). It                             QFN-24 (4mm × 4mm) package
+operates from 2.7V to 5.5V over the temperature range
+                                                                              RoHS & Halogen-Free Compliance
+of -40°C to +85°C.
+                                                                              TSCA Compliance
+                                                                         APPLICATIONS
+                                                                              Mobile phones and other hand-held devices for
+                                                                               LED display
+                                                                              LED in home appliances
+
+TYPICAL APPLICATION CIRCUIT
+
+
+
+
+                                               Figure 1   Typical Application Circuit Dual 8×8
+Note 1: The IC should be placed far away from the mobile antenna in order to prevent the EMI.
+
+
+Lumissil Microsystems – www.lumissil.com                                                                                       1
+Rev. D, 10/24/2024
+IS31FL3730
+TYPICAL APPLICATION CIRCUIT (CONTINUE)
+
+
+
+
+                                   Figure 2   Typical Application Circuit Dual 7×9
+
+
+
+
+                                   Figure 3   Typical Application Circuit Dual 6×10
+
+
+
+
+                                   Figure 4   Typical Application Circuit Dual 5×11
+
+
+Lumissil Microsystems – www.lumissil.com                                              2
+Rev. D, 10/24/2024
+IS31FL3730
+PIN CONFIGURATION
+ Package               Pin Configuration (Top View)
+
+
+
+
+ QFN-24
+
+
+
+
+PIN DESCRIPTION
+ No.                   Pin                            Description
+
+ 1                     SDA                            I2C serial data.
+ 2                     SCL                            I2C serial clock.
+ 3                     SDB                            Shutdown the chip when pull to low.
+ 4                     IN                             Audio input.
+ 5                     C_FILT                         Filter cap for audio control.
+ 6                     AD                             I2C address setting.
+ 7~10, 12              R1~R5                          Row control.
+ 11                    VCC                            Power supply.
+ 13~15                 R6/C11, R7/C10, R8/C9          Row/column control.
+ 16~19, 21~24          C8~C5, C4~C1                   Column control.
+ 20                    GND                            Ground.
+                       Thermal Pad                    Connect to GND.
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                    3
+Rev. D, 10/24/2024
+IS31FL3730
+ORDERING INFORMATION
+Industrial Range: -40°C to +85°C
+  Order Part No.                                                            Package                                                QTY/Reel
+
+  IS31FL3730-QFLS2-TR                                                       QFN-24, Lead-free                                      2500
+
+
+
+
+Copyright © 2024 Lumissil Microsystems. All rights reserved. Lumissil Microsystems reserves the right to make changes to this specification and its
+products at any time without notice. Lumissil Microsystems assumes no liability arising out of the application or use of any information, products or
+services described herein. Customers are advised to obtain the latest version of this device specification before relying on any published information and
+before placing orders for products.
+Lumissil Microsystems does not recommend the use of any of its products in life support applications where the failure or malfunction of the product can
+reasonably be expected to cause failure of the life support system or to significantly affect its safety or effectiveness. Products are not authorized for use in
+such applications unless Lumissil Microsystems receives written assurance to its satisfaction, that:
+a.) the risk of injury or damage has been minimized;
+b.) the user assume all such risks; and
+c.) potential liability of Lumissil Microsystems is adequately protected under the circumstances
+
+Lumissil Microsystems – www.lumissil.com                                                                                                                        4
+Rev. D, 10/24/2024
+IS31FL3730
+ABSOLUTE MAXIMUM RATINGS
+ Supply voltage, VCC                                                                                              -0.3V ~ +6.0V
+ Voltage at any input pin                                                                                         -0.3V ~ VCC+0.3V
+ Maximum junction temperature, TJMAX                                                                              +150°C
+ Storage temperature range, TSTG                                                                                  -65°C ~ +150°C
+ Operating temperature range, TA= TJ                                                                              -40°C ~ +85°C
+ Package thermal resistance, junction to ambient (4-layer standard test PCB based
+                                                                                                                  29.5°C/W
+ on JEDEC standard), θJA
+ ESD (HBM)                                                                                                        ±1kV
+ ESD (CDM)                                                                                                        ±1kV
+Note 2: Stresses beyond those listed under “Absolute Maximum Ratings” may cause permanent damage to the device. These are stress ratings
+only and functional operation of the device at these or any other condition beyond those indicated in the operational sections of the specifications
+is not implied. Exposure to absolute maximum rating conditions for extended periods may affect device reliability.
+
+
+ELECTRICAL CHARACTERISTICS
+The following specifications apply for VCC= 3.6V, TA= 25°C, unless otherwise noted.
+ Symbol                  Parameter                                     Condition                           Min.       Typ.      Max.       Unit
+
+    VCC        Supply voltage                                                                               2.7                   5.5        V
+               Quiescent power supply               VIN= 0V, without audio input, all LEDs
+     ICC                                                                                                               7.0                  mA
+               current                              off
+                                                    VSDB= 0V                                                           1.7        3.0
+     ISD       Shutdown current                                                                                                             μA
+                                                    VSDB= VCC, software shutdown                                       1.7        3.0
+                                                    Matrix display mode without audio
+                                                    modulation, Lighting Effect                                        40
+               Output current of R1~R8,             Register(0Dh) = 0xxx 0000 (Note 3)
+    IOUT                                                                                                                                    mA
+               C1~C8                                Matrix display mode with audio
+                                                    modulation, VIN= 2.5VP-P, 1kHz square                              40
+                                                    wave Audio Gain= 0dB (Note 3)
+               Current sink headroom
+                                                    ISINK= 320mA                                                      300
+               voltage R1~R8, C1~C8
+    VHR                                                                                                                                     mV
+               Current source headroom
+                                                    ISOURCE= 40mA                                                     200
+               voltage R1~R8, C1~C8
+               Period of row and column
+    tSCAN                                                                                                              32                    µs
+               scanning (Figure 10)
+               Non-overlap blanking time
+  tSCANOL      during row and column     (Note 4)                                                                       1                    µs
+               scan (Figure 10)
+
+ Logic Electrical Characteristics (SDA, SCL, AD)
+
+     VIL       Logic “0” input voltage              VCC = 2.7V~5.5V                                                               0.4        V
+     VIH       Logic “1” input voltage              VCC = 2.7V~5.5V                                         1.4                              V
+     IIL       Logic “0” input current              VIN = 0V (Note 4)                                                   5                    nA
+     IIH       Logic “1” input current              VIN = VCC (Note 4)                                                  5                    nA
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                                                          5
+Rev. D, 10/24/2024
+IS31FL3730
+DIGITAL INPUT SWITCHING CHARACTERISTICS (Note 4)
+   Symbol                             Parameter                             Condition        Min.           Typ.         Max.       Units
+      fSCL       Serial-Clock frequency                                                                                   400        kHz
+                 Bus free time between a STOP and a START
+      tBUF                                                                                    1.3                                     μs
+                 condition
+    tHD, STA     Hold time (repeated) START condition                                         0.6                                     μs
+    tSU, STA     Repeated START condition setup time                                          0.6                                     μs
+    tSU, STO     STOP condition setup time                                                    0.6                                     μs
+    tHD, DAT     Data hold time                                            (Note 5)            0                          0.9         μs
+    tSU, DAT     Data setup time                                                              100                                     ns
+     tLOW        SCL clock low period                                                         1.3                                     μs
+     tHIGH       SCL clock high period                                                        0.7                                     μs
+                 Rise time of both SDA and SCL signals,
+       tR                                                                  (Note 6)                     20+0.1Cb          300         ns
+                 receiving
+                 Fall time of both SDA and SCL signals,
+       tF                                                                  (Note 6)                     20+0.1Cb          300         ns
+                 receiving
+Note 3: Due to the row and column scanning sequence, the average current of an individual LED in the display is IOUT/8 when configured to
+drive a single matrix. When configured to drive two matrices, the average current of an individual LED in the display is IOUT/16.
+Note 4: Guaranteed by design.
+Note 5: The minimum tHD, DAT measured start from VIL(max) of SCL signal. The maximum tHD,DAT has only to be met if the device does not stretch
+the LOW period (tLOW) of the SCL signal. VIL(max)
+Note 6: Cb = total capacitance of one bus line in pF. ISINK ≤ 6mA. tR and tF measured between 0.3×VCC and 0.7×VCC.
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                                                    6
+Rev. D, 10/24/2024
+IS31FL3730
+FUNCTIONAL BLOCK DIAGRAM
+
+                                                       C_FILT        IN
+
+
+                    VCC
+                    SDB                                     Audio
+                                                          Modulation
+
+                    SCL
+                                   I2C                     Current
+                    SDA                     Register
+                                Interface                  Control
+                     AD
+
+                                            Sequence     Current Source
+                                  OSC                                     C1~C8
+                                             Control     Current Switch
+
+
+
+                                                         Current Source
+                                                                          R1~R8
+                                                         Current Switch
+                                                                          GND
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                          7
+Rev. D, 10/24/2024
+IS31FL3730
+DETAILED DESCRIPTION
+
+I2C INTERFACE                                                                     After the last bit of the chip address is sent, the master
+                                                                                  checks for the IS31FL3730’s acknowledge. The
+The IS31FL3730 uses a serial bus, which conforms to
+                                                                                  master releases the SDA line high (through a pull-up
+the I2C protocol, to control the chip’s functions with two
+                                                                                  resistor). Then the master sends an SCL pulse. If the
+wires: SCL and SDA. The IS31FL3730 has a 7-bit slave
+                                                                                  IS31FL3730 has received the address correctly, then it
+address (A7:A1), followed by the R/W bit, A0. Since
+                                                                                  holds the SDA line low during the SCL pulse. If the SDA
+IS31FL3730 only supports write operations, A0 must
+                                                                                  line is not low, then the master should send a “STOP”
+always be 0. The value of bits A1 and A2 are decided by
+                                                                                  signal (discussed later) and abort the transfer.
+the connection of the AD pin.
+                                                                                  Following acknowledge of IS31FL3730, the register
+The complete slave address is:
+                                                                                  address byte is sent, most significant bit first.
+Table 1 Slave Address (Write Only):                                               IS31FL3730 must generate another acknowledge
+                                                                                  indicating that the register address has been received.
+       Bit              A7:A3             A2:A1             A0
+                                                                                  Then 8-bit of data byte are sent next, most significant
+     Value              11000                 AD             0                    bit first. Each data bit should be valid while the SCL
+     AD connected to GND, AD=00;                                                  level is stable high. After the data byte is sent, the
+     AD connected to VCC, AD=11;                                                  IS31FL3730 must generate another acknowledge to
+     AD connected to SCL, AD=01;                                                  indicate that the data was received.
+     AD connected to SDA, AD=10;                                                  The “STOP” signal ends the transfer. To signal “STOP”,
+                                                                                  the SDA signal goes high while the SCL signal is high.
+The SCL line is uni-directional. The SDA line is
+bi-directional (open-collector) with a pull-up resistor                           Address Auto Increment
+(typically 4.7kΩ). The maximum clock frequency
+                                                                                  To write multiple bytes of data into IS31FL3730, load
+specified by the I2C standard is 400kHz. In this
+                                                                                  the address of the data register that the first data byte
+discussion, the master is the microcontroller and the
+                                                                                  is intended for. During the IS31FL3730 acknowledge of
+slave is the IS31FL3730.
+                                                                                  receiving the data byte, the internal address pointer will
+The timing diagram for the I2C is shown in Figure 5.                              increment by one. The next data byte sent to
+The SDA is latched in on the stable high level of the                             IS31FL3730 will be placed in the new address, and so
+SCL. When there is no interface activity, the SDA line                            on. The auto increment of the address will continue as
+should be held high.                                                              long as data continues to be written to IS31FL3730.
+                                                                                  This feature is useful for loading the LED on/off
+The “START” signal is generated by lowering the SDA
+                                                                                  condition for each of the display matrices as a burst of
+signal while the SCL signal is high. The start signal will
+                                                                                  data. Pay careful attention when loading data for dual
+alert all devices attached to the I2C bus to check the
+                                                                                  LED matrix displays since the register addressing is
+incoming address against their own chip address.
+                                                                                  not continuous.
+The 8-bit chip address is sent next, most significant bit
+first. Each address bit must be stable while the SCL
+level is high.
+
+        SDA
+                           tSU,DAT                          tHD,DAT     tSU,STA           tHD,STA       tSU,STO        tBUF
+                                  tLOW
+        SCL         S                         tHIGH                                R                              P
+
+              tHD,STA
+                                         tR           tF
+              Start Condition                                               Restart Condition             Stop Condition   Start Condition
+
+                                                           Figure 5   Interface Timing
+
+
+
+
+                                                             Figure 6    Bit Transfer
+Lumissil Microsystems – www.lumissil.com                                                                                                     8
+Rev. D, 10/24/2024
+IS31FL3730
+
+
+
+
+                                                Figure 7    Writing to IS31FL3730(Typical)
+
+
+
+
+                                    Figure 8   Writing to IS31FL3730(Automatic Address Increment)
+
+REGISTER DEFINITION
+Table 2 Register Function
+  Address                    Name                                        Function                     Table         Default
+      00h        Configuration Register             Set operation mode of IS31FL3730                     3         0000 0000
+ 01h~0Bh         Matrix 1 Data Register             Store the on or off state of each LED                4
+                                                                                                                   0000 0000
+ 0Eh~18h         Matrix 2 Data Register             Store the on or off state of each LED                5
+     0Ch         Update Column Register             Make the Data Register update the data               -         xxxx xxxx
+     0Dh         Lighting Effect Register           Store the intensity control settings                 6         0000 0000
+      19h        PWM Register                       Modulate LED light with 128 different items          7         1000 0000
+     FFh         Reset Register                     Reset all registers to default value                 -         xxxx xxxx
+
+
+Table 3 00h Configuration Register                                      A_EN   Audio Input Enable
+  Bit          D7     D6:D5    D4:D3           D2     D1:D0             0    Matrix intensity is controlled by the current
+                                                                             setting in the Lighting Effect Register (0Dh)
+ Name         SSD       -         DM      A_EN         ADM              1    Enable audio signal to modulate the intensity
+Default        0        00        00           0           00                of the matrix
+
+The Configuration Register sets operation mode of
+                                                                        ADM         Matrix Mode Selection
+IS31FL3730.
+                                                                        00          8×8 dot matrix display mode
+                                                                        01          7×9 dot matrix display mode
+SSD         Software Shutdown Enable
+                                                                        10          6×10 dot matrix display mode
+0           Normal operation
+                                                                        11          5×11 dot matrix display mode
+1           Software shutdown mode
+
+DM          Display Mode
+00          Matrix 1 only
+01          Matrix 2 only
+11          Matrix 1 and Matrix 2
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                                       9
+Rev. D, 10/24/2024
+IS31FL3730
+Table 4 01h~0Bh Matrix 1 Data Register(C1~C11)              CS        Full Current Setting for Each Row Output
+                                                            0000      40mA
+      Bit                      D7:D0
+                                                            0001      45mA
+     Name                      R8:R1                        ... ...
+                                                            0111      75mA
+  Default                     00000000                      1000      5mA
+                                                            1001      10mA
+Table 5 0Eh~18h Matrix 2 Data Register(C1~C11)              ... ...
+                                                            1110      35mA
+      Bit                      D7:D0                        Others    Not Available
+     Name                      R8:R1
+                                                            Table 7 19h PWM Register
+  Default                     00000000
+                                                                Bit        D7                    D6:D0
+The Data Registers (Matrix 1/Matrix 2) store the on or
+off state of each LED in the Matrix.                          Default        1                  0000000
+                                                            The PWM Register can modulate LED light with 128
+Rx          LED State                                       different items.
+0           LED off                                         When the D7 set to “1”, the PWM is the 128 item.
+1           LED on                                          When the D7 set to “0”, D6:D0 set the PWM from the 0
+                                                            item to the 127 item.
+11×2 registers are assigned to C1~C11 columns               For example, if the data in PWM Register is 0000 0100,
+respectively; the LED at a particular (row, column)         then the PWM is the 4 item.
+location will be turned on when the respective data is
+set to “1”. When configured for more than 8 column
+operation, only the required numbers of LSBs are used
+in each data register. For example, in 5×11 dot matrix
+mode, only bits R1 thru R5 are used, and bits R6 thru
+R8 are ignored.
+
+0Ch Update Column Register
+The data sent to the Data Registers will be stored in
+temporary registers. A write operation of “0000 0000”
+value to the Update Column Register is required to
+update the Data Registers (01h~0Bh, 0Eh~18h).
+                                                                          Figure 9    PWM Timing Diagram
+
+                                                            Software shutdown and hardware shutdown operation
+Table 6 0Dh Lighting Effect Register                        will reset the PWM Register. When restart the IC, the
+     Bit          D7         D6:D4          D3:D0           register value will reset to 0x80 and if previous setting
+                                                            is not this value, need to rewrite the PWM Register.
+  Name             -         AGS             CS
+  Default         0           000           0000            FFh Reset Register
+The Lighting Effect Register stores the intensity control   Once user writes “0000 0000” to the Reset Register,
+settings for all of the LEDs in the Matrix.                 IS31FL3730 will reset all registers to default value. On
+                                                            initial power-up, the IS31FL3730 registers are reset to
+                                                            their default values for a blank display.
+AGS         Audio Input Gain Selection
+000         Gain= 0dB
+001         Gain= +3dB
+010         Gain= +6dB
+011         Gain= +9dB
+100         Gain= +12dB
+101         Gain= +15dB
+110         Gain= +18dB
+111         Gain= -6dB
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                          10
+Rev. D, 10/24/2024
+IS31FL3730
+APPLICATION INFORMATION
+
+GENERAL PURPOSE DOT MATRIX DISPLAY MODE                     DUAL 5×11 DOT MATRIX DISPLAY MODE
+The general purpose dot matrix display timing diagram       By setting the ADM bits of the Configuration Register
+is shown in Figure 10. IS31FL3730 may be configured         (00h) to “11” and the DM bits to “11”, the IS31FL3730
+to drive displays of different dimensions from 8×8 to       will operate in the dual 5×11 LED dot matrix display
+5×11. Furthermore, IS31FL3730 may be configured to          mode.
+drive one or two LED matrices of the same dimension.
+                                                            The Matrix 1 LED columns have common cathodes
+Therefore, the overall row and column scan time can
+                                                            and are connected to the C1:C11 outputs. The rows
+vary based on the final LED matrix configuration.
+                                                            are connected to the row drivers. The Matrix 2 LED
+In any LED matrix configuration, a single line (column or   rows have common cathodes and are connected to the
+row) of LEDs is illuminated for 32µs before IS31FL3730      R1:R5 outputs. The columns are connected to the
+moves on to the next line of LEDs (Figure 10).              column drivers. Each of the 110 LEDs can be
+                                                            addressed separately. The three MSBs (D7:D5) of
+Example 1: When the IS31FL3730 is configured in the
+                                                            each Data Register (01h~0Bh, 0Eh~18h) are ignored.
+general purpose dual 8×8 dot matrix display mode,
+column controls C8:C1 scans the eight columns of            DOT MATRIX         DISPLAY     MODE      WITH     AUDIO
+Matrix 1 then row controls R8:R1 scans the eight rows       MODULATION
+of Matrix 2 at a rate of 1.89kHz, or 528µs per frame.
+                                                            When the IS31FL3730 operates in any of the dot
+Each line is active for 32µs. The non-overlap interval
+                                                            matrix modes, if the bit A_EN in Configuration Register
+between adjacent lines is 1µs.
+                                                            (00h) is set to “1”, the brightness of LED image can be
+Example 2: When configured to drive a single 7×9 dot        modulated by audio signal not controlled by the CS bit
+matrix display (Matrix 1), the column controls C9:C1        in Lighting Effect Register (0Dh).
+scan the nine columns every 297µs. Also note that in
+                                                            An external capacitor, C_FILT is required to control the
+this case, the Data Registers’ MSB will be ignored.
+                                                            rate at which the display intensity will change. The rate
+                                                            of change is computed using the formula: ΔT =
+                                                            C×500kΩ. A value of 0.1µF provides a good effect by
+                                                            allowing the display to fade from full intensity to off in
+                                                            approximately 50ms. Smaller capacitance will cause
+                                                            the intensity to change more quickly, and, conversely, a
+                                                            larger capacitance will cause the display intensity to
+                                                            change at a slower rate.
+                                                            SHUTDOWN MODE
+                                                            Shutdown mode can either be used as a means of
+                                                            reducing power consumption or generating a flashing
+                                                            display (repeatedly entering and leaving shutdown
+        Figure 10   Dot Matrix Display Timing Diagram       mode). During shutdown mode all registers retain their
+DUAL 8×8 DOT MATRIX DISPLAY MODE                            data.
+
+The application example in Figure 1 shows the               Software Shutdown
+IS31FL3730 in the dual 8×8 LED dot matrix display           By setting SSD bit of the Configuration Register (00h)
+mode.                                                       to “1”, the IS31FL3730 will operate in software
+The Matrix 1 LED columns have common cathodes and           shutdown mode, wherein they consume only 1.7μA
+are connected to the C1:C8 outputs. The rows are            (Typ.) current. When the IS31FL3730 is in software
+connected to the row drivers. The Matrix 2 LED rows         shutdown mode, all current sources and digital drivers
+have common cathodes and connected to the R1:R8.            are switched off, so that the matrix is blanked.
+The columns are connected to the C1:C8. Each of the         Hardware Shutdown
+128 LEDs can be addressed separately.
+                                                            The chip enters hardware shutdown mode when the
+                                                            SDB pin is pulled low.
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                           11
+Rev. D, 10/24/2024
+IS31FL3730
+CLASSIFICATION REFLOW PROFILES
+ Profile Feature                           Pb-Free Assembly
+
+ Preheat & Soak
+                                           150°C
+ Temperature min (Tsmin)
+                                           200°C
+ Temperature max (Tsmax)
+                                           60-120 seconds
+ Time (Tsmin to Tsmax) (ts)
+
+ Average ramp-up rate (Tsmax to Tp)        3°C/second max.
+ Liquidous temperature (TL)                217°C
+ Time at liquidous (tL)                    60-150 seconds
+ Peak package body temperature (Tp)*       Max 260°C
+ Time (tp)** within 5°C of the specified
+                                           Max 30 seconds
+ classification temperature (Tc)
+ Average ramp-down rate (Tp to Tsmax)      6°C/second max.
+ Time 25°C to peak temperature             8 minutes max.
+
+
+
+
+Figure 11   Classification Profile
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                      12
+Rev. D, 10/24/2024
+IS31FL3730
+PACKAGE INFORMATION
+
+QFN-24
+
+
+
+
+Lumissil Microsystems – www.lumissil.com   13
+Rev. D, 10/24/2024
+IS31FL3730
+RECOMMENDED LAND PATTERN
+
+QFN-24
+
+
+
+
+Note:
+1. Land pattern complies to IPC-7351.
+2. All dimensions in MM.
+3. This document (including dimensions, notes & specs) is a recommendation based on typical circuit board manufacturing parameters. Since
+land pattern design depends on many factors unknown (eg. user’s board manufacturing specs), user must determine suitability for use.
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                                                              14
+Rev. D, 10/24/2024
+IS31FL3730
+REVISION HISTORY
+ Revision                                   Detail Information                         Date
+ A           Initial release                                                        2011.12.19
+             1. Add land pattern
+             2. Add ESD and θJA value
+             3. Update POD
+ B                                                                                  2017.12.13
+             4. Add functional block
+             5. Add description for 19h register
+             6. EC table VIH and VIL test condition has been changed to 2.7V~5.5V
+             1. Update ISD hardware shutdown value
+             2. Add Note 4 for tSCANOL
+ C           3. Add SDB rise edge reset I2C function                                2018.04.02
+             4. Update function block
+             5. Update note number
+ D           Update to new Lumissil logo and add RoHS                               2024.10.24
+
+
+
+
+Lumissil Microsystems – www.lumissil.com                                                         15
+Rev. D, 10/24/2024
+

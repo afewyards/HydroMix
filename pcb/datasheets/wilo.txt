@@ -1,0 +1,1343 @@
+Pioneering for You
+
+Strategic Business Unit OEM
+
+Wilo-Para **/ iPWM
+Technical guide
+
+Table of contents
+General notes
+
+Introduction4
+PWM Generalities 
+Hardware
+
+VDMA 24 224 recommendations
+
+5
+
+								 6
+
+PWM Input signal											
+7
+Hardware definition											
+8
+PWM Input Master interface											
+9
+Recommended PWM input Master Interface								
+10
+
+PWM Output Master Interface 											
+12
+
+Recommended PWM Output Master Interface 								
+13
+Control Mode
+
+PWM Input strategy 											
+14
+Data usage
+
+PWM Output strategy 											
+15
+
+PWM Output : product characteristics 									
+16
+PWM Output : warning / error information 								17
+Troubleshooting
+
+PWM circulator troubleshooting										
+19
+Wilo circulator definition
+
+Referenced documents										
+
+20
+
+Glossary												 20
+
+General notes
+
+Index management
+Description of content evolution
+
+Version
+
+Initial release
+
+V1.0
+
+Date
+15/09/2020
+
+General notes
+
+3
+
+General notes
+
+INTRODUCTION
+For advanced heating systems used on the market it is expected to have agile products able to support the continuous improvement activities of
+global application performances.
+In this context, our customers need products able to offer adjustable performances and also provide information about their setting or status.
+For this reason, Wilo, based on application expertise, proposes its full range of pump, from 4m up to 13m head, equipped with bidirectionnal
+PWM external control usable for OEM application whether for heating, sanitary, solar or geothermal needs.
+
+Features :
+
+Based on the DIN IEC 60469-1, the PWM signal is a well-established standard in the OEM heating industry (for more details about the
+VDMA 24 224 definition, see "Referenced Documents“ chapter).
+To go further, Wilo has developped the iPWM signal, stands for Intelligent Pulse-Width Modulation, which establishes a bidirectional
+communication (PWM Input / PWM Output) between pump and application controller.
+
+Benefits:
+
+The iPWM pump becomes the self-evident canditate when adjustable duty point is required to adjust head-flow to just-needed performances
+and consequently power consumption. But the benefits are also obvious when a step ahead to data sharing is a prerequisite for system
+optimization by using the pump feedback of current flow rate or power consumption or even pump status.
+Thus, taking the benefits of this advanced function, it also opens the doors to appliance architecture optimization via a simplification of flow
+management, commisionning or maintenance support...
+The next pages will provide the detailed description of Wilo pumps‘ characteristics in order to allow you to implement them in a fast and proper
+way in your system.
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+General notes
+
+4
+
+General notes
+
+PWM Generalities
+External control via PWM signal
+
+The control signal definition is managed by a master controller. The master controller sends a PWM signal as an actuating variable to the Wilo
+Pump.
+The PWM signal generator gives periodic pulses to the pump, according to DIN IEC 60469-1. The actuating value is determined by the ratio
+between pulse duration and the pulse period. The duty cycle is defined as a ratio without dimension, with a value bewteen 0 ... 1 or 0 ... 100%.
+This is explained in the following figures with ideal pulses which form a rectangular wave.
+In the same maner the pump returns information or status to the master by a second PWM signal.
+PWM 100%
+
+T = 1/f
+
+t
+
+PWM 90%
+
+PWM 50%
+
+PWM 10%
+
+figure n°1
+
+Example:
+T = 2ms (500Hz)
+t = 0,6 ms
+
+PWM 0%
+
+figure n°2
+
+PWM value :
+PWM% = 100*t/T
+PWM% = 100*0,6/2 = 30%
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+General notes
+
+5
+
+6
+
+Hardware
+
+VDMA 24 224 recommendations
+What are the specifications of PWM signal ? (according to VDMA 24 224)
+T = 1/f
+t_on
+
+90%
+
+50%
+
+UiH
+
+10%
+UiL
+
+Rise time
+
+Fall time
+
+Symbol
+
+VDMA 24 224
+
+Cable length
+
+<3m
+
+Signal cable section
+
+≥ 0.25 mm²
+
+UiH
+
+4.5V - 15V
+
+UiL
+
+≤1V
+
+IH
+
+10 mA
+
+PWM Frequency
+
+100-1000 Hz
+
+PWM %
+
+0-100%
+
+Rise and Fall time
+
+≤ T/500
+
+figure n°3
+
+PWM input frequency f
+– f is the frequency at which the input signal is clocked out. It is the inverse of the period T
+Input voltage upper value UiH
+– The upper value of the input voltage above which the signal is evaluated as "ON"
+Input voltage lower value UiL
+– The lower value of the input voltage indicates below which voltage the signal is evaluated as "OFF"
+Resulting input current IH
+– IH is the current sunk by the pump interface according UiH
+Rise / fall time
+– Maximum admissible rise and fall time according to the period to guaranty the information integrity
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Hardware
+
+Interface Specification
+
+Hardware
+
+7
+
+PWM input signal (according to VDMA 24 224)
+PWM profile HEATING
+
+The pump can be switched to standby mode "OFF" by
+the PWM input signal. An advantage of this, compared to
+powering OFF the pump, will be a faster restart.
+
+speed
+
+MAX
+
+Hysterisis switching - ON/OFF
+
+The pump can be switched between MIN speed and
+standby mode operation by the PWM input signal.
+To prevent instability, an hysteresis area is mandatory.
+Driving pump with PWM values in this area is not
+recommended as two pump states are possible.
+
+MIN
+
+0
+
+10
+
+20
+
+30
+
+40
+
+50
+
+PWM [%]
+
+60
+
+70
+
+80
+
+90
+
+100
+
+Hysteresis area
+
+PWM profile SOLAR
+
+speed
+
+MAX
+
+MIN
+
+0
+
+10
+
+20
+
+30
+
+Hysteresis area
+
+40
+
+50
+
+60
+
+70
+
+80
+
+90
+
+100
+
+PWM [%]
+figure n°4
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Hardware
+
+Standby mode
+
+8
+
+Hardware
+
+Hardware definition
+The pin out for the signal cables used on Wilo pumps is defined as follow :
+
+Hardware
+
+Core no. 1 (brown) 		
+→ PWM Input
+Core no. 2 (blue or grey) → PWM Common
+Core no. 3 (black) 		
+→ PWM Output
+figure n°5
+figure n°6
+
+Standard cable length for iPWM : due to EMC requirement the maximum cable length of the iPWM cable shall be limited to 3m.
+The pump interface is defined according to VDMA 24224 description (PWM-Slave). So the Master interface (PWM-Master) need to be defined
+accordingly.
+Hardware definition
+Features
+
+Wilo Specification
+
+Cable length
+
+< 3m
+
+Signal cable section
+
+≥ 0.25 mm²
+
+Signal polarity
+
+Yes
+
+WARNING !
+For Wilo-Para R (with refrigerant gas use), to ensure to not exceed the maximum temperature allowed on the product, the maximum voltage used
+on the iPWM must not overtake 20V.
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Hardware
+
+9
+
+PWM Input Master Interface
+PWM signal coming from the Master according to :
+T = 1/f
+t_on
+
+90%
+
+50%
+
+UiH
+
+Symbol
+
+Wilo Specification
+
+UiH
+
+4V - 24.5V
+
+UiL
+
+≤1V
+
+IH
+
+3,5mA - 10 mA
+
+PWM Frequency
+
+90-5000 Hz
+
+PWM %
+
+0-100%
+
+Rise and Fall time
+
+≤ T/500
+
+10%
+UiL
+
+Rise time
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+Fall time
+
+figure n°7
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Hardware
+
+Signal profil description
+
+10
+
+Hardware
+
+Recommended PWM Input Master interface
+The PWM Input Master Interface should be designed according to :
+
+PWM Master
+
+VCC
+Hardware
+
+PWM Slave
+
+R_Pull-up
+
+R1
+
+IiH
+PWM Input
+
+PWM Input
+
+Iq
+
+100
+
+Q
+PWM Input
+
+UiL/H
+
+3.15K
+
+7V
+
+PWM Common
+
+PWM Common
+
+GND
+
+figure n°8
+
+Electrical diagram applicable according to values from Signal profile description, see PWM Input Master Interface chapter
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+11
+
+Hardware
+
+R_Pull-up dimensioning method
+Define the minimum voltage at PWM input UiH 1
+1- i.e 10V.
+Intersection with interface curve give the associated current IiH 2
+2-
+
+•
+
+Intersection with voltage drop at R_Pull-up i.e (24V-10V) 3
+3- will give the R_Pull-up max 44
+
+•
+
+Define the maximum current in transistor Q. 55
+Intersection with VCC curve i.e 24V 6
+6- will give the R_Pull-up min 77
+
+•
+
+1KΩ < R_Pull-up < 2.5KΩ
+Then the value chosen is R_Pull-up = 2.2KΩ
+
+Hardware
+
+•
+
+Recommended value:
+VCC = 24V
+UiH mini = 10V
+Iq max = 20 mA
+R1 = 100 Ω (ESD protection)
+
+figure n°9
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+12
+
+Hardware
+
+PWM Output Master Interface
+PWM signal coming from the Pump according to :
+
+t_on
+
+UoH
+
+2/3
+1/3
+
+UoL
+
+figure n°10
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+Recommended PWM Output Master Interface
+Output type
+
+Open collector
+
+High-level voltage of PWM output signal
+
+3V min - 25V max
+
+Low-level voltage of PWM output signal
+(iPWM ≤ 1 mA)
+
+≤ 1V
+
+Maximum current iPWM in normal operation
+(Low level)
+
+1 mA (to be ensured by the
+customer based on its UoH
+value)
+
+Frequency of PWM output signal
+
+75 Hz (+ 2Hz)
+
+Maximum voltage provided by the boiler in
+abnormal operation (UoH)
+
+32V
+
+Duty cycle range of PWM output signal
+
+0...100%
+
+Duty resolution of PWM output signal
+
+≤ 1V
+
+Duty cycle accuracy of PWM output signal
+
+± 1% (absolute)
+
+Maximum current iPWM in abnormal operation
+(UoL)
+
+10 mA
+
+Resistor R2
+See figure 11
+
+470 Ω
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Hardware
+
+T = 1/f
+
+13
+
+Hardware
+
+Recommended PWM Output Master interface
+The PWM Output Master Interface should be designed according to :
+
+PWM Master
+
+VCC
+
+Hardware
+
+PWM Slave
+
+R_Pull-up
+R2
+
+R1
+
+470
+
+PWM Output
+
+100
+C
+
+UoL/H
+
+PWM Output
+
+PWM Output
+
+Q
+
+PWM Common
+
+PWM Common
+GND
+
+R_Pull-up = ( R1 + R2 )
+
+(VCC-0.2
+UoL-0.2 )
+
+figure n°11
+
+Recommended value:
+
+Assuming that master interface transition levels are 1/3 and 2/3 of UoH
+1%
+C<
+75 R_Pull-up ln (3)
+for rise time impact < 1%
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+C<
+
+1
+8240 R_Pull-up
+
+VCC = 5 V
+R1 = 100Ω (ESD protection)
+UoL = 0.5V
+R_Pull-up = 8k2
+C = 10nF
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+14
+
+Control mode
+
+PWM Input strategy
+Two command strategies are available according cable break function
+rpm
+
+max
+
+min
+0
+
+5
+
+85 88
+
+93
+
+100
+
+PWM %
+
+% PWM-in
+
+Status
+
+Cable break
+
+Pump runs at maximum speed
+
+<5
+
+Pump runs at maximum speed
+
+5-85
+
+Pump speed decreases linearly from max to min
+
+85-88
+
+Pump runs at minimum speed
+
+88-93
+
+Hysteresis. Pump operations not defined
+
+93-100
+
+Pump stops (Standby)
+
+rpm
+
+PWM2 transfer function [%]
+
+PWM2
+max
+
+min
+0
+
+7
+
+12 15
+
+95 100
+
+PWM %
+
+% PWM-in
+
+Status
+
+Cable break
+
+Pump stops (standby)
+
+<7
+
+Pump stops (Standby)
+
+7-12
+
+Hysteresis. Pump operations not defined
+
+12-15
+
+Pump runs at minimum speed (start-up)
+
+15-95
+
+Pump speed decreases linearly from max to min
+
+> 95
+
+Pump runs at maximum speed
+
+figure n°12
+
+Heating / Solar
+The choice of transfer function profile has to be defined based on application purpose taking care of the expected cable break function
+I.e: In heating application, it is normaly expected that the pump runs at full speed when communication is lost (PWM1 profile).
+While for solar application, the pump must stops (PWM2 profile)
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Control mode
+
+PWM1 transfer function [%]
+
+PWM1
+
+Data usage
+
+15
+
+PWM Output strategy
+PWM Output signal strategy is defined as follow :
+Q/P max
+Q/P min
+
+Pump failure
+
+Data usage
+
+System disturbance
+affecting pump
+behavior
+Normal operation
+0
+
+2
+
+5
+
+75 80
+
+85
+
+90
+
+95
+
+100
+
+%PWM out
+
+figure n°13
+
+PWM Output signal [%]
+
+% PWM-out
+
+Status
+
+0
+
+PWM output interface damaged
+
+2
+
+Stand-by
+
+5-75
+
+Pump is running, flow or power information is returned
+
+80
+
+Abnormal running mode
+Pump is running but not at optimal performance
+
+85-90
+
+Abnormal function mode
+Pump is stopped momentarily but is still functional
+
+95
+
+The pump is stopped due to permanent failure
+
+100
+
+Pump power OFF or PWM output interface damaged
+
+(see chapter PWM Output : product characteristics for information range supplied)
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+16
+
+Data usage
+
+Para (Heating)
+Para Z (DHW)
+
+Para ST (Solar)
+
+Para G (Geothermal)
+Value
+
+Parameter
+
+Unit
+
+Value
+
+Value
+
+Output of Volume Flow
+
+%
+
+5 to 75
+
+5 to 75
+
+Para 4m
+
+m³/h
+
+0 to 2.1
+
+Para 6m
+
+m³/h
+
+0 to 2.1
+
+0 to 1.4
+
+Para 7m
+
+m³/h
+
+0 to 2.1
+
+0 to 1.4
+
+Para 8m
+
+m³/h
+
+0 to 2.1
+
+0 to 1.4
+
+Para 9m
+
+m³/h
+
+0 to 4.5
+
+Para 13m
+
+m³/h
+
+Output of Power Consumption
+
+%
+
+5 to 75
+
+Para 7m
+
+W
+
+5 to 75
+
+Para 8m
+
+W
+
+5 to 75
+
+Para 9m
+
+W
+
+5 to 87
+
+0 to 1.4
+
+Indication of Invalid Data (*)
+D_INV
+
+%
+
+80
+
+80
+
+Utrig
+
+V
+
+190
+
+190
+
+Urelease
+
+V
+
+195
+
+195
+
+Disable
+
+(*) When the power supply is falling down below Utrig, the pump is no more able to provide the accurate data estimation and then, an invalid
+data (D_INV) is returned until the voltage is exceeding Urelease.
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Data usage
+
+PWM Output : product characteristics
+
+17
+
+Data usage
+
+PWM Output : warning / error information
+LED
+Status
+
+%
+
+Error code and name
+
+Error type
+
+Short description of warning consequences and/or pump actions
+
+Final error
+
+95%
+
+Driver fault
+
+95%
+
+Missing motor, winding contact
+or disconnected electronic box
+
+Final error
+
+95%
+
+Blocked rotor
+
+Final error
+
+90%
+
+Loss of synchronization
+
+Error
+
+The pump is stopped due to internal error
+Action: change the pump
+Could occur if the plumber disconnects the motor from electronic box
+or when the motor winding is damaged
+Action: change the pump
+The pump will try with a routine to unblock itself.
+Action: try to change the fluid or remove the particles blocking the pump
+Temporary situation. Motor will restart by itself
+
+90%
+
+Over current
+
+Error
+
+Motor current exceeding acceptable limits. Most probably temporary state
+
+85%
+
+Undervoltage
+
+Error
+
+Fast voltage drop : this occurs when there is a high voltage dip detected
+
+90%
+
+Over speed
+
+Error
+
+If, after the voltage drop, the voltage stays under the restart level, the motor stays
+stopped
+
+Voltage drop
+≤ 160 Vac
+The pump could stop, but must, after a short time, issue the
+assigned error code
+≥ 170 Vac
+Pump able to run and start, but possibly with limitations of
+performance, but not into the function
+The pump needs to stop status of voltage of ≥ 170 Vac to
+start rotation
+
+85%
+
+LED Status :
+
+Overvoltage
+
+≥ 253 Vac
+The pump could stop and, if stopped,
+must reliably issue the assigned error code
+– running from 253 Vac > 265 Vac
+with limitation allowed without stop
+– if pump is stopped, it must be able to start
+when voltage reaches < 265 Vac
+
+Green constant
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+Green blinking
+
+Motor speed over the acceptable limits. Most probably temporary state
+
+If the voltage rises above the limit, the motor restarts by itself
+The main voltage has the following influencing factors: kind of high or low impedance
+power line, tolerances of components and the operation point (main factor)
+Action: check the power supply stability
+Error
+
+The pump could stop until the voltage is back to a standard level
+Action: check the power supply stability
+
+Green/Red blinking
+
+Red blinking
+
+Red constant
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Data usage
+
+PWM Warning / Error information overview
+
+18
+
+Data usage
+
+PWM Warning / Error information overview
+LED
+Status
+
+Error code and name
+
+Error type
+
+85%
+
+Overload motor
+
+Error
+
+85%
+
+Over temperature module
+
+Error
+
+85%
+
+Generator operation
+
+Warning
+
+85%
+
+Overtemperature Module
+
+Warning
+
+80%
+
+Overload motor
+
+Warning
+
+80%
+
+Undervoltage
+
+Warning
+
+2%
+
+Active stop mode
+
+No
+
+Short description of warning consequences and/or pump actions
+High friction due to mechanical ageing or particles in the medium
+Action: try to change the fluid or remove the particles blocking the pump
+Over temperature: the temperature of the electronical terminal box is too high
+Action: reduce the ambient temperature
+Pump will restart by itself when temperature is back to acceptable level
+Generator operation could happen if there is another device pushing in the same
+direction at the pump.
+Action: check the installation/setup
+The temperature of the module is too high. This is especially applicable for pumps where Selfprotection module overheat is deactivated. Pump is then running under not allowed condition
+Overload motor: high friction due to mechanical ageing or particles in the medium
+Action: clean or change the medium
+According to hysteresis:
+In voltage decrease phase: 160 Vac < U < 190 Vac
+In voltage increase phase: 170 Vac < U < 195 Vac
+The pump is stopped by the PWM in signal
+
+NB: The priority is defined according PWM ratio, 95% is the top priority
+
+LED Status :
+
+Green constant
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+Green blinking
+
+Green/Red blinking
+
+Red blinking
+
+Red constant
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Data usage
+
+%
+
+19
+
+Troubleshooting
+
+PWM circulator troubleshooting
+Wilo pumps are designed to provide the best efficiency all through the product's lifetime.
+If, however, you are facing issues, please check the below table :
+PWM circulator troubleshooting overview
+The pump is running
+but application doesn’t
+reach the performances
+I plugged in my pump,
+applied the PWM signal
+and the pump is not
+running or the pump
+was running and is now
+stopped
+
+Please check how is the status LED Root causeeeeeeeeeeeeeeeeee
+If LED blinks green/red, the pump is still
+operating but not at full performance due to
+abnormal conditions
+
+Remedy
+Check if the pump temperature is over the allowed limits
+Check if the power supply voltage is inside the limits (170Vac < U < 253Vac)
+Check if there is no external flow pushing water at the pump
+Check if there is no over current exceeding the limit
+
+If LED blinks green, the signal connection is not
+(or no more) working properly.
+Maybe the pump is driven in standby mode.
+
+Check on the master side which PWM signal is provided.
+Check your installation and make sure that the PWM signal is provided to the pump
+Check the signal cable
+
+If LED blinks red, the pump is stopped due to
+external issue.
+The pump will restart automatically when
+conditions are ok
+
+Check if the pump temperature is over the allowed limits
+Check if the power supply voltage is inside the limits (170Vac < U < 253Vac)
+Check if there is no external flow pushing water at the pump
+Check if there is no over current exceeding the limit.
+
+If LED is red constant, the pump is stopped due
+to internal “final” error
+
+Check on the master side which PWM signal is received from the pump
+Switch OFF the pump, wait 30s before switching ON the pump. Then through the
+master side try to start the pump.
+If the pump LED is still red after a power reset, replace the pump
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Troubleshooting
+
+Behavior
+
+20
+
+Wilo circulator definition
+
+Referenced Documents
+VDMA 24224 03/2014
+
+The VDMA is a German Engineering Association
+
+Glossary
+PWM : Pulse-Width Modulation
+
+HMI : Human Machine Interface
+
+iPWM : Intelligent Pulse-Width Modulation
+
+EMC : ElectroMagnetic Compatibility
+
+with PWM In : from controller to circulator
+
+Rpm : Revolution per minute
+
+PWM Out : from circulator to controller
+OEM : Original Equipment Manufacturer
+
+LED : Light Emitting Diode
+Vac : Alternative voltage (= RMS : Root Mean Square)
+Wilo circulator
+definition
+
+DHW : Domestic Hot Water
+
+How can Wilo support you ?
+Wilo can provide more support to our customers under request.
+Please, contact your local sales contact or use our website:
+
+www.wilo-oem.com
+
+Technical guide - Wilo-Para iPWM - version V1.0
+
+This document is subject to change without prior notice. Latest version available on www.wilo-oem.com
+
+Pioneering for You
+
+Imagine you already had
+the solutions today that
+will be needed tomorrow.
+
+version V1.0
+
+Wilo Group
+Strategic Business Unit OEM
+Wilo Intec
+50 av. Casella
+F – 18700 Aubigny sur Nère
+T + 33 2 48 81 62 62
+www.wilo-oem.com
+oem@wilo.com
+With OEM Solutions, what is visionary is just a step away from reality. As the leading original equipment manufacturer,
+we see ourselves as part of your business and we know exactly how crucial your processes are. We work with you to develop
+customized innovative solutions making you a pioneer in your market. We produce these solutions for you at the time you choose,
+to sus-tainable, top quality. This will benefit your entire business. From senior management to purchasing. From logistics to
+research and development. Thanks to highly committed teamwork for your success. OEM Solutions. Let’s move. Together.
+
+

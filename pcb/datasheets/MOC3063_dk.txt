@@ -1,0 +1,407 @@
+                  L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                   Property of Lite-on Only
+
+
+
+    FEATURES
+      * Isolation voltage between input and output Viso : 5,000Vrms
+      * 6pin DIP zero-cross optoisolators triac driver output
+      * High repetitive peak off-state voltage VDRM : Min. 600V
+      * High critical rate of rise of off-state voltage
+          ( dv/dt : MIN. 600V / µs )
+      * Dual-in-line package :
+          MOC3063
+      * Wide lead spacing package :
+          MOC3063M
+      * Surface mounting package :
+          MOC3063S
+      * Tape and reel packaging :
+          MOC3063S-TA1
+      * UL approved ( No. E113898 )
+      * CSA approved ( No. CA91533-1 )
+      * FIMKO approved ( No. 15469 )
+      * NEMKO approved ( No. P00102123 )
+      * DEMKO approved ( No. 309968-01 )
+      * SEMKO approved ( No. 0032019/01-11 )
+      * VDE approved (No. 094722 )
+
+
+
+       APPLICATIONS
+       * AC Motor Drives
+       * AC Motor Starters
+       * E.M. Contactors
+       * Lighting Controls
+       * Solenoid/Valve Controls
+       * Solid State Relays
+       * Static Power Switches
+       * Temperature Controls
+
+
+
+
+Part No. : MOC3063 SERIES                                             Page :   1 of 8
+BNS-OD-C131/A4
+                 L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                  Property of Lite-on Only
+
+
+
+    OUTLINE DIMENSIONS
+         Dual-in-line package :
+
+
+
+
+         Wide lead spacing package:
+
+
+
+
+         *1. Year date code.
+         *2. 2-digit work week.
+         *3. Factory identification mark shall be marked (Z : Taiwan, Y : Thailand).
+         *4. Model No.: MOC3063
+
+
+Part No. : MOC3063 SERIES                                                         Page :   2 of 8
+BNS-OD-C131/A4
+                 L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                 Property of Lite-on Only
+
+
+
+    OUTLINE DIMENSIONS
+
+         Surface mounting package :
+
+
+
+
+         *1. Year date code.
+         *2. 2-digit work week.
+         *3. Factory identification mark shall be marked (Z : Taiwan, Y : Thailand).
+         *4. Model No.: MOC3063
+
+
+
+
+Part No. : MOC3063 SERIES                                                         Page :   3 of 8
+BNS-OD-C131/A4
+                   L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                     Property of Lite-on Only
+
+
+
+    TAPING DIMENSIONS
+         Tape and reel package :
+         MOC3063S-TA1
+
+
+
+
+                     Description                 Symbol         Dimensions in mm ( inches )
+      Tape wide                                    W                 16 ± 0.3 ( .63 )
+      Pitch of sprocket holes                      P0                4 ± 0.1 ( .15 )
+                                                   F                 7.5 ± 0.1 ( .295 )
+      Distance of compartment
+                                                   P2                2 ± 0.1 ( .079 )
+      Distance of compartment to compartment       P1                12 ± 0.1 ( .472 )
+
+
+
+Part No. : MOC3063 SERIES                                                      Page :    4 of 8
+BNS-OD-C131/A4
+                    L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                      Property of Lite-on Only
+
+
+
+    ABSOLUTE MAXIMUM RATING
+
+                                                                                    ( Ta = 25°C )
+                         PARAMETER                         SYMBOL      RATING             UNIT
+
+                       Forward Current                        IF          50                 mA
+
+      INPUT            Reverse Voltage                       VR            6                 V
+
+                       Power Dissipation                     PD           120                mW
+
+                       Off-State Output Terminal Voltage    VDRM          600                V
+
+                       Peak Repetitive Surge Current
+      OUTPUT                                                ITSM           1                 A
+                       ( PW=100µs, 120pps )
+
+                       Collector Power Dissipation           PC           150                mW
+
+          Total Power Dissipation                            Ptot         250                mW
+
+      *1 Isolation Voltage                                   Viso        5,000            Vrms
+
+          Ambient Operating Temperature Range                TA        -40 ~ +100            °C
+
+          Storage Temperature Range                          Tstg      -55 ~ +150            °C
+
+      *2 Soldering Temperature                               TL           260                °C
+
+
+
+
+    *1. AC For 1 Minute, R.H. = 40 ~ 60%
+         Isolation voltage shall be measured using the following method.
+         (1) Short between anode and cathode on the primary side and between collector,
+             emitter on the secondary side.
+         (2) The isolation voltage tester with zero-cross circuit shall be used.
+         (3) The waveform of applied voltage shall be a sine wave.
+
+    *2. For 10 Seconds
+
+
+
+
+Part No. : MOC3063 SERIES                                                           Page :       5 of 8
+BNS-OD-C131/A4
+                   L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                       Property of Lite-on Only
+
+
+
+    ELECTRICAL - OPTICAL CHARACTERISTICS
+
+                                                                                                   ( Ta = 25°C )
+               PARAMETER                              SYMBOL MIN. TYP. MAX. UNIT              CONDITIONS
+
+                 Forward Voltage                        VF     —     1.2    1.4    V      IF=20mA
+    INPUT
+                 Reverse Current                        IR     —     0.05   10     µA     VR=6V
+
+              *1 Peak Blocking Current, Either
+                                                       IDRM1   —      —     500    nA     VDRM = 600V
+                 Direction
+
+                 Peak On-State Voltage, Either
+    OUTPUT                                              VTM    —      —     3.0    V      ITM=100 mA Peak
+                 Direction
+
+              *2 Critical rate of Rise of Off-State
+                                                       dv/dt   600   1500   —     V/µs
+                 Voltage
+
+
+              *3 Led Trigger Current,
+                 Current Required to                                                      Main Terminal
+                                      MOC3063           IFT    —      —      5    mA
+                 Latch Output, Either                                                     Voltage = 3V
+                 Direction
+   COUPLED
+                 Holding Current, Either
+                                                        IH     —     400    —      µA
+                 Direction
+                                                                                          VP=9V, IF=20mA
+                 Turn-On Time                           TON    —      8     20     µs
+                                                                                          RL = 100Ω
+
+                                                                                          IF=Rated IFT, MT1-MT2
+                 Inhibit Voltage                       VINH    —      5     20    Volts   Voltage above which
+     ZERO                                                                                 device will not trigger.
+   CROSSING
+                                                                                          IF = Rated IFT, Rated
+                 Leakage in Inhibited State            IDRM2   —      —     500    µA
+                                                                                          VDRM, Off State
+
+
+
+
+    *1 Test voltage must be applied within dv/dt rating.
+    *2 This is static dv/dt. Commutating dv/dt is a function of the load-driving thyristor(s) only.
+    *3 All devices are guaranteed to trigger at an IF value less than or equal to max IFT. Therefore,
+       recommended operating IF lies between max IFT 5mA for MOC3063 and absolute max IF (50mA)
+
+
+
+
+Part No. : MOC3063 SERIES                                                                     Page :      6 of 8
+BNS-OD-C131/A4
+                                                    L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                                                               Property of Lite-on Only
+
+
+
+    CHARACTERISTICS CURVES
+          Fig.1 Forward Current vs.                                                               Fig.2 On-state Current vs. Ambient
+                Ambient Temperature                                                                     Temperature
+                                                  60
+
+                                                  50
+
+
+
+
+              Forward current I F (mA)                                                                ITM , on-state current (A)
+                                                                                                                                   0.10
+                                                  40
+
+                                                  30
+                                                                                                                                   0.05
+                                                  20
+
+                                                  10
+
+                                                   0                                                                                  0
+                                                    -40 -20      0   20 40 60 80 100 120                                               -40 -20          0    20 40 60 80 100 120
+                                                                                        o                                                                                      o
+                                                             Ambient temperature Ta ( C)                                                         Ambient temperature Ta ( C)
+
+
+
+          Fig.3 Minimum Trigger Current                                                           Fig.4 Forward Current vs. Forward
+                vs. Ambient Temperature                                                                 Voltage
+                                                  10                                                                               100
+                                                                                  VP= 6V
+
+
+
+
+              Minimum trigger current I FT (mA)
+                                                                                  RL= 100
+                                                   8
+
+
+
+
+                                                                                                      Forward current I F (mA)
+                                                                                                                                                   o                                   o
+                                                                                                                                                 80 C                      60 C
+                                                                                                                                                   o                          o
+                                                   6                                                                                            100 C                      40 oC
+                                                                                                                                                                           20 C
+                                                                                                                                    10
+                                                   4
+
+
+                                                   2
+
+
+                                                   0                                                                                 1
+                                                        20      40       60       80        100                                           0.4          0.8      1.2      1.6               2.0
+                                                                                    o
+                                                              Ambient temperature ( C)                                                                 Forward voltage VF (V)
+
+
+
+          Fig.5 On-state Voltage vs. Ambient                                                      Fig.6 Holding Current vs.
+                Temperature                                                                             Ambient Temperature
+                                                  3.0                                                                                1
+                                                                               I TM= 100mA                                                                                    VP= 6V
+
+                                                  2.6
+
+
+
+
+              On-state voltage VTM(V)                                                                 Forward current I H (mA)
+                                                  2.2
+                                                                                                                                    0.1
+                                                  1.8
+
+
+                                                  1.4
+
+
+                                                  1.0                                                                              0.01
+                                                        20      40       60       80        100                                           20           40       60       80                100
+                                                                                        o                                                                                          o
+                                                             Ambient temperature Ta ( C)                                                         Ambient Temperature Ta ( C)
+
+
+
+
+Part No. : MOC3063 SERIES                                                                                                                                                 Page :                 7 of 8
+BNS-OD-C131/A4
+                                                 L IT E - O N T E C HN OLOGY C OR P OR A TI ON
+                                                                                   Property of Lite-on Only
+
+
+
+    CHARACTERISTICS CURVES
+
+      Fig.7 Turn-on Time vs. Forward                                                                Fig.8 Repetitive Peak Off-state Current
+            Current                                                                                       vs. Temperature
+                                      10                                                                                                  1000
+                                                                        VP= 9V
+
+
+
+
+                                                                                                      Repetitive Peak Off-state Current
+                                                                        RL= 100
+                                       8
+
+
+
+
+          Turn-on time Ton ( s)
+                                                                                                                                          100
+                                       6
+
+
+
+
+                                                                                                      Idrm (nA)
+                                       4
+                                                                                                                                           10
+
+                                       2
+
+
+                                       0                                                                                                    1
+                                            10         20         30          40         50                                                      20           40       60      80           100
+                                                  Forward current I F (mA)                                                                              Ambient temperature Ta ( C)
+                                                                                                                                                                                     O
+
+
+
+
+      Fig.9 On-state Current vs.                                                                    Static dv/dt Test Circuit
+            On-state Voltage
+                                      100
+                                                                                                             + 400
+                                                                                                             Vdc                                              RTEST
+                                                                                                                                                                                         R= 10k
+
+
+
+
+          On-state current ITM (mA)
+                                      80
+                                                                                                                                                                   CTEST
+                                                                                                              PULSE
+                                      60                                                                                                                MERCURY                             X100
+                                                                                                              INPUT
+                                                                                                                                                        WETTED                              SCOPE
+                                                                                                                                                        RELAY               D.U.T.          PROBE
+                                      40
+
+
+                                      20
+                                                                                               APPLIED VOLTAGE                                                                Vmax = 400V
+                                       0                                                         WAVEFORM                                             252 V
+                                            0    0.5        1.0   1.5   2.0        2.5   3.0                                                                                             0.63 Vmax       378
+                                                                                                 0 VOLTS                                                                      dv/dt=                 =
+                                                  On-state voltage VTM (V)                                                                            τRC                                  τRC           τRC
+
+
+
+
+    RECOMMENDED FOOT PRINT PATTERNS (MOUNT PAD)
+
+
+
+
+     Unit : mm
+
+Part No. : MOC3063 SERIES                                                                                                                                                                Page :          8 of 8
+BNS-OD-C131/A4
+

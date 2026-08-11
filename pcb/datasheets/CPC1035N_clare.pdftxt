@@ -1,0 +1,486 @@
+                                                                                                                        CPC1035N
+                                                                                          4 Pin SOP OptoMOS® Relay
+
+
+
+
+                   CPC1035N            Units          Description
+  Load Voltage       350                V             The CPC1035N is a miniature 1-Form-A solid state relay
+  Load Current       100                mA            in a 4 pin SOP package that employs optically coupled
+  Max RON             35                Ω             MOSFET technology to provide 1500V of input to output
+                                                      isolation. The efficient MOSFET switches and photovolta-
+                                                      ic die use Clare’s patented OptoMOS® architecture. The
+                                                      optically coupled input is controlled by a highly efficient
+Features                                              GaAlAs infrared LED. The CPC1035N uses Clare’s state
+• Small 4 Pin SOP Package                             of the art double molded vertical construction packaging
+• Low Drive Power Requirements (TTL/CMOS              to produce the world’s smallest relay. The CPC1035N
+  Compatible)                                         offers board space savings of at least 20% over the com-
+• No Moving Parts                                     petitor’s larger 4 pin SOP relay.
+• High Reliability
+• Arc-Free With No Snubbing Circuits
+• 1500VRMS Input/Output Isolation                     Approvals
+• FCC Compatible                                      • UL/C-UL Recognized Component
+• No EMI/RFI Generation                                 File #: E76270
+• Machine Insertable, Wave Solderable                 • BSI CERTIFIED - CERTIFICATE #: 8416
+• Tape & Reel Version Available                         (EN60950)
+
+
+                                                      Ordering Information
+                                                       Part #     Description
+                                                       CPC1035N   4 Pin SOP (100/tube)
+Applications                                           CPC1035NTR 4 Pin SOP (2,000/reel)
+• Telecommunications                                   * For other packaging options consult factory.
+
+  • Telecom Switching
+  • Tip/Ring Circuits
+  • Modem Switching (Laptop, Notebook, Pocket Size)
+  • Hookswitch
+  • Dial Pulsing                                      Pin Configuration
+  • Ground Start
+                                                                                        CPC1035N Pinout
+  • Ringer Injection
+• Instrumentation                                                                             1                   4
+                                                                                  + Control                           Load
+  • Multiplexers
+  • Data Acquisition                                                                          2                   3
+  • Electronic Switching                                                          Ð Control                           Load
+  • I/O Subsystems
+  • Meters (Watt-Hour, Water, Gas)
+                                                                            Switching Characteristics of
+• Medical Equipment—Patient/Equipment Isolation
+                                                                          Normally Open (Form A) Devices
+• Security
+• Aerospace
+• Industrial Controls
+                                                                                                        10ms
+                                                                             CONTROL
+
+                                                                                                    +90%
+                                                                               LOAD 10%+                         10%+
+                                                                                                         TON   TOFF
+
+
+
+DS-CPC1035N-R5                                 www.clare.com                                                                       1
+CPC1035N
+
+Absolute Maximum Ratings (@ 25˚ C)
+    Parameter                                      Min        Typ Max Units                               Absolute Maximum Ratings are stress ratings. Stresses
+    Input Power Disipation                          -          - 1501 mW                                  in excess of these ratings can cause permanent damage
+    Input control Current                           -          -  50   mA                                 to the device. Functional operation of the device at these
+      Peak (10ms)                                   -          -   1    A                                 or any other conditions beyond those indicated in the
+    Reverse Input Voltage                           -          -   5    V                                 operational sections of this data sheet is not implied.
+    Total PowerDissipation                          -          - 4002 mW
+                                                                                                          Exposure of the device to the absolute maximum ratings
+                                                                                                          for an extended period may degrade the device and effect
+    Capacitance
+      Input to Output                                -          1        -        pF
+                                                                                                          its reliability.
+    Isolation voltage
+      Input to Output                             1500          -       -  VRMS
+    Operational Temperature                        -40          -     +85   °C
+    Storage Temperature                            -40          -     +125 °C
+    Soldering Temperature
+      (10 seconds Max.)                              -          -     +220        °C
+    1   Derate Linearly 1.33 mw / oC
+    2   Derate Linearly 6.67 mw / oC
+
+
+
+
+Electrical Characteristics
+    Parameter                                                       Conditions                  Symbol             Min           Typ   Max     Units
+    Output Characteristics @ 25°C
+    Load Voltage (Peak)                                                      -                      VL                -           -    350      V
+    Load Current (Continuous)
+      AC Peak1                                                           -                          IL                -           -    100     mA
+    Peak Load Current                                                  10ms                        ILPK               -           -    350     mA
+    On-Resistance2                                                   IL=100mA                      RON                -          30     35     Ω
+    Off-State Leakage Current                                         VL=350V                     ILEAK               -           -     1      mA
+    Switching Speeds
+      Turn-On                                                   IF=5mA, VL=10V                    TON                 -           -     2       ms
+      Turn-Off                                                  IF=5mA, VL=10V                    TOFF                -           -    1.0      ms
+    Output Capacitance                                            50V; f=1MHz                     COUT                -          25     -       pF
+    Input Characteristics @ 25°C
+    Input Control Current3                                           IL=100mA                      IF                2            -    50      mA
+    Input Dropout Current                                                 -                        IF               0.3          0.9    -      mA
+    Input Voltage Drop                                                 IF=5mA                      VF               0.9          1.2   1.4      V
+    Reverse Input Voltage                                                 -                        VR                -            -     5       V
+    Reverse Input Current                                               VR=5V                      IR                -            -    10      µA
+    1   Load current derates linearly from 100mA @ 25oC to 70mA @85oC.
+    2   Measurement taken within 1 second of on time.
+    3   For applications requiring high temperature operation (greater than 60oC) an LED drive current of 10mA is recommended.
+
+
+
+
+2                                                                                          www.clare.com                                                        Rev. 5
+                                                                                                                                                                                                                                                                                                                                                                      CPC1035N
+
+
+                                                                                                                                                                                    PERFORMANCE DATA*
+
+
+                                                                             CPC1035N                                                                                                                    CPC1035N
+                                                                 Typical LED Forward Voltage Drop                                                                                             Typical On-Resistance Distribution                                                                                              CPC1035N
+                                                                   (Ambient Temperature = 25oC)                                                                                                 (Ambient Temperature = 25oC)                                                                                     Typical Blocking Voltage Distribution
+                                                                            IF = 5mADC                                                                                                             (Load Current = 100mA)                                                                                           (Ambient Temperature = 25oC)
+                                                          35                                                                                                                           35                                                                                                                  35
+
+                                                          30                                                                                                                           30                                                                                                                  30
+
+
+
+
+                                                                                                                                                                                                                                                                                        Device Count (N)
+                                       Device Count (N)                                                                                                          Device Count (N)
+                                                          25                                                                                                                           25                                                                                                                  25
+
+                                                          20                                                                                                                           20                                                                                                                  20
+
+                                                                                                                                                                                                                                                                                                           15
+                                                          15                                                                                                                           15
+                                                                                                                                                                                                                                                                                                           10
+                                                          10                                                                                                                           10
+                                                                                                                                                                                                                                                                                                            5
+                                                           5                                                                                                                            5
+                                                                                                                                                                                                                                                                                                            0
+                                                           0                                                                                                                            0                                                                                                                         377.5 388.5 399.5 410.5 421.5 432.5 443.5
+                                                                      1.17       1.19            1.21          1.23            1.25                                                            26         27       28        29        30        31         32
+                                                                                                                                                                                                                                                                                                                                         Blocking Voltage (V)
+                                                                               LED Forward Voltage Drop (V)                                                                                                        On-Resistance (Ω)
+
+
+                                                                                  CPC1035N                                                                                                                     CPC1035N                                                                                                          CPC1035N
+                                                                       Typical IF for Switch Operation                                                                                               Typical IF for Switch Dropout                                                                                          Typical Turn-On Time
+                                                                       (Ambient Temperature = 25oC)                                                                                                 (Ambient Temperature = 25 C)
+                                                                                                                                                                                                                                o
+                                                                                                                                                                                                                                                                                                                        (Ambient Temperature = 25oC)
+                                                                          (Load Current = 100mA)                                                                                                       (Load Current = 100mA)                                                                                         (Load Current = 100mA; IF = 5mA)
+                                                          25                                                                                                                           25                                                                                                                  25
+
+                                                          20                                                                                                                           20                                                                                                                  20
+
+
+
+
+                                      Device Count (N)                                                                                                              Device Count (N)                                                                                                   Device Count (N)
+                                                          15                                                                                                                           15                                                                                                                  15
+
+                                                          10                                                                                                                           10                                                                                                                  10
+
+                                                           5                                                                                                                            5                                                                                                                   5
+
+                                                           0                                                                                                                            0                                                                                                                   0
+                                                                 0.55        0.60        0.65        0.70    0.75      0.80        0.85                                                        0.55       0.60     0.65      0.70      0.75      0.80       0.85                                                  0.50        0.60       0.70        0.80    0.90    1.00        1.10
+                                                                                         LED Current (mA)                                                                                                           LED Current (mA)                                                                                                        Turn-On (ms)
+
+
+
+                                                                                CPC1035N
+                                                                          Typical Turn-Off Time                                                                                                                                                                                                                           CPC1035N
+                                                                       (Ambient Temperature = 25oC)                                                                                                       CPC1035N                                                                                             Typical Leakage vs. Temperature
+                                                                     (Load Current = 100mA; IF = 5mA)                                                                                        Typical Load Current vs. Temperature                                                                          (Measured across Pins 3 & 4) IL = max rated
+                                                          25                                                                                                                           180                                                                                              0.016
+                                                                                                                                                                                       160                                                                                              0.014
+                                                          20                                                                                                                           140
+
+
+
+
+                                       Device Count (N)                                                                                                    Load Current (mA)
+                                                                                                                                                                                                                                                                                        0.012
+
+
+
+
+                                                                                                                                                                                                                                                                        Leakage (µA)
+                                                                                                                                                                                       120
+                                                          15                                                                                                                                                                                                                            0.010
+                                                                                                                                                                                       100
+                                                                                                                                                                                                                                                  IF =10mA                              0.008
+                                                                                                                                                                                        80
+                                                          10                                                                                                                                                                                                                            0.006
+                                                                                                                                                                                        60
+                                                                                                                                                                                                                                                      IF =5mA
+                                                                                                                                                                                        40                                                                                              0.004
+                                                           5
+                                                                                                                                                                                        20                                                                                              0.002
+                                                           0                                                                                                                             0                                                                                                                  0
+                                                                     0.21     0.22       0.23        0.24    0.25      0.26        0.27                                                      -40    -20        0    20       40        60        80     100      120                                            -40     -20          0          20      40      60          80      100
+                                                                                            Turn-Off (ms)                                                                                                           Temperature ( oC)                                                                                                     Temperature (oC)
+
+
+
+                                                                                    CPC1035N                                                                                                              CPC1035N                                                                                                               CPC1035N
+                                                                             Typical Blocking Voltage                                                                                          Typical Turn-On vs. Temperature                                                                                        Typical Turn-Off vs. Temperature
+                                                                                 vs. Temperature                                                                                                    (Load Current = 50mA)                                                                                                  (Load Current = 50mA)
+                                                         430                                                                                                 5.000                                                                                                                      1.000
+                                                                                                                                                             4.500                                                                                                                      0.900
+
+
+
+
+            Blocking Voltage (VRMS)
+                                                         425
+                                                                                                                                                             4.000                                                                                                                      0.800
+                                                         420                                                                                                 3.500                                                                                                                      0.700
+
+
+
+                                                                                                                                            Turn-On (ms)                                                                                                               Turn-Off (ms)
+                                                         415                                                                                                 3.000                                                                                                                      0.600
+                                                                                                                                                             2.500                                                                                                                      0.500
+                                                         410                                                                                                 2.000                                                                                                                      0.400
+                                                                                                                                                                                                                                                        5mA
+                                                         405                                                                                                 1.500                                                                                                                      0.300
+                                                                                                                                                             1.000                                                                                     10mA                             0.200
+                                                         400                                                                                                                                                                                                                                                                                                                 10mA
+                                                                                                                                                             0.500                                                                                                                      0.100
+                                                                                                                                                                                                                                                                                                                                                                              5mA
+                                                         395                                                                                                     0                                                                                                                          0
+                                                               -40      -20          0          20      40        60          80      100                                               -40        -20         0        20        40        60         80     100                                               -40     -20          0          20      40      60          80      100
+                                                                                                              o
+                                                                                         Temperature ( C)                                                                                                          Temperature (oC)                                                                                                       Temperature ( oC)
+
+
+
+
+         The Performance data shown in the graphs above is typical of device performance. For guaranteed parameters not indicated in the written specifications, please contact
+         our application department.
+
+
+
+
+Rev. 5                                                                                                                                                                                             www.clare.com                                                                                                                                                                          3
+CPC1035N
+
+
+                                                                                                                                                                PERFORMANCE DATA*
+
+
+                                                                     CPC1035N                                                                                                 CPC1035N                                                                                       CPC1035N
+                                                         Typical LED Forward Voltage Drop                                                                      Typical Turn-On vs. LED Forward Current                                                        Typical Turn-Off vs. LED Forward Current
+                                                                  vs. Temperature                                                                                       (Load Current = 100mA)                                                                         (Load Current = 100mA)
+                                              1.8                                                                                                             2.0                                                                                            0.7
+
+
+
+
+    LED Forward Voltage Drop (V)
+                                                                                                                                                              1.8
+                                                                                                                                                                                                                                                             0.6
+                                              1.6                                                                                                             1.6
+                                                                                                                                                              1.4                                                                                            0.5
+
+
+
+                                                                                                                                             Turn-On (ms)                                                                                  Turn-Off (ms)
+                                              1.4                                                                                                             1.2                                                                                            0.4
+                                                                                                         50mA
+                                                                                                         30mA                                                 1.0
+                                              1.2                                                        20mA                                                 0.8                                                                                            0.3
+                                                                                                         10mA
+                                                                                                                                                              0.6                                                                                            0.2
+                                                                                                         5mA
+                                              1.0                                                                                                             0.4
+                                                                                                                                                                                                                                                             0.1
+                                                                                                                                                              0.2
+                                              0.8                                                                                                               0                                                                                              0
+                                                    -40    -20    0        20    40       60        80    100     120                                               0     5     10    15    20     25   30       35   40    45   50                                 0    5     10   15     20    25    30   35   40    45   50
+                                                                          Temperature (oC)                                                                                          LED Forward Current (mA)                                                                    LED Forward Current (mA)
+
+
+
+
+                                                                                                                                                                                     CPC1035N                                                                                      CPC1035N
+                                                                 CPC1035N                                                                                                 Typical IF for Switch Operation                                                                Typical IF for Switch Dropout
+                                                    Typical On-Resistance vs. Temperature                                                                                        vs. Temperature                                                                               vs. Temperature
+                                                      (Load Current = 50mA; IF = 10mA)                                                                                        (Load Current = 50mA)                                                                         (Load Current = 50mA)
+                                               60                                                                                                        3.000                                                                                             3.000
+
+                                               50                                                                                                        2.500                                                                                             2.500
+
+
+
+
+                          On-Resistance ( )                                                                             LED Current (mA)                                                                                               LED Current (mA)
+                                               40                                                                                                        2.000                                                                                             2.000
+
+                                               30                                                                                                        1.500                                                                                             1.500
+
+                                               20                                                                                                        1.000                                                                                             1.000
+
+                                               10                                                                                                        0.500                                                                                             0.500
+
+                                                0                                                                                                               0                                                                                             0
+                                                    -40     -20       0         20       40        60        80   100                                               -40       -20     0       20        40       60        80    100                               -40   -20        0       20        40    60        80    100
+                                                                           Temperature (oC)                                                                                                Temperature ( C)  o                                                                           Temperature (oC)
+
+
+
+
+                                                                  CPC1035N
+                                                    Typical Load Current vs. Load Voltage
+                                                        (Ambient Temperature = 25oC)                                                                                                    CPC1035N
+                                                                   IF = 5mA                                                                                                         Energy Rating Curve
+                                              150                                                                                                             1.0
+                                                                                                                                                              0.9
+                                              100                                                                                                             0.8
+
+
+
+
+    Load Current (mA)
+                                                                                                                                           Load Current (A)
+                                                                                                                                                              0.7
+                                               50
+                                                                                                                                                              0.6
+                                                0                                                                                                             0.5
+                                                                                                                                                              0.4
+                                              -50                                                                                                             0.3
+                                                                                                                                                              0.2
+                                     -100
+                                                                                                                                                              0.1
+                                     -150                                                                                                                       0
+                                                    -3       -2           -1         0         1         2         3                                             10µs 100µs 1ms 10ms 100ms                       1s        10s 100s
+
+                                                                           Load Voltage (V)                                                                                                      Time
+
+
+
+
+                              *The Performance data shown in the graphs above is typical of device performance. For guaranteed parameters not indicated in the written specifications, please contact
+                              our application department.
+
+
+
+
+4                                                                                                                                                                             www.clare.com                                                                                                                                       Rev. 5
+                                                                                                                            CPC1035N
+
+
+                                                       Mechanical Dimensions
+
+
+                                                         .38 TYP.
+ 4 Pin SOIC Narrow (“N” Suffix)                        (.015 TYP.)                 PC Board Pattern
+                                                                                   (Top View)
+                                         6.09 ± .25                                                   2.54 ± 0.127
+                                                               3.81 ± .13
+                                       (.240 ± .010)         (.150 ± .005)                           (0.100 ± 0.005)
+
+               .38 x 45
+             (.015 x 45 )
+                                                                                                                   5.66 ± 0.14
+                                                                    4.09 ± 0.20
+                                                                 (0.161 ± 0.008)                                 (0.223 ± 0.005)
+  1.01 ± .025                          2.18 MAX.                                            1.448
+ (.040 ± .001)                           (.086)                                            (0.057)
+
+0.432 ± 0.127
+                         .20 ± .025                 2.54 TYP.                                           0.889
+(.017 ± .005)
+                       (.008 ± .001)               (.100 TYP.)
+                                                                                                       (0.035)
+
+
+
+
+                                                                                                                          Dimensions
+                                                                                                                               mm
+                                                                                                                            (inches)
+
+
+Rev. 5                                                     www.clare.com                                                               5
+                                                                     Worldwide Sales Offices
+
+
+
+CLARE LOCATIONS                  EUROPE                       ASIA PACIFIC
+
+Clare Headquarters               European Headquarters        Asian Headquarters
+78 Cherry Hill Drive             CP Clare nv                  Clare
+Beverly, MA 01915                Bampslaan 17                 Room N1016, Chia-Hsin, Bldg II,
+Tel: 1-978-524-6700              B-3500 Hasselt (Belgium)     10F, No. 96, Sec. 2
+Fax: 1-978-524-4900              Tel: 32-11-300868            Chung Shan North Road
+Toll Free: 1-800-27-CLARE        Fax: 32-11-300890            Taipei, Taiwan R.O.C.
+                                                              Tel: 886-2-2523-6368
+Clare Micronix Division          France                       Fax: 886-2-2523-6369
+145 Columbia                     Clare France Sales
+Aliso Viejo, CA 92656-1490       Lead Rep
+Tel: 1-949-831-4622              99 route de Versailles
+Fax: 1-949-831-4628              91160 Champlan
+                                 France
+SALES OFFICES                    Tel: 33 1 69 79 93 50
+                                 Fax: 33 1 69 79 93 59
+AMERICAS
+                                 Germany
+                                 Clare Germany Sales
+Americas Headquarters
+                                 ActiveComp Electronic GmbH
+Clare
+                                 Mitterstrasse 12
+78 Cherry Hill Drive
+                                 85077 Manching
+Beverly, MA 01915
+                                 Germany
+Tel: 1-978-524-6700
+                                 Tel: 49 8459 3214 10
+Fax: 1-978-524-4900
+                                 Fax: 49 8459 3214 29
+Toll Free: 1-800-27-CLARE
+                                 Italy
+Eastern Region
+                                 C.L.A.R.E.s.a.s.
+Clare
+                                 Via C. Colombo 10/A
+P.O. Box 856
+                                 I-20066 Melzo (Milano)
+Mahwah, NJ 07430
+                                 Tel: 39-02-95737160
+Tel: 1-201-236-0101
+                                 Fax: 39-02-95738829
+Fax: 1-201-236-8685
+Toll Free: 1-800-27-CLARE
+                                 Sweden
+                                 Clare Sales
+Central Region
+                                 Comptronic AB
+Clare Canada Ltd.
+                                 Box 167
+3425 Harvester Road, Suite 202
+                                 S-16329 Spånga
+Burlington, Ontario L7N 3N1
+                                 Tel: 46-862-10370
+Tel: 1-905-333-9066
+Fax: 1-905-333-1824
+                                 Fax: 46-862-10371            http://www.clare.com
+                                 United Kingdom
+Western Region                                                Clare cannot assume responsibility for use of any circuitry other
+                                 Clare UK Sales
+Clare                                                         than circuitry entirely embodied in this Clare product. No circuit
+                                 Marco Polo House             patent licenses nor indemnity are expressed or implied. Clare
+1852 West 11th Street, #348                                   reserves the right to change the specification and circuitry, with-
+                                 Cook Way
+Tracy, CA 95376                                               out notice at any time. The products described in this document
+                                 Bindon Road                  are not intended for use in medical implantation or other direct life
+Tel: 1-209-832-4367
+                                 Taunton                      support applications where malfunction may result in direct phys-
+Fax: 1-209-832-4732                                           ical harm, injury or death to a person.
+                                 UK-Somerset TA2 6BG
+Toll Free: 1-800-27-CLARE
+                                 Tel: 44-1-823 352541
+                                 Fax: 44-1-823 352797
+Canada
+Clare Canada Ltd.
+3425 Harvester Road, Suite 202
+Burlington, Ontario L7N 3N1
+Tel: 1-905-333-9066
+Fax: 1-905-333-1824
+                                                              Specification: DS-CPC1035N-R5
+                                                              ©Copyright 2000, Clare, Inc.
+                                                              OptoMOS® is a registered trademark of Clare, Inc.
+                                                              All rights reserved. Printed in USA.
+                                                              1/12/01
+

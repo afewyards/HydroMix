@@ -1,0 +1,26 @@
+
+<!DOCTYPE html>
+<head>
+<meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1.0, maximum-scale=1.0, minimum-scale=1.0"/>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
+<meta http-equiv="Cache-Control" content="no-store"/>
+<style>#captchaContainer{margin:0 auto;padding-top:100px;}</style>
+<meta name="robots" content="nofollow,noindex">
+<script type="text/javascript" src="https://static.aipcba.com/static/js/jquery-0b6ecf17e3.js"></script>
+<script>window.AliyunCaptchaConfig ={region:"sgp",prefix:"19l3cc",};</script>
+<script type="text/javascript" src="https://o.alicdn.com/captcha-frontend/aliyunCaptcha/AliyunCaptcha.js"></script>
+<title>Verify Human</title>
+</head>
+<body>
+<div id="captchaContainer"></div>
+<script type="text/javascript">var captcha;window.initAliyunCaptcha({SceneId:"1q9ku5an",mode:'embed',element:'#captchaContainer',button:'#captchaContainer',captchaVerifyCallback:captchaVerifyCallback,onBizResultCallback:onBizResultCallback,getInstance:getInstance,slideStyle:{width:360,height:40,},language:"en",immediate:true,});function getInstance(instance) {captcha =instance;}
+async function captchaVerifyCallback(captchaVerifyParam) {return new Promise((resolve) =>{$.ajax({url:'/?act=verify_human&op=verify',type:'POST',data:{captchaVerifyParam:captchaVerifyParam
+},dataType:'json',success:function (res,status,xhr) {if (xhr.status ===200) {resolve({captchaResult:res.verifyResult,bizResult:true,});} else {resolve({captchaResult:false,bizResult:false,});}
+},error:function () {resolve({captchaResult:false,bizResult:false,});}
+});});}
+function onBizResultCallback(bizResult) {if (bizResult ===true) {const params =new URLSearchParams(window.location.search);if (params.get("referer")) {window.location.href =decodeURIComponent(params.get("referer"));} else {window.location.href ='/';}
+} else {alert('Sorry, something unexpected happened. Please contact us.');}
+}
+</script>
+</body>
+</html>

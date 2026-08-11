@@ -1,0 +1,267 @@
+                                                                    Surface Mount Fuses
+                                                                    NANO2® Fuse > 250V/350V VAC/VDC Time Lag > 462 Series
+
+
+462 Series Fuse                                                                                                                                                    RoHS          PS
+                                                                                                                                                                                 E                  ®
+
+
+
+
+                                                                                                     Description
+
+                                                                                                     The 462 series Nano2® Surface Mount Fuse has time-lag
+                                                                                                     current characteristics with interrupting ratings rated at
+                                                                                                     250V and 350V. It complies with IEC 60127-4 Universal
+                                                                                                     Modular Fuse-Links.
+
+                                                                                                     Features
+
+                                                                                                     • Heat resistant plastic                                   • Lead-free -- compatible
+                                                                                                       housing, UL 94 V-0                                         with lead-free solders
+                                                                                                     • Designed for line or low                                   and higher temperature
+                                                                                                       voltage applications                                       profiles
+                                                                                                     • Low voltage drop                                         • Available in ratings of
+  Agency Approvals                                                                                                                                                500mA to 5A
+                                                                                                     • Internationally approved
+  Agency              Agency File NumberS                                Ampere Range                • High pulse resistance
+
+     ®
+                                    E67006                                500mA - 4A
+                                                                                                     Applications
+                          40022235 40027839                        1A, 1.6A, 2A, 3.15A, 4A
+                                                                                                     • Lighting ballast                                         • Transformerless AC/DC
+         PS
+                          JET1896-31007-1005                               2.5a - 5a                 • AC/DC adaptor primary                                      converter circuit
+         E
+                                                                                                       protection                                               • High DC voltage power
+                                    E242325                                 1A - 5A                                                                               distribution system
+
+
+  Electrical Characteristics for Series                                                              Additional Information
+
+   % of Amp Rating                                        Opening Time
+              125%                                       1 hour, Minimum
+              200%                                   2 minutes, Maximum
+                                                                                                            Datasheet                             Resources                              Samples
+                                                 10 milliseconds, Minimum
+              1000%
+                                                100 milliseconds, Maximum
+
+
+  Electrical Specifications by Item
+
+                                    Max                                                                               Nom                   Nom                           Agency Approvals3
+  Ampere                                                                   Nominal Cold       Nominal
+                     Amp           Voltage           Interrupting                                                    Voltage               Power
+   Rating                                                                   Resistance         Melting
+                     Code          Rating               Rating                                                        Drop               Dissipation                                                        PS
+    (A)                                                                      (Ohms)1         I2t (A2sec)                                                          ®                                         E
+                                     (V)5                                                                             (mV)                  (mW)
+    0.500            0500                                                     0.2270            0.43                    160                     200                   X                        X
+    0.630            0630                                                     0.1570            0.80                    160                     200                   X                        X
+    0.800            0800                                                     0.1300            1.40                    160                     250                   X                        X
+     1.00            1100                             100A @                  0.0867            2.70                    140                     250                   X           X            X
+     1.25            1125                           350VAC/VDC4               0.0602            5.20                    130                     250                   X                        X
+     1.60            1160                              150A @                 0.0443            9.70                    130                     280                   X           X            X
+                                      250
+     2.00            1200                            250VAC/VDC               0.0335            5.44                    120                     300                   X           X            X
+     2.50            1250                                                     0.0278            8.00                    120                     450                   X                        X             X
+     3.15            1315                                                     0.0204           14.00                    110                     600                   X           X            X             X
+     4.00            1400                                                     0.0158           21.00                    110                     800                   X           X            X             X
+                                                       150A @
+     5.00            1500                                                     0.0124           40.00                     110                   1000                   X                        X             X
+                                                     250VAC/VDC
+1. Cold resistance measured at less than 10% of rated current at 23°C                         If you have special electrical characteristic needs, please contact Littelfuse to discuss application specific options.
+2. l2t values slated for 8ms opening time
+3. Agency Approval Table Key: X = Approved or Certified, P = Pending
+4. UL Recognition - IR at 100A @ 350 VAC/VDC
+5. Rated at 350VAC/VDC per UL Recognition under UL248 (up to 4A only).
+   Rated at 250VAC/VDC per VDE under IEC standard 60127-4.
+
+
+                                                                                                                                                                                         © 2014 Littelfuse, Inc.
+                                                                                                                                                          Specifications are subject to change without notice.
+                                                                                                                                                                                             Revised: 09/16/14
+Surface Mount Fuses
+NANO2® Fuse > 250V/350V VAC/VDC Time Lag > 462 Series
+
+
+
+
+  Temperature Rerating Curve                                                Average Time Current Curves
+                                                                                                  462 Series
+
+
+
+
+                                                                                                                                500mA
+                                                                                                                                630mA
+                                                                                                                                800mA
+                                                                                                                                1.00A
+                                                                                                                                1.25 A
+                                                                                                                                1.60 A
+                                                                                                                                2.00 A
+                                                                                                                                2.50 A
+                                                                                                                                3.15 A
+                                                                                                                                4.00 A
+                                                                                                                                5.00 A
+                                                                                                      100000
+
+
+
+
+                                                                                                      10000
+
+
+
+
+                                                                                                       1000
+
+
+
+
+                                                                                    TIME IN SECONDS
+                                                                                                        100
+
+
+
+
+                                                                                                         10
+
+
+
+
+                                                                                                             1
+
+
+
+
+                                                                                                        0.1
+
+
+
+
+                                                                                                        0.01
+
+
+
+                                                                                                       0.001
+                                                                                                                 0.1                  1                 10               100
+
+                                                                                                                                   CURRENT IN AMPERES
+
+
+
+
+  Soldering Parameters
+
+
+  Reflow Condition                                     Pb – free assembly                                                                                    tP
+                                                                                                         TP
+                                                                                                                                                                    Critical Zone
+                                                                                                                                             Ramp-up                  TL to TP
+                    - Temperature Min (Ts(min))        150°C
+  Pre Heat          - Temperature Max (Ts(max))        200°C                                  TL
+                                                                                                                                                             tL
+                                                                                          TS(max)
+
+
+                                                                            Temperature
+                    - Time (Min to Max) (ts)           60 – 120 seconds
+                                                                                                                                                                    Ramp-down
+  Average Ramp-up Rate (Liquidus Temp
+                                                       5°C/second max.                                                            Preheat
+  (TL) to peak)                                                                               TS(min)
+                                                                                                                                 tS
+  TS(max) to TL - Ramp-up Rate                         5°C/second max.
+                    - Temperature (TL) (Liquidus)      217°C                                            25
+  Reflow
+                    - Temperature (tL)                 60 – 90 seconds                                                 time to peak temperature
+                                                                                                                            (t 25ºC to peak)                      Time
+  Peak Temperature (TP)                                250+0/-5 °C
+  Time within 5°C of actual peak
+                                                       20 – 40 seconds
+  Temperature (tp)
+  Ramp-down Rate                                       5°C/second max.
+  Time 25°C to peak Temperature (TP)                   8 minutes max.
+
+
+
+
+© 2014 Littelfuse, Inc.
+Specifications are subject to change without notice.
+Revised: 09/16/14
+                                                         Surface Mount Fuses
+                                                         NANO2® Fuse > 250V/350V VAC/VDC Time Lag > 462 Series
+
+
+
+
+Product Characteristics
+
+                        Body: Plastic UL 94 V-0                                          Operating
+Materials                                                                                                        –40°C to +85°C with proper derating
+                        Cap: Tin-plated brass                                            Temperature
+
+                        Body: Brand Logo, “T” for Time-Lag,                                                      IEC60068-1, -2-1, -2-2, -2-78
+Product Marking                                                                          Climatic Category
+                        Current Rating, L Voltage Rating, UMF logo                                               (–40°C to +85°C / 21 days)
+
+Solderability           IEC 60068-2-58                                                                           IEC60068-6 (24 cycles of 15 mins each,
+                                                                                         Vibration               1-60 Hz at 0.75mm amplitute, 60-2000 Hz
+Reistance to                                                                                                     at 10g acceleration)
+                        IEC 60068-2-58
+Soldering Heat
+                                                                                         Moisture
+                                                                                                                 Level 1 J-STD-020C
+                                                                                         Sensitivity Level
+
+
+Dimensions                                                                               Part Numbering System
+
+                  2.8                        2.8
+                                                                                                 462 0 500 0 0 0 0
+            1.4                                    1.4
+                                                                                                                             RESERVE CHARACTER
+                                                                                                                             0: Default
+                                                                                          SERIES
+                        W   T 800mA                                                                                          PACKAGING CODE
+                                                                          4.5 ± 0.1
+     4.25                                                                                 AMP CODE                           0: Tape and Reel, 1500 pcs
+                                                                                          0: < 1A
+                        462 L 250V                                                        1: > 1A                            VARIANT
+                                                                                                                             0: Standard
+                                                                                          AMP RATING
+                            10.5 ± 0.2                        4.5 ± 0.1
+                                                                                          100: 1A                            KIND
+                                                                                          125: 1.25A                         0: Standard
+                                                                                          160: 1.6A
+                                                                                          200: 2A                Examples:
+                                 Recommended Pad Layout                                   250: 2.5A              0.5 amp (500mA) product is
+                                                                                          315: 3.15A                462 0 500 0 0 0 0
+                                                                                          400: 4A
+                                                                                          500: 500mA, 5A         5.0 amp product is
+                                                                                          630: 630mA                462 1 500 0 0 0 0
+                                                                                          800: 800mA             Please refer to Amp Code column of
+                                                                                                                 the Electrical Specifications table on
+                                                                                                                 the first page of this document.
+
+
+
+
+Packaging
+
+                                                                                                       Quantity &
+   Packaging Option                       Packaging Specification                     Quantity
+                                                                                                     Packaging Code
+
+  16mm Tape and Reel                           IEC 60286, part 3                       1500                  0
+
+
+
+
+                                                                                                                                                          © 2014 Littelfuse, Inc.
+                                                                                                                           Specifications are subject to change without notice.
+                                                                                                                                                              Revised: 09/16/14
+

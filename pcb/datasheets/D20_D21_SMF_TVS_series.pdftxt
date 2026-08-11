@@ -1,0 +1,474 @@
+Transient Voltage Suppression Diodes
+ Surface Mount – 200W > SMF Series
+
+
+SMF Series                                                                                                                                       RoHS
+
+
+
+                                                                                           Description
+
+
+
+
+                                                                                                                                                           SMF Series
+                                            Uni-directional
+                                                                                           The SMF series is designed specifically to protect sensitive
+                                                                                           electronic equipment from voltage transients induced by
+                                                                                           lightning and other transient voltage events.
+
+                                                                                           SMF package is 50% smaller in footprint when compare
+                                                                                           to SMA package and deliverying one of the lowest height
+                                                                                           profiles (1.1mm) in the industry.
+
+
+                                                                                           Features
+
+                                                                                           •Compatible with                • EFT protection of data
+   Maximum Ratings and Thermal Characteristics                                              industrial standard               lines in accordance with
+                                                                                            package SOD-123                   IEC 61000-4-4 (IEC801-4)
+   (TA=25°C unless otherwise noted)
+                                                                                           • For surface mounted          • Low inductance, excellent
+   Parameter                                           Symbol         Value         Unit      applications to optimize         clamping capability
+                                                                                              board space                  • 200W peak pulsepower
+   Peak Pulse Power Dissipation at                                                                                            capability at 10 × 1000µs
+                                                         PPPM          200           W     • Low profile: maximum
+   TA=25ºC by 10x1000µs (Note 1)                                                                                              waveform, repetition rate
+                                                                                              height of 1.1mm.
+   Thermal Resistance Junction- to-                                                                                           (duty cycle): 0.01%
+                                                         RTHJ-A        220          °C/W   • Typical failure mode is
+   Ambient
+                                                                                              short from over-specified    • Fast response time:
+   Thermal Resistance Junction- to-                                                           voltage or current              typically less than 1.0ns
+                                                         RTHJ-L        100          °C/W                                      from 0 Volts to VBR min
+   Lead
+                                                                                           • Whisker test is conducted
+   Operating and Storage Temperature                                                          based on JEDEC               • High temperature
+                                                        TJ,TSTG    -55 to 150        °C                                       soldering: 260°C/40
+   Range                                                                                      JESD201A per its table 4a
+Notes:                                                                                        and 4c                          seconds at terminals
+1. Non-repetitive current pulse, per Fig. 4 and derated above TA=25ºC per Fig. 3.
+                                                                                           • IEC-61000-4-2 ESD            • Glass passivated junction
+                                                                                              30kV (Air), 30kV (Contact)   • Built-in strain relief
+  Functional Diagram                                                                       • ESD protection of data       • Matte tin lead–free plated
+                                              Bi-directional                                  lines in accordance with     • Halogen-free and RoHS
+                                                                                              IEC 61000-4-2 (IEC801-2)         compliant
+
+                  Cathode                                                Anode             Applications
+                                              Uni-directional                              SMF devices are ideal for the protection of I/O interfaces,
+                                                                                           VCC bus and other vulnerable circuit used in cellular phones,
+                                                                                           portable devices, business machines, power supplies and
+                                                                                           other consumer applications.
+
+
+
+
+© 2013 Littelfuse, Inc.
+Specifications are subject to change without notice.
+Revised: 03/04/13
+                                                      Transient Voltage Suppression Diodes
+                                                     Surface Mount – 200W > SMF Series
+
+
+
+
+  Electrical Characteristics (TA=25°C unless otherwise noted)
+
+                                                 Breakdown                    Test                    Maximum       Maximum                   Maximum
+     Part              Marking                   Voltage VBR                Current     Reverse
+                                                                                                       Reverse      Peak Pulse                Clamping
+    Number                                       (Volts) @ IT                           Stand off
+                                                                               IT                    Leakage @ VR   Current Ipp              Voltage @Ipp
+                                                                                      Voltage VR (V)
+                                                                             (mA)                       IR (µA)        (A)                      VC (V)
+                         Code                MIN              MAX
+    SMF5.0A               AE                 6.4                7.0             10         5.0          400               21.7                        9.2
+    SMF6.0A               AG                 6.67              7.37             10         6.0          400               19.4                        10.3
+    SMF6.5A               AK                 7.22              7.98             10         6.5          250               17.9                        11.2
+    SMF7.0A               AM                 7.78               8.6             10         7.0          100               16.7                         12
+    SMF7.5A               AP                 8.33              9.21              1         7.5           50               15.5                        12.9
+    SMF8.0A               AR                 8.89              9.83              1         8.0           25               14.7                        13.6
+    SMF8.5A               AT                 9.44              10.4              1         8.5           10               13.9                        14.4
+    SMF9.0A               AV                 10.0              11.1              1         9.0            5                13                         15.4
+    SMF10A                AX                 11.1              12.3              1         10           2.5               11.8                         17
+    SMF11A                AZ                 12.2              13.5              1         11           2.5                11                         18.2
+    SMF12A                BE                 13.3              14.7              1         12           2.5               10.1                        19.9
+    SMF13A                BG                 14.4              15.9              1         13           1.0                9.3                        21.5
+    SMF14A                BK                 15.6              17.2              1         14           1.0                8.6                        23.2
+    SMF15A                BM                 16.7              18.5              1         15           1.0                8.2                        24.4
+    SMF16A                BP                 17.8              19.7              1         16           1.0                7.7                         26
+    SMF17A                BR                 18.9              20.9              1         17           1.0                7.2                        27.6
+    SMF18A                BT                 20.0              22.1              1         18           1.0                6.8                        29.2
+    SMF20A                BV                 22.2              24.5              1         20           1.0                6.2                        32.4
+    SMF22A                BX                 24.4              26.9              1         22           1.0                5.6                        35.5
+    SMF24A                BZ                 26.7              29.5              1         24           1.0                5.1                        38.9
+    SMF26A                CE                 28.9              31.9              1         26           1.0                4.8                        42.1
+    SMF28A                CG                 31.1              34.4              1         28           1.0                4.4                        45.4
+    SMF30A                CK                 33.3              36.8              1         30           1.0                4.1                        48.4
+    SMF33A                CM                 36.7              40.6              1         33           1.0                3.8                        53.3
+    SMF36A                CP                 40.0              44.2              1         36           1.0                3.4                        58.1
+    SMF40A                CR                 44.4              49.1              1         40           1.0                3.1                        64.5
+    SMF43A                CT                 47.8              52.8              1         43           1.0                2.9                        69.4
+    SMF45A                CV                 50.0              55.3              1         45           1.0                2.8                        72.7
+    SMF48A                CX                 53.3              58.9              1         48           1.0                2.6                        77.4
+    SMF51A                CZ                 56.7              62.7              1         51           1.0                2.4                        82.4
+    SMF54A                DE                 60.0              66.3              1         54           1.0                2.3                        87.1
+Notes:
+1. VBR measured after IT applied for 300µs, IT = sequare wave pulse or equivalent.
+2. Surge current waveform per 10 × 1000µs exponential wave and derated per Fig.2.
+3. All terms and symbols are consistent with ANSI/IEEE C62.35.
+
+
+
+
+                                                                                                                                                   © 2013 Littelfuse, Inc.
+                                                                                                                    Specifications are subject to change without notice.
+                                                                                                                                                       Revised: 03/04/13
+Transient Voltage Suppression Diodes
+ Surface Mount – 200W > SMF Series
+
+
+
+
+  I-V Curve Characteristics
+
+
+
+
+                                                                                                                                                                                  SMF Series
+                        Uni-directional
+
+
+
+
+                        Vc VBR VR
+                                                                       V
+                                                 IR VF
+                                                 IT
+
+
+
+
+                                                 Ipp
+
+
+
+PPPM Peak Pulse Power Dissipation -- Max power dissipation
+VR Stand-off Voltage -- Maximum voltage that can be applied to the TVS without operation
+VBR Breakdown Voltage -- Maximum current that flows though the TVS at a specified test current (IT)
+VC Clamping Voltage -- Peak voltage measured across the suppressor at a specified Ippm (peak impulse current)
+IR Reverse Leakage Current -- Current measured at VR
+VF Forward Voltage Drop for Uni-directional
+
+
+
+
+  Ratings and Characteristic Curves (TA=25°C unless otherwise noted)
+
+  Figure 1 - TVS Transients Clamping Waveform                                     Figure 2 - Peak Pulse Power Rating Curve
+
+                                                  Voltage Transients                                               10
+
+
+
+
+                                                                                      PPPM-Peak Pulse Power (kW)
+                                                  Voltage Across TVS
+
+
+
+
+   Voltage or Current
+                                               Current Through TVS                                                 1
+
+
+
+
+                                                                                                                   0.1
+                                                                                                                     0.000001   0.00001          0.0001           0.001
+                                                                                                                                td-Pulse Width (sec.)
+                                                                           Time
+
+                                                                                                                                                        continues on next page.
+
+
+
+
+© 2013 Littelfuse, Inc.
+Specifications are subject to change without notice.
+Revised: 03/04/13
+                                                                                                Transient Voltage Suppression Diodes
+                                                                                                Surface Mount – 200W > SMF Series
+
+
+
+
+Ratings and Characteristic Curves (TA=25°C unless otherwise noted) (Continued)
+
+
+Figure 3 - Pulse Derating Curve                                                                                         Figure 4 - Pulse Waveform - 10x1000µS
+
+                                                     100                                                                                                                        150
+
+
+
+
+      Peak Pulse Power (PPP) or Current (IPP)
+                                                                                                                                                                                           tr=10µsec               TJ=25°C
+
+
+
+
+                                                                                                                              IPPM- Peak Pulse Current, % IRSM
+                                                                                                                                                                                                                   Pulse Width(td) is defined
+                                                     80                                                                                                                                                            as the point where the peak
+                                                                                                                                                                                                                   current decays to 50% of IPPM
+                                                                                                                                                                                               Peak Value
+                                                                                                                                                                                100            IPPM
+                                                     60
+                                                                                                                                                                                                       Half Value
+
+
+
+
+            Derating in Percentage %
+                                                     40                                                                                                                                                        ( )
+                                                                                                                                                                                                       IPPM IPPM
+                                                                                                                                                                                                                   2
+
+                                                                                                                                                                                50                                 10/1000µsec. Waveform
+                                                                                                                                                                                                                   as defined by R.E.A
+                                                     20
+
+
+                                                      0                                                                                                                                   td
+                                                               0   25       50     75     100    125      150     175                                                             0
+                                                                                                                                                                                      0        1.0           2.0              3.0                  4.0
+                                                                           TA-Ambient temperature (ºC)                                                                                                 t-Time (ms)
+
+
+
+Figure 5 - Steady State Power Dissipation                                                                               Figure 6 - Forward Voltage
+     Derating Curve
+
+
+                                                                                                                                                                                0.9
+                                                    1.50
+
+
+
+
+      PM(AV), Steady State Power Dissipation (W)
+                                                                                                                                         Vf - Typical forward dropped voltage
+                                                                                                                                                                                0.8
+                                                    1.25
+
+                                                                                                                                                                                0.7
+                                                    1.00
+
+                                                                                                                                                                                0.6
+                                                    0.75
+
+                                                                                                                                                                                0.5
+                                                    0.50
+
+                                                                                                                                                                                0.4
+                                                    0.25
+
+                                                                                                                                                                                 0
+                                                           0
+                                                                                                                                                                                  -55           10                 75                  140
+                                                               0   25       50      75    100 125      150       175
+                                                                                                                                                                                                 Temperature (ºC)
+                                                                           TL - Tab temperature (ºC)
+
+
+Figure 7 - Cj vs. Working Peak Reverse Voltage
+
+
+
+                                                   10000
+
+
+
+
+                                                   1000
+                                                                                            Measured@Vr=0v
+
+
+                          Cj (pf)
+                                                                         Measured@50%Vr
+                                                    100
+
+
+
+
+                                                     10
+                                                          1                         10                          100
+
+                                                                        Vbr - Reverse breakdown voltage
+
+
+                                                                                                                                                                                                                                    © 2013 Littelfuse, Inc.
+                                                                                                                                                                                                     Specifications are subject to change without notice.
+                                                                                                                                                                                                                                        Revised: 03/04/13
+Transient Voltage Suppression Diodes
+ Surface Mount – 200W > SMF Series
+
+
+
+
+  Soldering Parameters
+
+
+
+
+                                                                                                                                                                                        SMF Series
+  Reflow Condition                                                   Lead–free assembly
+                                                                                                                                                     tp
+                                                                                                                TP
+                    - Temperature Min (Ts(min))                      150°C
+                                                                                                                                           Ramp-up                      Critical Zone
+  Pre Heat          - Temperature Max (Ts(max))                      200°C                                                                                                TL to TP
+                                                                                                                TL                                        tL
+                    - Time (min to max) (ts)                         60 – 180 secs
+
+
+                                                                                          Temperature (T)
+                                                                                                            Ts(max)
+
+  Average ramp up rate (Liquidus Temp
+                                                                     3°C/second max                                                                               Ramp-down
+  (TL) to peak                                                                                              Ts(min)
+                                                                                                                         ts
+  TS(max) to TL - Ramp-up Rate                                       3°C/second max                                    Preheat
+
+
+                    - Temperature (TL) (Liquidus)                    217°C
+  Reflow                                                                                                     25˚C
+                    - Time (min to max) (ts)                         60 – 150 seconds                                   t 25˚C to Peak
+                                                                                                                                         Time (t)
+  Peak Temperature (TP)                                              260+0/-5 °C
+  Time within 5°C of actual peak
+                                                                     20 – 40 seconds
+  Temperature (tp)
+  Ramp-down Rate                                                     6°C/second max
+  Time 25°C to peak Temperature (TP)                                 8 minutes Max.
+  Do not exceed                                                      260°C
+
+
+  Physical Specifications                                                                 Environmental Specifications
+
+  Case               SOD-123 plastic over glass passivated junction                       Temperature Cycle                               JESD22-A104
+
+  Polarity           Color band denotes cathode except bipolar                           Pressure Cooker                                 JESD22-A102
+
+  Terminal           Matte tin-plated leads, solderable per JESD22-B102D                  High Temp. Storage                              JESD22-A103
+
+                                                                                          HTRB                                            JESD22-A108
+
+                                                                                          Thermal Shock                                   JESD22-A106
+
+
+   Dimensions - SOD-123 Package
+
+                                                                                                                        Millimeters                            Inches
+                                                             E                            Dimensions
+                                                                                                                      Min                Max          Min               Max
+                                                                                                                 A    2.50               2.90        0.0984          0.1142
+                                                                                                                 B    3.40               3.90        0.1339         0.1535
+                                 A   B
+
+
+                                                                                                                 C    0.70               1.20        0.0275         0.0472
+                                                             E                                                   D    1.50               2.00        0.0591         0.0787
+                                                               F
+                      C                                                                                          E    0.35               0.90        0.0138         0.0354
+                      D
+                                                                                                                 F    0.05               0.26        0.0020          0.0102
+                                                                                                                 G    0.00               0.10        0.0000         0.0039
+                             G
+                              H
+                                                                                                                 H    0.95               1.10        0.0374         0.0433
+
+                  Mounting Pad Layout
+
+                           1.6 (0.062)   1.3 (0.051)
+
+
+
+
+                                                       1.4 (0.055)
+
+
+
+
+© 2013 Littelfuse, Inc.
+Specifications are subject to change without notice.
+Revised: 03/04/13
+                                                 Transient Voltage Suppression Diodes
+                                                Surface Mount – 200W > SMF Series
+
+
+
+
+Part Numbering System                                                       Part Marking System
+ SMF xx A
+
+
+
+
+               5% VBR VOLTAGE TOLERANCE                                              LF
+                                                                                     XX
+                                                                                          Cathode Band
+
+
+                                                                                     YM   Marking Code
+              VR VOLTAGE
+                                                                                          Trace Code Marking
+     SERIES
+                                                                                           Y:Year Code
+                                                                                           M: Month Code
+
+
+
+Packaging
+
+                           Component                               Packaging                 Packaging
+ Part number                                    Quantity
+                            Package                                 Option                  Specification
+
+   SMFXXX                  SOD-123               3000      Tape & Reel – 8mm/7” tape         EIA RS-481
+
+
+
+
+Tape and Reel Specification
+
+                0.157
+                 (4.0)
+                                                                                                                                                  Cathode
+    0.31
+    (8.0)
+
+
+                              0.157                         0.059 DIA   Cover tape
+                              (4.0)                         (1.5)
+
+                                    7.0 (178)
+                                                             Dimensions are in inches
+    0.80 (20.2)                                              (and millimeters).
+Arbor Hole Dia.
+
+
+                                                              Direction of Feed
+      0.33
+      (8.5)
+
+
+
+
+                                                                                                                                          © 2013 Littelfuse, Inc.
+                                                                                                           Specifications are subject to change without notice.
+                                                                                                                                              Revised: 03/04/13
+

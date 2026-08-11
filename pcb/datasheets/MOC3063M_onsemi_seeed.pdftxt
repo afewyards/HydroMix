@@ -1,0 +1,742 @@
+                                                                                                                                   MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+                                                                                                         September 2010
+
+
+
+     MOC3061M, MOC3062M, MOC3063M,
+     MOC3162M, MOC3163M
+     6-Pin DIP Zero-Cross Phototriac Driver Optocoupler
+     (600 Volt Peak)
+     Features                                                 Description
+     ■ Simplifies logic control of 115/240 VAC power          The MOC306XM and MOC316XM devices consist of a
+     ■ Zero voltage crossing                                  GaAs infrared emitting diode optically coupled to a
+     ■ dv/dt of 1000V/µs guaranteed (MOC316X-M),
+                                                              monolithic silicon detector performing the function of a
+                                                              zero voltage crossing bilateral triac driver. They are
+        – 600V/µs guaranteed (MOC306X-M)
+                                                              designed for use with a triac in the interface of logic sys-
+     ■ VDE recognized (File # 94766)                          tems to equipment powered from 115/240 VAC lines,
+        – ordering option V (e.g., MOC3063V-M)                such as solid-state relays, industrial controls, motors,
+     ■ Underwriters Laboratories (UL) recognized              solenoids and consumer appliances, etc.
+        (File #E90700, volume 2)
+
+     Applications
+     ■ Solenoid/valve controls
+     ■ Static power switches
+     ■ Temperature controls
+     ■ AC motor starters
+     ■ Lighting controls
+     ■ AC motor drives
+     ■ E.M. contactors
+     ■ Solid state relays
+
+
+     Schematic                                                Package Outlines
+
+
+
+             ANODE 1                           6 MAIN TERM.
+
+
+
+           CATHODE 2                           5 NC*
+
+
+                                 ZERO
+                 N/C 3         CROSSING        4 MAIN TERM.
+                                CIRCUIT
+
+
+
+                           *DO NOT CONNECT
+                           (TRIAC SUBSTRATE)
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                  www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4
+                                                                                                                                           MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Absolute Maximum Ratings (TA = 25°C unless otherwise noted)
+     Stresses exceeding the absolute maximum ratings may damage the device. The device may not function or be
+     operable above the recommended operating conditions and stressing the parts to these levels is not recommended.
+     In addition, extended exposure to stresses above the recommended operating conditions may affect device reliability.
+     The absolute maximum ratings are stress ratings only.
+
+        Symbol                              Parameters                             Device               Value           Units
+      TOTAL DEVICE
+          TSTG        Storage Temperature                                            All             -40 to +150            °C
+          TOPR        Operating Temperature                                          All              -40 to +85            °C
+          TSOL        Lead Solder Temperature                                        All            260 for 10 sec          °C
+            TJ        Junction Temperature Range                                     All             -40 to +100            °C
+          VISO        Isolation Surge Voltage(1)                                     All                7500           Vac(pk)
+                      (peak AC voltage, 60Hz, 1 sec. duration)
+            PD        Total Device Power Dissipation @ 25°C Ambient                  All                 250             mW
+                        Derate above 25°C                                                                2.94           mW/°C
+      EMITTER
+            IF        Continuous Forward Current                                     All                  60              mA
+            VR        Reverse Voltage                                                All                  6                 V
+            PD        Total Power Dissipation @ 25°C Ambient                         All                 120             mW
+                        Derate above 25°C                                                                1.41           mW/°C
+      DETECTOR
+          VDRM        Off-State Output Terminal Voltage                               All                600                V
+           ITSM       Peak Repetitive Surge Current                                  All                  1                 A
+                      (PW = 100µs, 120pps)
+            PD        Total Power Dissipation @ 25°C Ambient                         All                 150             mW
+                        Derate above 25°C                                                                1.76           mW/°C
+     Note:
+     1. Isolation surge voltage, VISO, is an internal device dielectric breakdown rating. For this test, Pins 1 and 2 are
+        common, and Pins 4, 5 and 6 are common.
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                          www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                     2
+                                                                                                                                                MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Electrical Characteristics (TA = 25°C Unless otherwise specified)
+     Individual Component Characteristics
+       Symbol                Parameters                Test Conditions              Device         Min.     Typ.*     Max.      Units
+      EMITTER
+          VF        Input Forward Voltage           IF = 30mA                         All                    1.3       1.5        V
+           IR       Reverse Leakage Current         VR = 6V                           All                   0.005     100        µA
+      DETECTOR
+         IDRM1      Peak Blocking Current,          VDRM = 600V, IF = 0(2)         MOC316XM                  10       100
+                    Either Direction                                                                                             nA
+                                                                                   MOC306XM                  10       500
+         dv/dt      Critical Rate of Rise of        IF = 0 (Figure 9)(3)           MOC306XM        600      1500
+                    Off-State Voltage                                                                                           V/µs
+                                                                                   MOC316XM        1000
+
+
+     Transfer Characteristics
+       Symbol         DC Characteristics               Test Conditions               Device         Min.     Typ.*    Max. Units
+           IFT        LED Trigger Current           Main Terminal                  MOC3061M                             15       mA
+                      (rated IFT)                   Voltage = 3V(3)                MOC3062M/                            10
+                                                                                   MOC3162M
+                                                                                   MOC3063M/                            5
+                                                                                   MOC3163M
+          VTM         Peak On-State Voltage,        ITM = 100 mA peak,                 All                    1.8       3         V
+                      Either Direction              IF = rated IFT
+            IH        Holding Current,                                                 All                   500                 µA
+                      Either Direction
+
+
+     Zero Crossing Characteristics
+       Symbol              Characteristics           Test Conditions                Device           Min.    Typ.* Max. Units
+          VINH       Inhibit Voltage (MT1-MT2   IF = Rated IFT              MOC3061M/2M/3M                     12       20        V
+                     voltage above which device                               MOC3162M/3M                      12       15
+                     will not trigger)
+         IDRM2       Leakage in Inhibited State     IF = Rated IFT,                   Al                                    2    mA
+                                                    VDRM = 600V,
+                                                    off state
+
+
+
+     Isolation Characteristics
+       Symbol           Characteristics          Test Conditions           Device           Min.     Typ.*           Max.       Units
+          VISO       Isolation Voltage         f = 60 Hz, t = 1 sec          All            7500                                 V
+
+     *Typical values at TA = 25°C
+     Notes:
+     2. Test voltage must be applied within dv/dt rating.
+     3. All devices are guaranteed to trigger at an IF value less than or equal to max IFT. Therefore, recommended operating
+        IF lies between max IFT (15mA for MOC3061M, 10mA for MOC3062M & MOC3162M, 5mA for MOC3063M &
+        MOC3163M) and absolute max IF (60mA).
+     4. This is static dv/dt. See Figure 9 for test circuit. Commutating dv/dt is a function of the load-driving thyristor(s) only.
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                               www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                         3
+                                                                                                                                           MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Safety and Insulation Ratings
+     As per IEC 60747-5-2, this optocoupler is suitable for “safe electrical insulation” only within the safety limit data.
+     Compliance with the safety ratings shall be ensured by means of protective circuits.
+
+        Symbol                              Parameter                          Min.          Typ.          Max.          Unit
+                       Installation Classifications per DIN VDE 0110/1.89
+                       Table 1
+                       For Rated Main Voltage < 150Vrms                                       I-IV
+                       For Rated Main voltage < 300Vrms                                       I-IV
+                       Climatic Classification                                            55/100/21
+                       Pollution Degree (DIN VDE 0110/1.89)                                    2
+           CTI         Comparative Tracking Index                               175
+           VPR         Input to Output Test Voltage, Method b,                 1594                                     Vpeak
+                       VIORM x 1.875 = VPR, 100% Production Test
+                       with tm = 1 sec, Partial Discharge < 5pC
+                       Input to Output Test Voltage, Method a,                 1275                                     Vpeak
+                       VIORM x 1.5 = VPR, Type and Sample Test
+                       with tm = 60 sec, Partial Discharge < 5pC
+          VIORM        Max. Working Insulation Voltage                          850                                     Vpeak
+          VIOTM        Highest Allowable Over Voltage                          6000                                     Vpeak
+                       External Creepage                                         7                                       mm
+                       External Clearance                                        7                                       mm
+                       Insulation Thickness                                     0.5                                      mm
+           RIO         Insulation Resistance at Ts, VIO = 500V                  109                                       Ω
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                          www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                      4
+                                                                                                                                                                                                                                                          MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Typical Performance Curves
+                                                                        Figure 1. LED Forward Voltage vs. Forward Current                                                                       Figure 2. Trigger Current Vs. Temperature
+                                                                   1.7                                                                                                                1.6
+
+                                                                   1.6
+                                                                                                                                                                                      1.5
+                                                                                                                                                                                                       VTM = 3V
+                                                                   1.5                                                                                                                                 NORMALIZED TO TA = 25°C
+
+
+
+
+       VF, FORWARD VOLTAGE (V)
+                                                                                                                                                                                      1.4
+                                                                   1.4
+
+
+
+
+                                                                                                                                                                    IFT, NORMALIZED
+                                                                   1.3                                                                                                                1.3
+
+                                                                                  TA = -40°C
+                                                                   1.2                                                                                                                1.2
+                                                                                   TA = 25°C
+                                                                   1.1
+                                                                                                                                                                                      1.1
+                                                                   1.0
+                                                                                   TA = 85°C
+                                                                                                                                                                                      1.0
+                                                                   0.9
+
+                                                                   0.8                                                                                                                0.9
+
+                                                                   0.7                                                                                                                0.8
+                                                                      0.1                  1              10                 100                                                        -40      -20      0     20     40    60       80     100
+                                                                                   IF, LED FORWARD CURRENT (mA)                                                                                        TA, AMBIENT TEMPERATURE (°C)
+
+
+
+
+                                                                             Figure 3. LED Current Required to Trigger vs.
+                                                                                           LED Pulse Width                                                                                  Figure 4. Leakage Current, IDRM vs. Temperature
+                                                                   16                                                                                               10000
+
+
+
+
+                           IFT, LED TRIGGER CURRENT (NORMALIZED)
+                                                                   14
+                                                                                TA = 25°C
+                                                                                                                                                                           1000
+
+
+
+
+                                                                                                                                       IDRM, LEAKAGE CURRENT (nA)
+                                                                                NORMALIZED TO PWIN >> 100µs
+                                                                   12
+
+
+                                                                   10                                                                                                                 100
+
+                                                                    8
+
+                                                                                                                                                                                       10
+                                                                    6
+
+
+                                                                    4
+                                                                                                                                                                                        1
+
+                                                                    2
+
+                                                                                                                                                                                      0.1
+                                                                    0                                                                                                                   -40      -20      0     20     40    60       80     100
+                                                                         1                        10                         100
+                                                                                                                                                                                                       TA, AMBIENT TEMPERATURE (°C)
+                                                                                   PWIN, LED TRIGGER PULSE WIDTH (µs)
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                                                                                                                                         www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                                                                      5
+                                                                                                                                                                                                                                    MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Typical Performance Curves (Continued)
+                                                  Figure 5. IDRM2, Leakage in Inhibit State vs. Temperature                                                       Figure 6. On-State Characteristics
+                                                   2.4                                                                                            800
+
+                                                   2.2               IF = RATED IFT
+                                                                     NORMALIZED TO TA = 25°C                                                      600
+                                                   2.0                                                                                                     TA = 25°C
+
+
+
+
+                                                                                                                     ITM, ON-STATE CURRENT (mA)
+                                                                                                                                                  400
+                                                   1.8
+
+
+
+
+      IDRM2, NORMALIZED
+                                                   1.6                                                                                            200
+
+                                                   1.4                                                                                               0
+                                                   1.2
+                                                                                                                                                  -200
+                                                   1.0
+                                                                                                                                                  -400
+                                                   0.8
+
+                                                   0.6                                                                                            -600
+
+                                                   0.4
+                                                     -40       -20       0     20     40       60   80     100                                    -800
+                                                                                                                                                      -4     -3        -2       -1        0        1        2    3      4
+                                                                     TA, AMBIENT TEMPERATURE (°C)
+                                                                                                                                                                    VTM, ON-STATE VOLTAGE (VOLTS)
+
+
+
+
+                                                           Figure 7. IH, Holding Current vs. Temperature                                                    Figure 8. Inhibit Voltage vs. Temperature
+                                                   3.2                                                                                            1.20
+
+
+                                                   2.8                                                                                            1.15
+
+
+
+
+               IH, HOLDING CURRENT (NORMALIZED)
+                                                                                                                                                           NORMALIZED TO TA = 25°C
+                                                                                                                                                  1.10
+                                                   2.4
+
+
+
+
+                                                                                                                     VINH, NORMALIZED
+                                                                                                                                                  1.05
+                                                   2.0
+                                                                                                                                                  1.00
+                                                   1.6
+                                                                                                                                                  0.95
+                                                   1.2
+                                                                                                                                                  0.90
+                                                   0.8
+                                                                                                                                                  0.85
+
+                                                   0.4
+                                                                                                                                                  0.80
+                                                                                                                                                     -40      -20           0        20       40       60       80     100
+                                                   0.0                                                                                                              TA, AMBIENT TEMPERATURE (°C)
+                                                     -40       -20        0    20     40       60   80     100
+                                                                     TA, AMBIENT TEMPERATURE (°C)
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                                                                                                                   www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                                                    6
+                                                                                                                                                                                                 MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     1. 100x scope probes are used, to allow high speeds and voltages.
+     2. The worst-case condition for static dv/dt is established by triggering the D.U.T. with a normal LED input current, then
+        removing the current. The variable vernier resistor combined with various capacitor combinations allows the dv/dt to
+        be gradually increased until the D.U.T. continues to trigger in response to the applied voltage pulse, even after the
+        LED current has been removed. The dv/dt is then decreased until the D.U.T. stops triggering. tRC is measured at this
+        point and recorded.
+                                                                                                                              27
+                                                                                    VDRM/VRRM SELECT                          2W                     1000
+                                                                                                                                                   10 WATT
+                                                                                                                                                 WIREWOUND
+                                                  X100 PROBE             6
+                                                          1
+                                 DIFFERENTIAL                                 DUT             20k      2W                           0.33    1000V
+                                    PREAMP                2                                                                                                             0.047
+                                                  X100 PROBE                                                                                                            1000V
+                                                                         4
+
+                                                                                                                               470pF
+
+                                                                               dV
+                                 MOUNT DUT ON                                   dt                                             0.001
+                                 TEMPERATURE CONTROLLED                      VERNIER                   100
+                                 Cµ PLATE                                                              2W
+                                                                                                                               0.005
+                                                                                                                                                      1 MEG   2W EACH
+                                                                                                                                                               1.2 MEG
+                                                                                                       82                      0.01
+                                                                                                       2W                                                          2W
+                                                                                                                                                 POWER
+                                                                                                                                                                          TEST
+                                                                                                                               0.047
+
+
+                                                            1N914                                                                  0.1
+
+                                                                                                      RFP4N100
+                                            20V                                                                                0.47                                0-1000V
+                                                                                                                                                                    10mA
+                                                               56
+                                                               2W      1000         1N967A
+                                 f = 10 Hz                             1/4W           18V
+                                 PW = 100 µs
+                                 50 Ω PULSE
+                                 GENERATOR
+
+                                                                    ALL COMPONENTS ARE NON-INDUCTIVE UNLESS SHOWN
+                                                                                          dV
+                                                        Figure 9. Circuit for Static         Measurement of Power Thyristors
+                                                                                          dt
+
+
+
+     Basic Applications
+     Typical circuit for use when hot line switching is
+     required. In this circuit the “hot” side of the line is
+     switched and the load connected to the cold or
+     neutral side. The load may be connected to either
+                                                                                               Rin
+     the neutral or hot line.                                                                             1                         6      360Ω
+                                                                              VCC                                                                                                 HOT
+                                                                                                                                                      FKPF12N60
+     Rin is calculated so that IF is equal to the rated IFT                                               2       MOC3061-M
+                                                                                                                  MOC3062-M
+                                                                                                                                    5
+                                                                                                                                                                  39Ω
+     of the part, 15mA for the MOC3061M, 10mA for                                                         3
+                                                                                                                  MOC3063-M
+                                                                                                                                    4                                               240 VAC
+     the MOC3062M, or 5mA for the MOC3063M.                                                                                                                       0.01µF
+     The 39Ω resistor and 0.01µF capacitor are for                                                                                 360Ω
+
+     snubbing of the triac and is often, but not always,                                                                                                                LOAD      NEUTRAL
+
+     necessary depending upon the particular triac and                                                   Figure 10. Hot-Line Switching Application Circuit
+     load used.
+     Suggested method of firing two, back-to-back
+     SCR’s with a Fairchild triac driver. Diodes
+                                                                                                                                                                               115 VAC
+     can be 1N4001; resistors, R1 and R2, are
+                                                                                                                  R1   D1
+     optional 330Ω.
+                                                                                          1                   6
+                                                                       VCC
+     Note:                                                                      Rin
+                                                                                          2 MOC3061-M
+     This optoisolator should not be used to drive
+                                                                                                              5                            SCR
+                                                                                            MOC3062-M
+                                                                                            MOC3063-M                                                             SCR
+     a load directly. It is intended to be a trigger                                      3                   4
+                                                                                                                       360Ω
+
+     device only.
+                                                                                                                                                 R2      D2
+
+                                                                                                                                                                        LOAD
+
+
+                                                                                                     Figure 11. Inverse-Parallel SCR Driver Circuit
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                                                                                www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                         7
+                                                                                                                                                                                                 MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Package Dimensions
+
+      Through Hole                                                                                             0.4" Lead Spacing
+
+                            8.13–8.89
+                        6               4                                                                                               8.13–8.89
+                                                                                                                                    6               4
+
+
+
+
+        6.10–6.60
+                                                                                                               6.10–6.60
+
+
+
+
+              Pin 1     1               3
+                                                                                                                      Pin 1         1               3
+
+      5.08 (Max.)
+                               0.25–0.36
+            3.28–3.53                                                 7.62 (Typ.)                             5.08 (Max.)
+                                                                                                                                           0.25–0.36
+                                                                                                                    3.28–3.53
+
+
+
+
+        0.38 (Min.)                         2.54–3.81
+                                                                                                                0.38 (Min.)                             2.54–3.81
+                                                                                                  0.20–0.30
+          (0.86)                            2.54 (Bsc)
+                                                               15° (Typ.)
+                             0.41–0.51                                                                            (0.86)                                 2.54 (Bsc)
+                                                                                                                                                                          0.20–0.30
+         1.02–1.78                                                                                                                       0.41–0.51
+                               0.76–1.14                                                                         1.02–1.78                                            10.16–10.80
+                                                                                                                                           0.76–1.14
+
+
+
+
+                                                        Surface Mount
+
+                                                                              8.13–8.89                                         (1.78)
+                                                                          6                4
+                                                                                                                                                           (1.52)
+
+
+                                                                                                                                             (2.54)
+                                                                                                                           (7.49)
+                                                         6.10–6.60
+                                                  8.43–9.90                                                     (10.54)
+
+
+
+
+                                                                          1                3
+                                                            Pin 1                                                                            (0.76)
+                                                                                                                           Rcommended Pad Layout
+
+
+
+                                                                                    0.25–0.36
+
+
+
+                                                   3.28–3.53
+                                              5.08                                                                                                  0.20–0.30
+                                             (Max.)
+                                                        0.38 (Min.)
+                                                                                                                      0.16–0.88
+                                                                                                2.54 (Bsc)
+                                                          (0.86)                                                               (8.13)
+                                                                               0.41–0.51
+                                                          1.02–1.78
+                                                                                    0.76–1.14
+
+
+
+                                                    Note:
+                                                    All dimensions in mm.
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                                                                                www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                                           8
+                                                                                                                                                MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Ordering Information
+                                                   Order Entry Identifier
+                     Option                             (Example)                                         Description
+                    No option                             MOC3061M                    Standard Through Hole Device
+                         S                               MOC3061SM                    Surface Mount Lead Bend
+                       SR2                              MOC3061SR2M                   Surface Mount; Tape and Reel
+                         T                                MOC3061TM                   0.4" Lead Spacing
+                         V                               MOC3061VM                    VDE 0884
+                        TV                               MOC3061TVM                   VDE 0884, 0.4" Lead Spacing
+                        SV                               MOC3061SVM                   VDE 0884, Surface Mount
+                      SR2V                             MOC3061SR2VM                   VDE 0884, Surface Mount, Tape and Reel
+
+
+
+
+     Marking Information
+
+
+                                                                                                     1
+
+
+                                                                              MOC3061                2
+
+                                                                                                     6
+                                                                      V           X YY Q
+
+                                                                  3           4         5
+
+
+                                       Definitions
+                                            1    Fairchild logo
+                                            2    Device number
+                                                 VDE mark (Note: Only appears on parts ordered with VDE
+                                            3
+                                                 option – See order entry table)
+                                            4    One digit year code, e.g., ‘3’
+                                            5    Two digit work week ranging from ‘01’ to ‘53’
+                                            6    Assembly package code
+                                      *Note – Parts that do not have the ‘V’ option (see definition 3 above) that are
+                                      marked with date code ‘325’ or earlier are marked in portrait format.
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                               www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                             9
+                                                                                                                                                               MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     Carrier Tape Specification
+
+                                                                              12.0 ± 0.1
+                             4.5 ± 0.20
+                                                                             2.0 ± 0.05                         Ø1.5 MIN
+                                          0.30 ± 0.05            4.0 ± 0.1
+                                                                                                                        1.75 ± 0.10
+
+
+
+                                                                                                                       11.5 ± 1.0
+                             21.0 ± 0.1                                                                                        24.0 ± 0.3
+                                                                                                                9.1 ± 0.20
+
+
+
+
+                                    0.1 MAX                       10.1 ± 0.20                                      Ø1.5 ± 0.1/-0
+
+                                           User Direction of Feed
+
+
+
+
+     Reflow Profile
+
+                              300
+                                                                                                  260°C
+                              280
+                              260
+                                                                                                                    >245°C = 42 Sec
+                              240
+                              220
+                              200
+                              180
+                                                                                                  Time above
+                              160                                                                183°C = 90 Sec
+                        °C
+                              140
+                              120
+                              100                        1.822°C/Sec Ramp up rate
+                               80
+                               60
+                               40
+                               20                       33 Sec
+
+                                0
+                                    0                   60            120                  180            270            360
+                                                                             Time (s)
+
+
+
+
+©2005 Fairchild Semiconductor Corporation                                                                                              www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                  10
+                                                                                                                                                                                      MOC306XM, MOC316XM — 6-Pin DIP Zero-Cross Phototriac Driver Optocoupler (600 Volt Peak)
+     TRADEMARKS
+     The following includes registered and unregistered trademarks and service marks, owned by Fairchild Semiconductor and/or its global subsidiaries, and is not
+     intended to be an exhaustive list of all such trademarks.
+                                                                                                                                                                ®
+     AccuPower™                             F-PFS™                                      Power-SPM™                                                               *
+     Auto-SPM™                              FRFET®                                      PowerTrench®
+                                                                 SM
+                                                                                        PowerXS™                                                 The Power Franchise®
+     Build it Now™                          Global Power Resource
+     CorePLUS™                              Green FPS™                                  Programmable Active Droop™
+     CorePOWER™                             Green FPS™ e-Series™                        QFET®
+     CROSSVOLT™                             Gmax™                                       QS™                                                      TinyBoost™
+     CTL™                                   GTO™                                        Quiet Series™                                            TinyBuck™
+     Current Transfer Logic™                IntelliMAX™                                 RapidConfigure™                                          TinyCalc™
+     DEUXPEED®                              ISOPLANAR™                                     ™                                                     TinyLogic®
+     Dual Cool™                             MegaBuck™                                                                                            TINYOPTO™
+                                                                                        Saving our world, 1mW/W/kW at a time™
+     EcoSPARK®                              MICROCOUPLER™                                                                                        TinyPower™
+                n                                                                       SignalWise™
+     EfficientMax™                          MicroFET™                                                                                            TinyPWM™
+                                                                                        SmartMax™
+     ESBC™                                  MicroPak™                                                                                            TinyWire™
+          ®                                                                             SMART START™
+                                            MicroPak2™                                  SPM®                                                     TriFault Detect™
+                                            MillerDrive™                                STEALTH™                                                 TRUECURRENT™*
+     Fairchild®                                                                                                                                  " SerDes™
+                                            MotionMax™
+     Fairchild Semiconductor®                                                           SuperFET™
+                                            Motion-SPM™                                 SuperSOT™-3
+     FACT Quiet Series™
+                                            OptoHiT™
+     FACT®                                                                              SuperSOT™-6
+                                            OPTOLOGIC®                                                                                           UHC®
+     FAST®                                                                              SuperSOT™-8
+                                            OPTOPLANAR®                                 SupreMOS®                                                Ultra FRFET™
+     FastvCore™                                   ®
+     FETBench™                                                                          SyncFET™                                                 UniFET™
+     FlashWriter®*                                                                      Sync-Lock™                                               VCX™
+                                            PDP SPM™                                                                                             VisualMax™
+     FPS™
+                                                                                                                                                 XS™
+     * Trademarks of System General Corporation, used under license by Fairchild Semiconductor.
+     DISCLAIMER
+     FAIRCHILD SEMICONDUCTOR RESERVES THE RIGHT TO MAKE CHANGES WITHOUT FURTHER NOTICE TO ANY PRODUCTS HEREIN TO IMPROVE
+     RELIABILITY, FUNCTION, OR DESIGN. FAIRCHILD DOES NOT ASSUME ANY LIABILITY ARISING OUT OF THE APPLICATION OR USE OF ANY PRODUCT
+     OR CIRCUIT DESCRIBED HEREIN; NEITHER DOES IT CONVEY ANY LICENSE UNDER ITS PATENT RIGHTS, NOR THE RIGHTS OF OTHERS. THESE
+     SPECIFICATIONS DO NOT EXPAND THE TERMS OF FAIRCHILD’S WORLDWIDE TERMS AND CONDITIONS, SPECIFICALLY THE WARRANTY THEREIN,
+     WHICH COVERS THESE PRODUCTS.
+
+     LIFE SUPPORT POLICY
+     FAIRCHILD’S PRODUCTS ARE NOT AUTHORIZED FOR USE AS CRITICAL COMPONENTS IN LIFE SUPPORT DEVICES OR SYSTEMS WITHOUT THE
+     EXPRESS WRITTEN APPROVAL OF FAIRCHILD SEMICONDUCTOR CORPORATION.
+     As used herein:
+      1. Life support devices or systems are devices or systems which, (a)                     2. A critical component in any component of a life support, device, or
+          are intended for surgical implant into the body or (b) support or                       system whose failure to perform can be reasonably expected to
+          sustain life, and (c) whose failure to perform when properly used in                    cause the failure of the life support device or system, or to affect its
+          accordance with instructions for use provided in the labeling, can be                   safety or effectiveness.
+          reasonably expected to result in a significant injury of the user.
+
+     ANTI-COUNTERFEITING POLICY
+     Fairchild Semiconductor Corporation's Anti-Counterfeiting Policy. Fairchild's Anti-Counterfeiting Policy is also stated on our external website, www.fairchildsemi.com,
+     under Sales Support.
+     Counterfeiting of semiconductor parts is a growing problem in the industry. All manufacturers of semiconductor products are experiencing counterfeiting of their
+     parts. Customers who inadvertently purchase counterfeit parts experience many problems such as loss of brand reputation, substandard performance, failed
+     applications, and increased cost of production and manufacturing delays. Fairchild is taking strong measures to protect ourselves and our customers from the
+     proliferation of counterfeit parts. Fairchild strongly encourages customers to purchase Fairchild parts either directly from Fairchild or from Authorized Fairchild
+     Distributors who are listed by country on our web page cited above. Products customers buy either from Fairchild directly or from Authorized Fairchild Distributors
+     are genuine parts, have full traceability, meet Fairchild's quality standards for handling and storage and provide access to Fairchild's full range of up-to-date technical
+     and product information. Fairchild and our Authorized Distributors will stand behind all warranties and will appropriately address any warranty issues that may arise.
+     Fairchild will not provide any warranty coverage or other assistance for parts bought from Unauthorized Sources. Fairchild is committed to combat this global
+     problem and encourage our customers to do their part in stopping this practice by buying direct or from authorized distributors.
+
+     PRODUCT STATUS DEFINITIONS
+     Definition of Terms
+      Datasheet                      Product Status                                                                Definition
+      Identification
+                                                                 Datasheet contains the design specifications for product development. Specifications may change
+      Advance Information            Formative / In Design
+                                                                 in any manner without notice.
+                                                                 Datasheet contains preliminary data; supplementary data will be published at a later date. Fairchild
+      Preliminary                    First Production
+                                                                 Semiconductor reserves the right to make changes at any time without notice to improve design.
+                                                                 Datasheet contains final specifications. Fairchild Semiconductor reserves the right to make
+      No Identification Needed       Full Production
+                                                                 changes at any time without notice to improve the design.
+                                                                 Datasheet contains specifications on a product that is discontinued by Fairchild Semiconductor.
+      Obsolete                       Not In Production
+                                                                 The datasheet is for reference information only.
+                                                                                                                                                                       Rev. I49
+
+©2005 Fairchild Semiconductor Corporation                                                                                                                     www.fairchildsemi.com
+MOC306XM, MOC316XM Rev. 1.0.4                                                             10
+

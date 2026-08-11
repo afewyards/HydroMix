@@ -1,0 +1,566 @@
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Features:
+       0.80 inch (20.0mm) Matrix height
+       8 × 8 dot matrix font
+       Low power consumption
+       Categorized for luminous intensity
+       Choice of colors: Red or Green, etc.
+       Choice of face paint colors: Gray or black
+       Design flexibility: Common row anode or common row cathode
+       RoHS Compliant.
+
+
+
+
+Descriptions:
+          The KWM-20881AVA/ KWM-20881CVA is a 0.80 inch (20.0mm) height dot matrix display.
+          The display provides excellent reliability in bright ambient light.
+          The device is made with white dots and gray surface.
+
+
+
+
+Applications:
+          Indoor monochromatic display applications, used in variable message signs and static massage panels
+          Airport, train and bus station display panels
+          Electronic message centers---Stock market, department stores, stadiums, banks and cafes
+          Safety Signage---Factories and Hospitals
+
+
+
+
+Device Selection Guide:
+
+                      Part No.                       Emitting Color                   Polarity
+                  KWM-20881AVA                              Red                  Common Row Anode
+
+                  KWM-20881CVA                              Red                  Common Row Cathode
+
+
+
+   Spec No.:    W07088A/B                                                            Date:     16-Mar-2017
+   Issue No.:   G-001-Rev-3                                                         E-mail:    sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                   http://   www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                   Page:     1 / 10
+ KWM-20881AVA/KWM-20881CVA
+ 0.80 inch (20.0mm), Red
+ Φ1.90mm 8×8 Dot Matrix LED Display
+
+ Technical Data Sheet
+
+Package Dimension:
+
+
+
+                                                                                                              5.9 [0.232]
+                            PIN16
+
+
+
+
+                                                              2.5*7=17.5 [0.689]
+                                                                                   20 [0.787]                                          15 [0.591]
+
+
+
+
+                                      2.5*7=17.5 [0.689]
+                        PIN1                                        1. 9                                               7.3 [0.287]±0.5
+                                                                   Φ
+                                          20 [0.787]                                                     COL.
+                                                                                     0.0
+                                                                                   [Φ                       1      2   3    4     5   6             7   8
+                                                                                                75
+                                                                                                 ]
+                                                                                                     ROW. 1
+
+                                          Model No.                                                       2
+                                                                                                          3
+                                                                                                          4
+                                                               Φ0.45 [0.018]
+                                                                                                          5
+                                                                                                          6
+                                      2.50*7=17.5 [0.689]                                                 7
+                                                                                                          8
+
+
+
+
+Notes:
+
+  1. All dimensions are in millimeters (inches).
+
+  2. Tolerance is ± 0.25 mm (.010″) unless otherwise noted.
+
+
+
+     Spec No.:   W07088A/B                                                                                                       Date:              16-Mar-2017
+    Issue No.:   G-001-Rev-3                                                                                                    E-mail:             sales@luckylight.cn
+    Luckylight Electronics Co., Ltd                                                                                              http://            www.luckylight.cn
+    Copyright © 2017 Luckylight All Rights Reserved                                                                              Page:              2 / 10
+ KWM-20881AVA/KWM-20881CVA
+ 0.80 inch (20.0mm), Red
+ Φ1.90mm 8×8 Dot Matrix LED Display
+
+ Technical Data Sheet
+
+Internal Circuit Diagram:
+
+
+                                       Common Row Anode: KWM-20881AVA
+
+                                                COL. 1        2   3   4    5   6    7    8
+                                                     PIN
+                                                         13   3   4   10   6   11   15   16
+                                                     NO.
+
+                                        ROW PIN
+                                            NO.
+                                           1 9
+
+                                            2 14
+
+                                            3 8
+
+                                            4 12
+
+                                            5 1
+
+                                            6 7
+
+                                            7 2
+
+                                            8 5
+
+
+                                      Common Row Cathode: KWM-20881CVA
+
+                                                   COL. 1     2   3    4   5    6    7    8
+                                                     PIN
+                                                     NO. 13   3   4   10   6   11   15   16
+
+                                         ROW PIN
+                                             NO.
+                                            1 9
+
+                                            2 14
+
+                                            3 8
+
+                                             4 12
+
+                                            5 1
+
+                                            6 7
+
+                                            7 2
+
+                                            8 5
+
+   Spec No.:    W07088A/B                                                                      Date:     16-Mar-2017
+   Issue No.:   G-001-Rev-3                                                                   E-mail:    sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                             http://   www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                             Page:     3 / 10
+ KWM-20881AVA/KWM-20881CVA
+ 0.80 inch (20.0mm), Red
+ Φ1.90mm 8×8 Dot Matrix LED Display
+
+ Technical Data Sheet
+
+Absolute Maximum Ratings at Ta=25℃
+                     Parameters                              Symbol                     Max                               Unit
+ Power Dissipation Per Dot                                     Pd                        48                               mW
+ Peak Forward Current Per Dot
+                                                               IFP                      100                               mA
+ (1/10 Duty Cycle, 0.1ms Pulse Width)
+ Forward Current Per Dot                                        IF                       20                               mA
+
+ Reverse Voltage Per Dot                                       VR                        5                                 V
+
+ Operating Temperature Range                                  Topr                            -40℃ to +80℃
+
+ Storage Temperature Range                                     Tstg                           -40℃ to +85℃
+
+ Soldering Temperature                                         Tsld                      260℃ for 5 Seconds
+
+
+
+
+Electrical Optical Characteristics at Ta=25℃
+                 Parameters                       Symbol     Min.     Typ.      Max.         Unit           Test Condition
+                                                             15.0     30.0        ---        mcd            IF=10mA (Note a)
+ Average Luminous Intensity                           Iv
+                                                             30.0     60.0        ---        mcd            IF=20mA (Note a)
+
+ Luminous Intensity Matching Ratio                    Iv-m    ---       ---      2:1                                 IF=10mA
+
+ Peak Emission Wavelength                             λp      ---      632        ---         nm                     IF=20mA
+
+ Dominant Wavelength                                  λd      ---      624        ---         nm            IF=20mA (Note b)
+
+ Spectral Line Half-Width                             △λ      ---      20         ---         nm                     IF=20mA
+
+ Forward Voltage Per Dot                              VF      ---      2.0       2.4          V                      IF=20mA
+
+ Reverse Current Per Dot                              IR      ---       ---       50          µA                     VR=5V
+
+
+
+
+Notes:
+
+  a. Luminous intensity is measured with a light sensor and filter combination that approximates the CIE eye-response curve.
+
+  b. The dominant wavelength (λd) is derived from the CIE chromaticity diagram and represents the single wavelength which
+
+    defines the color of the device.
+
+
+
+
+     Spec No.:   W07088A/B                                                                        Date:     16-Mar-2017
+    Issue No.:   G-001-Rev-3                                                                  E-mail:       sales@luckylight.cn
+    Luckylight Electronics Co., Ltd                                                               http://   www.luckylight.cn
+    Copyright © 2017 Luckylight All Rights Reserved                                            Page:        4 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Typical Electrical / Optical Characteristics Curves
+(25℃ Ambient Temperature Unless Otherwise Noted)
+
+
+                                                             Spectrum Distribution                                                    Forward Current & Forward Voltage
+                                                                                                           Ta=25℃                                                                          Ta=25 ℃
+
+
+
+
+                  Relative Luminous Intensity (%)
+                                                    100                                                                                                    50
+
+
+
+
+                                                                                                                            Forward Current IF (mA)
+                                                     75                                                                                                    40
+
+                                                                                                                                                           30
+                                                     50
+                                                                                                                                                           20
+                                                     25
+                                                                                                                                                           10
+                                                      0
+                                                      300    400 500 600 700                                   800                                          0
+                                                                                                                                                            1.4    1.6 1.8 2.0 2.2 2.4                2.6
+                                                             Wavelength λ p (nm)                                                                                   Forward Voltage VF (V)
+
+
+                                                             Luminous Intensity &                                      Luminous Intensity & Forward Current
+                                                             Ambient Temperature                                                                                                           Ta=25 ℃
+
+
+
+
+                  Relative Luminous Intensity (%)                                                                       Relative Luminous Intensity (%)
+                                                    1000                                                                                                  1000                          f=1KHz
+                                                                                                                                                                                        Duty=1/10
+
+
+                                                     100                                                                                                  100
+
+
+                                                     10                                                                                                    10
+
+
+                                                          1                                                                                                  1 0         1        2              3
+                                                          -60 -40 -20 0 20 40 60 80 100                                                                      10        10       10      10
+                                                            Ambient Temperature Ta ( ℃ )                                                                           Forward Current IF (mA)
+
+
+                                                                                                  Forward Current Derating Curve
+                                                                                                  50
+
+
+
+
+                                                                        Forward Current IF (mA)
+                                                                                                  40
+
+                                                                                                  30
+
+                                                                                                  20
+
+                                                                                                  10
+
+                                                                                                   0
+                                                                                                       0     20     40   60     80 100
+                                                                                                           Ambient Temperature Ta ( ℃ )
+
+
+   Spec No.:    W07088A/B                                                                                                                                                              Date:         16-Mar-2017
+   Issue No.:   G-001-Rev-3                                                                                                                                                           E-mail:        sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                                                                                                                     http://       www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                                                                                                                     Page:         5 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Packing & Label Specifications:
+
+
+                                                                                          Inner Box
+
+                            Pearl Wool
+
+                                                         12
+
+
+                                                   0                                                  125
+                                                22
+                                                                                            R
+
+                      285                                                    LUCKY LIGHT
+                                                                                                225
+                                                                                    285
+
+
+
+
+                                                                                                                 Outside Box
+
+                        Label                                         Side
+
+
+                                                                                                                                         285 (410)
+                        R
+       Lucky Light          Electronics Co., Ltd.
+       Part No.:   XXXXXXXXXX
+       PO No.:     XXXXXX                                     Label                                                                                  Outside Label
+                                     FQC
+       Lot No.:    XXXXXX           XX XX XX                                 RoHS
+                                                                                                                                     (305
+                                     PASS                                                                                                )
+       Quantity: XXXX PCS                                                                                                          300
+                                                       Date
+       Bin Code: XXXX                                                                                       475 (465)
+
+
+
+
+   Spec No.:          W07088A/B                                                                                          Date:       16-Mar-2017
+   Issue No.:         G-001-Rev-3                                                                                       E-mail:      sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                                                       http://     www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                                                       Page:       6 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Terms and conditions for the usage of this document:
+
+  a. The information included in this document reflects representative usage scenarios and is intended for technical
+    reference only.
+  b. The part number, type, and specifications mentioned in this document are subject to future change and
+    improvement without notice. Before production usage customer should refer to the latest datasheet for the
+    updated specifications.
+  c. When using the products referenced in this document, please make sure the product is being operated within the
+    environmental and electrical limits specified in the datasheet. If customer usage exceeds the specified limits,
+    Luckylight will not be responsible for any subsequent issues.
+  d. The information in this document applies to typical usage in consumer electronics applications. If customer's
+    application has special reliability requirements or have life-threatening liabilities, such as automotive or medical
+    usage, please consult with Luckylight representative for further assistance.
+  e. The contents and information of this document may not be reproduced or re-transmitted without permission by
+    Luckylight.
+  f. Over-current-proof
+  Customer must apply resistors for protection, otherwise slight voltage shift will cause big current change (Burn out
+    will happen).
+  g. Storage
+  1. Before opening the package, the LEDs should be kept at 30℃or less and 80%RH or less.
+  2. The LEDs should be used within a year.
+  3. After opening the package, the LEDs should be kept at 30℃or less and 60%RH or less.
+
+
+
+
+    Spec No.:    W07088A/B                                                                Date:     16-Mar-2017
+    Issue No.:   G-001-Rev-3                                                             E-mail:    sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                        http://   www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                        Page:     7 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Through Hole Display Mounting Method
+ Lead Forming:
+    1. Do not bend the component leads by hand without proper tools.
+    2. The leads should be bent by clinching the upper part of the lead firmly such that the bending force Is not
+       exerted on the plastic body.
+
+
+
+                                                                                          Clinch the lead terminal
+                                                                                          with the benging tool
+
+
+
+
+                                                                                 F
+                                       F(bending stress)                             F(bending stress)
+                Not Recommended                                    Recommended
+
+
+
+ Installation:
+    1. The installation process should not apply stress to the lead terminals.
+    2. When inserting for assembly, ensure the terminal pitch matches the substrate board’s hole pitch to prevent
+       spreading or pinching the lead terminals.
+
+
+
+
+                     F                               F
+
+
+
+
+                           Not Recommended                                   Recommended
+
+
+    3. The component shall be placed at least 5mm from edge of PCB to avoid damage caused excessive heat
+       during wave soldering.
+
+
+
+
+                                                           >=5mm                                    >=5mm
+
+
+
+
+   Spec No.:    W07088A/B                                                                 Date:     16-Mar-2017
+   Issue No.:   G-001-Rev-3                                                             E-mail:     sales@luckylight.cn
+   Luckylight Electronics Co., Ltd                                                        http://   www.luckylight.cn
+   Copyright © 2017 Luckylight All Rights Reserved                                        Page:     8 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+           R e c o m m e n d e d W a v e S o ld e rin g P ro file s
+
+           (℃ )            300                                                                   255 ℃ / 5 sec m ax
+
+
+                           250                                                                                        ≤ 30℃
+
+
+
+                           200
+
+                           150
+
+
+            Temperature
+                                                 4 ℃ / s m ax
+                                                                                    (1 0 0 ℃ )
+                           100    (8 5 ℃ )
+
+
+
+                            50
+                                             P re h e a t tim e : 6 0 s e c m a x
+
+
+                              0
+
+                                                                         T im e (s e c )
+
+
+
+
+Notes:
+   1. Recommend pre-heat temperature of 105℃ or less (as measured with a thermocouple attached to the LED
+      pins) prior to immersion in the solder wave with a maximum solder bath temperature of 260℃.
+   2. Peak wave soldering temperature between 245℃～255℃ for 3 sec (5 sec max).
+   3. Do not apply stress to the epoxy resin while the temperature is above 85℃.
+   4. Fixtures should not incur stress on the component when mounting and during soldering process.
+   5. SAC 305 solder alloy is recommended.
+   6. No more than one wave soldering pass.
+   7. During wave soldering, the PCB top-surface temperature should be kept below 105℃.
+
+
+Soldering General Notes:
+   1. Through-hole displays are incompatible with reflow soldering.
+   2. If components will undergo multiple soldering processes, or other processes where the omponents may be
+      subjected to intense heat, please check with luckylight for compatibility.
+
+
+
+
+  Spec No.:               W07088A/B                                                                                            Date:     16-Mar-2017
+  Issue No.:              G-001-Rev-3                                                                                         E-mail:    sales@luckylight.cn
+  Luckylight Electronics Co., Ltd                                                                                              http://   www.luckylight.cn
+  Copyright © 2017 Luckylight All Rights Reserved                                                                              Page:     9 / 10
+KWM-20881AVA/KWM-20881CVA
+0.80 inch (20.0mm), Red
+Φ1.90mm 8×8 Dot Matrix LED Display
+
+Technical Data Sheet
+
+Cleaning:
+   1. Mild “no-clean” fluxes are recommended for use in soldering.
+   2. If cleaning is required, luckylight recommends to wash components with water only.
+   Do not use harsh organic solvents for cleaning because they may damage the plastic parts.
+   3. The cleaning process should take place at room temperature and the devices should not be washed for more
+      than one minute.
+   4. When water is used in the cleaning process, immediately remove excess moisture from the component with
+      forced-air drying afterwards.
+
+
+Circuit Design Notes:
+   1. Protective current-limiting resistors may be necessary to operate the LEDs within the specified range.
+   2. LEDs mounted in parallel should each be placed in series with its own current-limiting resistor.
+
+
+
+                                    Recommended Set-up                    Invalid Set-up
+
+                            VS                                       VS
+
+
+
+
+                           GND                                    GND
+
+
+
+
+   3. The driving circuit should be designed to protect the LED against reverse voltages and transient voltage spikes
+      when the circuit is powered up or shut down.
+   4. The safe operating current should be chosen after considering the maximum ambient temperature of the
+      operating environment.
+   5. Prolonged reverse bias should be avoided, as it could cause metal migration, leading to an increase in leakage
+      current or causing a short circuit.
+
+
+
+
+  Spec No.:    W07088A/B                                                                    Date:     16-Mar-2017
+  Issue No.:   G-001-Rev-3                                                                 E-mail:    sales@luckylight.cn
+  Luckylight Electronics Co., Ltd                                                           http://   www.luckylight.cn
+  Copyright © 2017 Luckylight All Rights Reserved                                           Page:     10 / 10
+

@@ -1,0 +1,662 @@
+                               Photocoupler
+                               Product Data Sheet
+                               MOC3063 SERIES
+                               Spec No. :DS70-2001-026
+                               Effective Date: 05/07/2019
+                               Revision: F
+
+
+
+
+                                                            LITE-ON DCC
+
+                                                             RELEASE
+
+                                                       BNS-OD-FC001/A4
+
+
+ LITE-ON Technology Corp. / Optoelectronics
+No.90,Chien 1 Road, Chung Ho, New Taipei City 23585, Taiwan, R.O.C.
+   Tel: 886-2-2222-6181 Fax: 886-2-2221-1948 / 886-2-2221-0660
+                     http://www.liteon.com/opto
+                                                                                        Photocoupler
+                                                                                      MOC306X series
+
+1. DESCRIPTION
+1.1 Features
+   Isolation voltage between input and output Viso : 5,000Vrms
+   6pin DIP zero-cross photocoupler, triac driver output
+   High repetitive peak off-state voltage VDRM : Min. 600V
+   High critical rate of rise of off-state voltage( dV/dt : MIN. 1000V / µs )
+   Dual-in-line package : MOC3061 / MOC3062 / MOC3063
+   Wide lead spacing package : MOC3061M / MOC3062M / MOC3063M
+   Surface mounting package : MOC3061S / MOC3062S / MOC3063S
+   Tape and reel packaging : MOC3061S-TA / MOC3062S-TA1 / MOC3063S-TA1
+                                  MOC3061S-TA1 / MOC3062S-TA1 / MOC3063S-TA1
+   Safety approval
+    UL 1577, Cert. No.E113898
+    CSA CA5A, Cert. No. 1020087 (CA 91533-1)
+    FIMKO EN/IEC 60950-1, EN/IEC 60065; Cert. No.NCS/FI 24426 M3
+    VDE DIN EN60747-5-2, Cert. No. 40015248
+    CQC GB4943.1-2011/ GB8898-2011
+
+   RoHS Compliance
+    All materials be used in device are followed EU RoHS directive (No.2002/95/EC).
+   MSL class1
+   Halogen free option
+
+
+1.2 Applications
+   AC Motor Drives
+   AC Motor Starters
+   E.M. Contactors
+   Lighting Controls
+   Solenoid/Valve Controls
+   Solid State Relays
+   Static Power Switches
+   Temperature Controls
+
+
+
+
+                                                                                          Part No.:MOC306X series
+
+                                                                          1/12            BNC-OD-FC002/A4
+                                                                                          Rev. : -
+                                            Photocoupler
+                                          MOC306X series
+
+2. PACKAGE DIMENSIONS
+ 2.1   MOC306X          2.2 MOC306XM
+
+
+
+
+2.3    MOC306XS
+
+                            Notes :
+                             1. 2-digit year code, example : 2016 = 16
+                             2. 2-digit work week ranging from ‘01’ to ‘53’
+                             3. Factory identification mark shall be marked
+                                (W: China-CZ, Y: Thailand)
+                             4. VDE option
+                             5. IFT rank
+
+                            * Dimensions are in Millimeters and (Inches).
+
+
+
+
+                                                      Part No.:MOC306X series
+
+                                  2/12                BNC-OD-FC002/A4
+                                                      Rev. : -
+                                                                             Photocoupler
+                                                                           MOC306X series
+3. TAPING DIMENSIONS
+
+3.1 MOC306XS-TA                                          3.2 MOC306XS-TA1
+
+
+
+
+                    Description                 Symbol          Dimension in mm (inch)
+                     Tape wide                    W                  16±0.3 (0.63)
+               Pitch of sprocket holes            P0                  4±0.1 (0.15)
+                                                  F                  7.5±0.1 (0.295)
+              Distance of compartment
+                                                  P2                 2±0.1 (0.079)
+             Distance of compartment to
+                                                  P1                 12±0.1 (0.472)
+                    compartment
+
+
+
+
+3.3 Quantities Per Reel
+
+                             Package Type          MOC306XS series
+
+                             Quantities (pcs)            1000
+
+
+
+
+                                                                                       Part No.:MOC306X series
+
+                                                                 3/12                  BNC-OD-FC002/A4
+                                                                                       Rev. : -
+                                                                                               Photocoupler
+                                                                                             MOC306X series
+
+4. RATING AND CHARACTERISTICS
+ 4.1 Absolute Maximum Ratings at Ta=25°C
+
+                                             Parameter                       Symbol        Rating        Unit
+                               Forward Current                                   IF          50           mA
+
+                               Reverse Voltage                                   VR           6            V
+                  Input
+                                                                                                          o
+                               Junction Temperature                              TJ          125              C
+
+                               Power Dissipation                                 P           120         mW
+
+                               Off-State Output Terminal Voltage               VDRM          600           V
+
+                               On-State RMS Current                            ID(RMS)       100          mA
+
+                               Peak Repetitive Surge Current
+                 Output                                                         ITSM          1            A
+                               ( PW=1ms, 120pps )
+                                                                                                          o
+                               Junction Temperature                              TJ          125              C
+
+                               Output Power Dissipation                          PC          300         mW
+
+                               Total Power Dissipation                          Ptot         330         mW
+
+                     1.        Isolation Voltage                                Viso        5000         Vrms
+                                                                                                          o
+                               Operating Temperature                            Topr      -40 ~ +110          C
+                                                                                                          o
+                               Storage Temperature                              Tstg      -55 ~ +150          C
+                                                                                                          o
+                     2.        Soldering Temperature                            Tsol         260              C
+
+
+
+
+    1.    AC For 1 Minute,   R.H. = 40 ~ 60%
+
+           Isolation voltage shall be measured using the following method.
+
+           (1) Short between anode and cathode on the primary side and between collector and emitter on the
+
+               secondary side.
+
+           (2) The isolation voltage tester with zero-cross circuit shall be used.
+
+           (3) The waveform of applied voltage shall be a sine wave.
+
+
+
+     2.   For 10 Seconds
+
+
+
+
+                                                                                                       Part No.:MOC306X series
+
+                                                                                         4/12          BNC-OD-FC002/A4
+                                                                                                       Rev. : -
+                                                                                             Photocoupler
+                                                                                           MOC306X series
+4.2 Recommended Operating Conditions (Note)
+
+               Characteristics                Symbol            Min.             Typ.            Max.          Unit
+       Supply Voltage                            VAC               -               -              240          Vac
+                              MOC3061                           22.5              25               30           mA
+
+       Forward Current        MOC3062             IF             15               20               30           mA
+                              MOC3063                            7.5              10               30           mA
+
+       Operating Temperature                     Topr            -25               -               85           °C
+
+
+ Note: Recommended operating conditions are given as a design guideline to obtain expected performance of the device.
+
+      Additionally, each item is an independent guideline respectively. In developing designs using this product,
+
+      please confirm specified characteristics shown in this document.
+
+
+
+
+                                                                                                        Part No.:MOC306X series
+
+                                                                                 5/12                   BNC-OD-FC002/A4
+                                                                                                        Rev. : -
+                                                                                                   Photocoupler
+                                                                                                 MOC306X series
+
+ 4.3      Electrical Optical Characteristics at Ta=25°C
+
+                                                            Symb
+                      Parameter                                        Min.      Typ.    Max.        Unit        Test Condition
+                                                               ol
+                   Forward Voltage                            VF         —        1.2     1.4         V      IF=20mA
+  Input
+                   Reverse Current                             IR        —       0.05      10         µA     VR=6V
+
+                   Peak Blocking Current, Either
+              1                                              IDRM        —        —       500         nA     VDRM = 600V
+                   Direction
+
+                   Peak On-State Voltage, Either
+ Output                                                       VTM        —        —       3.0         V      ITM=100 mA Peak
+                   Direction
+
+                   Critical rate of Rise of Off-State
+              2                                              dv/dt     1000       —        —         V/µs    Vin=240Vrms
+                   Voltage
+
+                                             MOC3061                     —        —        15        mA
+                   Led Trigger Current,
+
+                   Current Required to                                                                        Main Terminal Voltage =
+                                             MOC3062          IFT        —        —        10        mA
+                   Latch Output, Either                                                                                  3V
+ Couple
+                   Direction
+                                             MOC3063                     —        —        5         mA
+
+
+                   Holding Current, Either Direction           IH        —       200       —          µA
+
+
+                                                                                                              IF=Rated IFT, MT1-MT2
+
+                   Inhibit Voltage                           VINH        —         5       20        Volts    Voltage above which
+ ZERO
+                                                                                                              device will not trigger.
+CROSSING
+
+                                                                                                              IF = Rated IFT, Rated
+                   Leakage in Inhibited State                IDRM2       —        —       500         µA
+                                                                                                              VDRM, Off State
+
+
+
+
+  *1. Test voltage must be applied within dv/dt rating.
+
+  *2. This is static dv/dt. Commutating dv/dt is a function of the load-driving thyristor(s) only.
+
+
+
+
+                                                                                                               Part No.:MOC306X series
+
+                                                                                        6/12                   BNC-OD-FC002/A4
+                                                                                                               Rev. : -
+                                                                                                                                                                                                                                                                                                                                               Photocoupler
+                                                                                                                                                                                                                                                                                                                                             MOC306X series
+         5. CHARACTERISTICS CURVES (TYPICAL PERFORMANCE)
+                                                                                                   Fig.1 Forward Current vs.                                                                                                                                                     Fig.2 On-state Current vs. Ambient
+                                                                                                         Ambient Temperature                                                                                                                                                           Temperature
+
+                                                                                      60                                                           60                                                                                                                    120
+
+
+                                                                                      50                                                           50                                                                                                                    100
+
+
+
+
+                                                                                                                   Forward current I F (mA)
+                                                                                                                                                                                                                                                                                         ITM , on-state current (A)
+                                                          IF - Forward Current - mA                                                                                                                                           ITM - On State Current - mA
+                                                                                                                                                                                                                                                                                                                      0.10
+                                                                                                                                                   40                                                                                                                    80
+                                                                                      40
+
+                                                                                                                                                   30                                                                                                                    60
+                                                                                      30
+                                                                                                                                                                                                                                                                                                                      0.05
+                                                                                                                                                   20                                                                                                                    40
+                                                                                      20
+
+                                                                                                                                                   10
+                                                                                      10                                                                                                                                                                                 20
+
+                                                                                                                                                    0                                                                                                                                                                    0
+                                                                                       0                                                             -40 -20        0        20 40 60 80 100 120                                                                             0                                            -40 -20 0 20 40 60 80 100 120
+                                                                                            -40          -20                                       0         20         40      60   80        o   100     120                                                                   -40          -20                          0     20    40    60     80      100
+                                                                                                                                                                                                                                                                                                                                                              o 120
+                                                                                                                                                               Ambient temperature Ta ( C)                                                                                                                                      Ambient temperature Tao ( C)
+                                                                                                                                                  TA - Ambient Temperature - oC                                                                                                                                          TA - Ambient Temperature - C
+
+
+                                                                                                  Fig.3 NormalizedTrigger
+                                                                                                  Fig.3 Minimum    TriggerCurrent
+                                                                                                                           Current                                                                                                                                               Fig.4 Forward Current vs. Forward
+                                                                                                         vs
+                                                                                                         vs.Ambient
+                                                                                                             AmbientTemperature
+                                                                                                                     Temperature                                                                                                                                                       Voltage
+                                                                    2                                                                              10                                                                                                            100                                                  100
+                                                                                                                                                                                          VP= 6V
+
+
+
+
+               N.IFT - Normalized Trigger LED Current                                                      Minimum trigger current IFT (mA)
+                                                         1.8                                 VTM=3V
+                                                                                                                                                                                          RL= 100
+                                                                                                              =25oC
+                                                                                             Normalized to TA 8
+
+
+
+
+                                                                                                                                                                                                                                              IF -Forward Current - mA                   Forward current IF (mA)
+                                                         1.6                                                                                                                                                                                                                                                                 TA=110oC
+                                                                                                                                                                                                                                                                                                                             TA=75oC                                  o
+                                                                                                                                                                                                                                                                                                                                      o
+                                                         1.4                                                                                                                                                                                                                                                                      80 C
+                                                                                                                                                                                                                                                                                                                             TA=25oC                       60 C
+                                                                                                                                                                                                                                                                         10                                                  TA=0oC   o                               o
+
+                                                         1.2                                                                                        6                                                                                                                                                                            100    C                  40 C
+                                                                                                                                                                                                                                                                                                                             TA=-40oC                      20 C
+                                                                                                                                                                                                                                                                                                                                                                      o
+
+
+
+                                                                    1                                                                                                                                                                                                                                                  10
+
+                                                         0.8
+                                                                                                                                                    4
+
+                                                         0.6
+                                                                                                                                                                                                                                                                             1
+                                                                                                                                                    2
+                                                         0.4
+                                                         0.2
+                                                                                                                                                    0                                                                                                                                                                   1
+                                                                    0                                                                                   20          40       60       80      100                                                                    0.1                                                 0.4           0.8      1.2      1.6              2.0
+                                                                                      -40          -20                                        0           20         40     60     80     100
+                                                                                                                                                                                           o     120                                                                             0.6                                    0.8               1          1.2                  1.4         1.6
+                                                                                                                                                                  Ambient temperature ( C)                                                                                                                                             Forward voltage VF (V)
+                                                                                                                                              TA - Ambient Temperature - oC                                                                                                                                                         VF - Forward Voltage - V
+
+
+                                                                                                  Fig.5
+                                                                                                   Fig.5Normalized On-state
+                                                                                                         On-state Voltage vs.Voltage
+                                                                                                                              Ambient                                                                                                                                            Fig.6 Normalized
+                                                                                                                                                                                                                                                                                  Fig.6 Holding   Holding
+                                                                                                                                                                                                                                                                                                Current vs.Current
+                                                                                                         vs Ambient Temperature
+                                                                                                          Temperature                                                                                                                                                                   vs Ambient
+                                                                                                                                                                                                                                                                                        Ambient    Temperature
+                                                                                                                                                                                                                                                                                                 Temperature
+                                                         2                                                                                        3.0                                                                                                         10                                                        1
+                                                                                                                                                                                     IT= 100mA                                                                                                                                                                VP= 6V
+                                                        1.8                             IF=10mA, ITM=100mA                                                                                                                                                                             Normalized to TA =25oC
+
+
+
+N.VTM - Normalized On-State                                                                                                                                                                                          N.IH - Normalized Holding
+                                                                                                         =25oC
+                                                                                        Normalized to TA2.6
+
+
+
+
+                                                                                                                    On-state voltage VT (V)                                                                                                                                              Holding current IH (mA)
+                                                        1.6
+                                                        1.4
+                                                                                                                                                  2.2
+                                                        1.2
+                                                                                                                                                                                                                                                                         1                                             0.1
+                                                         1
+                                                                                                                                                  1.8
+
+
+
+                                                                                                                                                                                                                              Current
+                                                        0.8
+
+
+          Voltage
+                                                        0.6
+                                                                                                                                                  1.4
+                                                        0.4
+                                                        0.2
+                                                                                                                                                  1.0                                                                                                                                                                 0.01
+                                                         0                                                                                              20          40          60        80             100                                                0.1                                                              20         40      60       80               100
+                                                                      -40                         -20                                         0          20 Ambient
+                                                                                                                                                               40   temperature80
+                                                                                                                                                                       60      Ta ( C)100
+                                                                                                                                                                                               o
+                                                                                                                                                                                                               120                                                           -40         -20                                  0 Ambient
+                                                                                                                                                                                                                                                                                                                                  20 Temperature
+                                                                                                                                                                                                                                                                                                                                        40     60Ta ( C)80        o
+                                                                                                                                                                                                                                                                                                                                                                                100   120
+                                                                                                           TA - Ambient Temperature - oC                                                                                                                                                                                     TA - Ambient Temperature - oC
+
+
+
+                                                                                                                                                                                                                                                                                                                                                         Part No.:MOC306X series
+
+                                                                                                                                                                                                                                                                                                                             7/12                        BNC-OD-FC002/A4
+                                                                                                                                                                                                                                                                                                                                                         Rev. : -
+                                                                                                                                                                                Photocoupler
+                                                                                                                                                                              MOC306X series
+                                                  Fig.7 Off-state Current vs                                                                Fig.8 On-state Current vs
+                                                         Ambient Temperature                                                                       On-state Voltage
+                                       1000                                                                                          1000
+                                                        VDRM=Rated VDRM                                                                              IF=Rated IFT
+                                                        Normalized to TA=25oC
+
+
+       N. IDRM - Normalized Peak
+                                                                                                                                                     TA = 25oC
+
+
+
+
+                                                                                                             ITM - On-State Current - mA
+                                        100
+                                                                                                                                           100
+
+                                            10
+
+
+
+
+            Off-state Current
+                                                                                                                                            10
+                                             1
+
+
+
+                                            0.1                                                                                             1
+                                                  -40     -20        0     20   40   60   80     100   120                                       1                  1.5          2           2.5         3
+                                                                 TA - Ambient Temperature - oC                                                                        VTM - On-State Voltage - V
+
+
+                                                  Fig.9 Inhibit Voltage vs
+                                                         Ambient Temperature
+
+                                       2
+
+
+
+
+N.VINH - Normalized Inhibit Voltage
+                                      1.8           IF= Rated IFT
+                                                    Normalized to TA =25oC
+                                      1.6
+                                      1.4
+                                      1.2
+                                       1
+                                      0.8
+                                      0.6
+                                      0.4
+                                      0.2
+                                        0
+                                            -40         -20      0        20    40   60    80    100   120
+                                                                TA - Ambient Temperature - oC
+
+
+
+
+                                                                                                                                                                                          Part No.:MOC306X series
+
+                                                                                                                                                                    8/12                  BNC-OD-FC002/A4
+                                                                                                                                                                                          Rev. : -
+                                                                                                            Photocoupler
+                                                                                                          MOC306X series
+6. TEMPERATURE PROFILE OF SOLDERING
+ 6.1 IR Reflow soldering (JEDEC-STD-020E compliant)
+  One time soldering reflow is recommended within the condition of temperature and time profile shown below. Do not solder more than three
+
+  times.
+
+
+
+                                                      Profile item                        Conditions
+
+                                          Preheat
+
+                                             - Temperature Min (TSmin)                       150˚C
+
+                                             - Temperature Max (TSmax)                       200˚C
+
+                                             - Time (min to max) (ts)                      90±30 sec
+
+                                          Soldering zone
+
+                                             - Temperature (TL)                              217˚C
+
+                                             - Time (tL)                                    60 sec
+
+                                          Peak Temperature (TP)                              260˚C
+
+                                          Ramp-up rate                                   3˚C / sec max.
+
+                                          Ramp-down rate                                  3~6˚C / sec
+
+
+
+                                                                           20 sec
+                                                           Ramp-up                TP 260 C
+
+                                                       TL 217 C
+
+
+
+
+               Temperature ( C)
+                                                Tsmax 200 C                                          Ramp-down
+
+
+                                  Tsmin                                    60 sec
+                                  150 C                                 tL (Soldering)
+
+
+
+
+            25 C
+                                            60 ~ 120 sec                                                         Time (sec)
+                                                                                               35~70 sec
+                                            ts (Preheat)
+
+
+
+
+                                                                                                                   Part No.:MOC306X series
+
+                                                                                               9/12                BNC-OD-FC002/A4
+                                                                                                                   Rev. : -
+                                                                                                 Photocoupler
+                                                                                               MOC306X series
+6.2 Wave soldering (JEDEC22A111 compliant)
+   One time soldering is recommended within the condition of temperature.
+
+   Temperature: 260+0/-5˚C
+
+   Time: 10 sec.
+
+   Preheat temperature:25 to 140˚C
+
+   Preheat time: 30 to 80 sec.
+
+
+
+
+6.3 Hand soldering by soldering iron
+  Allow single lead soldering in every single process. One time soldering is recommended.
+
+  Temperature: 380+0/-5˚C
+
+  Time: 3 sec max.
+
+
+
+
+                                                                                                    Part No.:MOC306X series
+
+                                                                                            10/12   BNC-OD-FC002/A4
+                                                                                                    Rev. : -
+                                                Photocoupler
+                                              MOC306X series
+7. RRECOMMENDED FOOT PRINT PATTERNS (MOUNT PAD)
+
+   Unit: mm
+
+
+
+
+                                                  Part No.:MOC306X series
+
+                                        11/12     BNC-OD-FC002/A4
+                                                  Rev. : -
+                                                                                                 Photocoupler
+                                                                                               MOC306X series
+8. NAMING RULE
+
+                              MOC306(X)(1)-(2)-G
+                    DEVICE PART NUMBER (MOC306X)
+                    Please refer to Electrical Optical
+                    Characteristics Table on Page 6
+
+
+                    (1) FORM TYPE (S, M or none)
+                    (2) TAPING TYPE (TA, TA1)
+
+                    (3) Halogen free
+
+                    Example : MOC3061S-TA1-G
+
+
+
+
+                      MOC306(X)(1)(2)-V-G
+              DEVICE PART NUMBER (MOC306X)
+              Please refer to Electrical Optical
+              Characteristics Table on Page 6
+
+
+             (1) FORM TYPE (S, M or none)
+             (2) TAPING TYPE (TA, TA1)
+             (3) VDE option
+
+             (4) Halogen free
+             Example : MOC3061STA1-V-G
+
+
+
+9. NOTES
+   LiteOn is continually improving the quality, reliability, function or design and LiteOn reserves the right to make changes without
+    further notices.
+   The products shown in this publication are designed for the general use in electronic applications such as office automation
+    equipment, communications devices, audio/visual equipment, electrical application and instrumentation.
+   For equipment/devices where high reliability or safety is required, such as space applications, nuclear power control equipment,
+    medical equipment, etc, please contact our sales representatives.
+   When requiring a device for any ”specific” application, please contact our sales in advice.
+   If there are any questions about the contents of this publication, please contact us at your convenience.
+   The contents described herein are subject to change without prior notice.
+   Immerge unit’s body in solder paste is not recommended.
+
+
+
+
+                                                                                                           Part No.:MOC306X series
+
+                                                                                   12/12                   BNC-OD-FC002/A4
+                                                                                                           Rev. : -
+

@@ -1,0 +1,625 @@
+Z0103MN, Z0107MN,
+Z0109MN
+
+Sensitive Gate Triac Series
+Silicon Bidirectional Thyristors
+  Designed for use in solid state relays, MPU interface, TTL logic and                          http://onsemi.com
+other light industrial or consumer applications. Supplied in surface
+mount package for use in automated manufacturing.
+                                                                                                  TRIAC
+Features                                                                                    1.0 AMPERE RMS
+• Sensitive Gate Trigger Current in Four Trigger Modes                                          600 VOLTS
+• Blocking Voltage to 600 V
+• Glass Passivated Surface for Reliability and Uniformity                                 MT2                             MT1
+• Surface Mount Package                                                                                              G
+• These are Pb−Free Devices
+                                                                                                                     MARKING
+MAXIMUM RATINGS (TJ = 25°C unless otherwise noted)                                                                   DIAGRAM
+
+                       Rating                      Symbol    Value        Unit                                               4
+
+ Peak Repetitive Off−State Voltage (Note 1)        VDRM,      600          V                     SOT−223
+ (Sine Wave, 50 to 60 Hz, Gate Open,               VRRM                                                                    AYW
+                                                                                                CASE 318E                10XMN G
+ TJ = −40 to +125°C)
+                                                                                                 STYLE 11                   G
+ On−State Current RMS (TC = 80°C)                  IT(RMS)    1.0          A
+ (Full Sine Wave 50 to 60 Hz)                                                                                    1       2       3
+
+ Peak Non−repetitive Surge Current (One Full        ITSM      8.0          A               A       = Assembly Location
+ Cycle Sine Wave, 60 Hz, TC = 25°C)                                                        Y       = Year
+                                                                                           W       = Work Week
+ Circuit Fusing Considerations                       I2t      0.4         A2s              10XMN = Device Code
+ (Pulse Width = 8.3 ms)                                                                            x = 3, 7, 9
+ Average Gate Power (TC = 80°C, t v 8.3 ms)        PG(AV)     1.0          W               G       = Pb−Free Package
+                                                                                      (Note: Microdot may be in either location)
+ Peak Gate Current (t v 20 ms, TJ = +125°C)         IGM       1.0          A
+ Operating Junction Temperature Range                TJ      −40 to        °C
+                                                              +125
+                                                                                                PIN ASSIGNMENT
+ Storage Temperature Range                          Tstg     −40 to        °C         1                   Main Terminal 1
+                                                              +150
+                                                                                      2                   Main Terminal 2
+Stresses exceeding Maximum Ratings may damage the device. Maximum
+Ratings are stress ratings only. Functional operation above the Recommended           3                         Gate
+Operating Conditions is not implied. Extended exposure to stresses above the
+Recommended Operating Conditions may affect device reliability.                       4                   Main Terminal 2
+1. VDRM and VRRM for all types can be applied on a continuous basis. Blocking
+   voltages shall not be tested with a constant current source such that the
+   voltage ratings of the devices are exceeded.
+                                                                                          ORDERING INFORMATION
+THERMAL CHARACTERISTICS
+                                                                                     Device          Package             Shipping†
+                   Characteristic                  Symbol    Max          Unit
+                                                                                 Z0103MNT1G         SOT−223       1000/Tape & Reel
+ Thermal Resistance, Junction−to−Ambient PCB        RqJA      156         °C/W
+ Mounted per Figure 1                                                                               (Pb−Free)
+
+ Thermal Resistance, Junction−to−Tab Meas-          RqJT      25          °C/W   Z0107MNT1G         SOT−223       1000/Tape & Reel
+ ured on MT2 Tab Adjacent to Epoxy                                                                  (Pb−Free)
+
+ Maximum Device Temperature for                      TL       260          °C    Z0109MNT1G         SOT−223       1000/Tape & Reel
+ Soldering Purposes for 10 Secs Maximum                                                             (Pb−Free)
+
+                                                                                 †For information on tape and reel specifications,
+                                                                                  including part orientation and tape sizes, please
+                                                                                  refer to our Tape and Reel Packaging Specification
+                                                                                  Brochure, BRD8011/D.
+
+
+© Semiconductor Components Industries, LLC, 2009                      1                                   Publication Order Number:
+June, 2009 − Rev. 3                                                                                                     Z0103MN/D
+                                                Z0103MN, Z0107MN, Z0109MN
+
+ELECTRICAL CHARACTERISTICS (TC = 25°C unless otherwise noted; Electricals apply in both directions)
+                                   Characteristic                                       Symbol      Min    Typ   Max    Unit
+
+OFF CHARACTERISTICS
+ Peak Repetitive Blocking Current                                          TJ = 25°C   IDRM, IRRM    −      −    5.0    mA
+   (VD = Rated VDRM, VRRM; Gate Open)                                   TJ = +125°C                  −      −    500    mA
+
+ON CHARACTERISTICS
+ Peak On−State Voltage                                                                    VTM        −      −    1.56    V
+   (ITM = "1.4 A Peak; Pulse Width v 2.0 ms, Duty Cycle v 2.0%)
+ Gate Trigger Current (Continuous dc)                                     Z0103MN         IGT                           mA
+  (VD = 12 Vdc, RL = 30 Ohms)
+  MT2(+), G(+)                                                                                      0.15    −    3.0
+  MT2(+), G(−)                                                                                      0.15    −    3.0
+  MT2(−), G(−)                                                                                      0.15    −    3.0
+  MT2(−), G(+)                                                                                      0.25    −    5.0
+ Gate Trigger Current (Continuous dc)                                     Z0107MN         IGT                           mA
+  (VD = 12 Vdc, RL = 30 Ohms)
+  MT2(+), G(+)                                                                                      0.15    −    5.0
+  MT2(+), G(−)                                                                                      0.15    −    5.0
+  MT2(−), G(−)                                                                                      0.15    −    5.0
+  MT2(−), G(+)                                                                                      0.25    −    7.0
+ Gate Trigger Current (Continuous dc)                                     Z0109MN         IGT                           mA
+  (VD = 12 Vdc, RL = 30 Ohms)
+  MT2(+), G(+)                                                                                      0.15    −    10
+  MT2(+), G(−)                                                                                      0.15    −    10
+  MT2(−), G(−)                                                                                      0.15    −    10
+  MT2(−), G(+)                                                                                      0.25    −    10
+ Latching Current (VD = 12 V, IG = 1.2 x IGT)                             Z0103MN          IL                           mA
+   MT2(+), G(+) All Types                                                                            −      −    7.0
+   MT2(+), G(−) All Types                                                                            −      −    15
+   MT2(−), G(−) All Types                                                                            −      −    7.0
+   MT2(−), G(+) All Types                                                                            −      −    7.0
+ Latching Current (VD = 12 V, IG = 1.2 x IGT)                             Z0107MN          IL                           mA
+   MT2(+), G(+) All Types                                                                            −      −    10
+   MT2(+), G(−) All Types                                                                            −      −    20
+   MT2(−), G(−) All Types                                                                            −      −    10
+   MT2(−), G(+) All Types                                                                            −      −    10
+ Latching Current (VD = 12 V, IG = 1.2 x IGT)                             Z0109MN          IL                           mA
+   MT2(+), G(+) All Types                                                                            −      −    15
+   MT2(+), G(−) All Types                                                                            −      −    25
+   MT2(−), G(−) All Types                                                                            −      −    15
+   MT2(−), G(+) All Types                                                                            −      −    15
+ Gate Trigger Voltage (Continuous dc) (VD = 12 Vdc, RL = 30 Ohms)                         VGT        −      −    1.3     V
+ Gate Non−Trigger Voltage (VD = 12 V, RL = 30 Ohms, TJ = 125°C)                           VGD       0.2     −     −      V
+  All Four Quadrants
+ Holding Current                                                     (Z0103MA)             IH        −      −    7.0    mA
+ (VD = 12 Vdc, Initiating Current = 50 mA, Gate Open)       (Z0107MA, Z0109MA)                       −      −    10
+
+DYNAMIC CHARACTERISTICS
+ Rate of Change of Commutating Current                                                  di/dt(c)    1.6     −     −     A/ms
+   (VD = 400 V, ITM = 0.84 A, Commutating dv/dt = 1.5 V/ms, Gate Open,
+   TJ = 110°C, f = 250 Hz, with Snubber)
+ Critical Rate of Rise of Off−State Voltage (VD = 67% Rated VDRM, Exponential            dv/dt                          V/ms
+   Waveform, Gate Open, TJ = 110°C)                                     Z0103MN                     10     30     −
+                                                                        Z0107MN                     20     60     −
+                                                                        Z0109MN                     50     75     −
+ Repetitive Critical Rate of Rise of On−State Current, TJ = 125°C                         di/dt      −      −    20     A/ms
+   Pulse Width = 20 ms, IPKmax = 15 A, diG/dt = 1 A/ms, f = 60 Hz
+
+
+
+                                                        http://onsemi.com
+                                                                    2
+                                       Z0103MN, Z0107MN, Z0109MN
+
+                                  Voltage Current Characteristic of Triacs
+                                           (Bidirectional Device)
+                                                                                                  + Current
+
+                                                                                                                          Quadrant 1
+                                                                                                                          MainTerminal 2 +
+Symbol   Parameter                                                                                                 VTM
+VDRM     Peak Repetitive Forward Off State Voltage
+                                                                                       on state
+IDRM     Peak Forward Blocking Current                                                                        IH
+VRRM     Peak Repetitive Reverse Off State Voltage              IRRM at VRRM
+IRRM     Peak Reverse Blocking Current
+VTM      Maximum On State Voltage                                                                       off state                   + Voltage
+IH       Holding Current                                                                     IH                          IDRM at VDRM
+
+                                                                    Quadrant 3
+                                                                                         VTM
+                                                                    MainTerminal 2 −
+
+
+
+
+                                               Quadrant Definitions for a Triac
+
+                                                        MT2 POSITIVE
+                                                      (Positive Half Cycle)
+                                                                +
+
+
+                                           (+) MT2                            (+) MT2
+
+
+
+                  Quadrant II        (−) IGT                            (+) IGT                       Quadrant I
+                                     GATE                               GATE
+
+                                                   MT1                                 MT1
+
+                                                REF                               REF
+
+                   IGT −                                                                                       + IGT
+
+                                           (−) MT2                            (−) MT2
+
+
+
+                   Quadrant III      (−) IGT                            (+) IGT                      Quadrant IV
+                                     GATE                               GATE
+
+                                                   MT1                                 MT1
+
+
+                                                REF                               REF
+
+
+                                                                −
+                                                        MT2 NEGATIVE
+                                                      (Negative Half Cycle)
+
+
+              All polarities are referenced to MT1.
+              With in−phase signals (using standard AC lines) quadrants I and III are used.
+
+
+
+
+                                                      http://onsemi.com
+                                                                3
+                                    Z0103MN, Z0107MN, Z0109MN
+
+                                0.15
+                                3.8
+         0.079
+          2.0
+
+                                                  0.244
+                          0.091      0.091         6.2
+                           2.3        2.3
+        0.079
+         2.0
+                                                    inches
+                    0.059       0.059     0.059              BOARD MOUNTED VERTICALLY IN CINCH 8840 EDGE CONNECTOR.
+                                                      mm
+0.984                1.5         1.5       1.5                   BOARD THICKNESS = 65 MIL., FOIL THICKNESS = 2.5 MIL.
+25.0                                                                  MATERIAL: G10 FIBERGLASS BASE EPOXY
+
+
+
+
+                0.096             0.096           0.096
+                2.44              2.44            2.44
+
+                        0.059             0.059
+                         1.5               1.5
+
+
+
+                                  0.472
+                                  12.0
+
+        Figure 1. PCB for Thermal Impedance and Power Testing of SOT-223
+
+
+
+
+                                                    http://onsemi.com
+                                                             4
+                                                                                                              Z0103MN, Z0107MN, Z0109MN
+
+                                                     10                                                                                                                           160
+
+
+
+
+        IT, INSTANTANEOUS ON‐STATE CURRENT (AMPS)
+                                                                                                                                            Rθ JA , JUNCTION TO AMBIENT THERMAL
+                                                                                                                                                                                  150                        TYPICAL                                      L
+                                                                                                                                                                                  140                        MAXIMUM
+                                                                                                                                                                                  130
+                                                                                                                                                                                                            DEVICE MOUNTED ON                                         L
+                                                                                                                                                                                  120
+                                                    1.0                                                                                                                                                     FIGURE 1 AREA = L2                            4
+                                                                                                                                                                                  110                       PCB WITH TAB AREA
+
+
+
+
+                                                                                                                                                       RESISTANCE, ° C/W
+                                                                                                                                                                                  100                       AS SHOWN
+                                                                                                                                                                                   90                                                                 1 2 3
+                                                                                                                                                                                   80
+                                                    0.1
+                                                                                                                                                                                   70
+                                                                                                          TYPICAL AT TJ = 110°C                                                    60
+                                                                                                          MAX AT TJ = 110°C                                                        50       MINIMUM
+                                                                                                          MAX AT TJ = 25°C                                                         40       FOOTPRINT = 0.076 cm2
+                                             0.01                                                                                                                                  30
+                                                          0             1.0       2.0        3.0         4.0                          5.0                                               0             2.0              4.0         6.0                    8.0               10
+                                                                   vT, INSTANTANEOUS ON‐STATE VOLTAGE (VOLTS)                                                                                                          FOIL AREA (cm2)
+
+                                                                        Figure 2. On-State Characteristics                                                                                      Figure 3. Junction to Ambient Thermal
+                                                                                                                                                                                                 Resistance versus Copper Tab Area
+
+
+
+
+T A , MAXIMUM ALLOWABLE AMBIENT TEMPERATURE ( °C)
+                                        110                                                                                                                                       110
+                                                                                                                                  α
+                                      100                                                                              α
+                                                                                                                                                                                  100
+                                                                                                  30°                                                                                                                               30°
+
+
+                                                                                                                                              T A , MAXIMUM ALLOWABLE
+                                                    90                                                  60°                                                                        90                                                         60°
+                                                                                                                    α = CONDUCTION
+                                                                                                              90°                                                                                                                                   90°
+                                                                                                                        ANGLE
+                                                    80                                                                                                                             80
+                                                                                dc                                                                                                                              dc
+                                                    70                                                                                                                             70
+
+
+
+                                                                                                                                             AMBIENT TEMPERATURE ( °C)
+                                                                               α = 180°                                                                                                                     α = 180°
+                                                    60                                    120°                                                                                     60                                  120°
+                                                    50                                                                                                                             50       1.0 cm2 FOIL AREA
+                                                              MINIMUM FOOTPRINT                                                                                                                                                           α
+                                                                                                                                                                                            50 OR 60 Hz
+                                                    40                                                                                                                             40                                           α
+                                                              50 OR 60 Hz
+                                                    30                                                                                                                             30                                     α = CONDUCTION
+                                                                                                                                                                                                                                ANGLE
+                                                    20                                                                                                                             20
+                                                          0             0.1          0.2         0.3       0.4                        0.5                                               0       0.1           0.2       0.3     0.4    0.5      0.6                         0.7
+                                                                         IT(RMS), RMS ON‐STATE CURRENT (AMPS)                                                                                              IT(RMS), RMS ON‐STATE CURRENT (AMPS)
+
+                                                              Figure 4. Current Derating, Minimum Pad Size                                                                                  Figure 5. Current Derating, 1.0 cm Square Pad
+                                                                    Reference: Ambient Temperature                                                                                                Reference: Ambient Temperature
+
+
+
+
+T A , MAXIMUM ALLOWABLE AMBIENT TEMPERATURE ( °C)
+                                                    110                                                                                                                           110
+                                                                                                                                  α                                                                                      30°
+                                               100                                                                      α                                                         105
+                                                                                                 30°
+                                                                                                                                                                                                                                              60°
+
+                                                                                                                                            T(tab) , MAXIMUM ALLOWABLE
+                                                                                                                                                                                                      dc
+                                                                                                        60°         α = CONDUCTION
+                                                    90                    dc                              90°           ANGLE                                                     100
+                                                                                                                                                                                                              α = 180°
+                                                                       α = 180°
+                                                    80                                                                                                                             95
+
+
+
+                                                                                                                                               TAB TEMPERATURE ( °C)
+                                                                              120°                                                                                                                                                                                        90°
+                                                                                                                                                                                                                         120°
+                                                    70                                                                                                                             90
+                                                                                                                                                                                            REFERENCE:                                    α
+                                                               4.0 cm2 FOIL AREA                                                                                                            FIGURE 1                            α
+                                                    60                                                                                                                             85
+                                                                                                                                                                                                                         α = CONDUCTION
+                                                                                                                                                                                                                                ANGLE
+                                                    50                                                                                                                             80
+                                                          0      0.1       0.2       0.3    0.4    0.5    0.6               0.7       0.8                                               0      0.1          0.2      0.3    0.4   0.5    0.6                    0.7         0.8
+                                                                         IT(RMS), RMS ON‐STATE CURRENT (AMPS)                                                                                              IT(RMS), ON‐STATE CURRENT (AMPS)
+
+                                                              Figure 6. Current Derating, 2.0 cm Square Pad                                                                                                  Figure 7. Current Derating
+                                                                    Reference: Ambient Temperature                                                                                                              Reference: MT2 Tab
+
+
+
+
+                                                                                                                              http://onsemi.com
+                                                                                                                                                5
+                                                                                                Z0103MN, Z0107MN, Z0109MN
+
+                            1.0                                                                                                                                             1.0
+                                                                        α
+                            0.9
+                                                             α
+
+
+
+ P(AV) , MAXIMUM AVERAGE                                                                                                                          r(t), TRANSIENT THERMAL
+                            0.8
+                                                      α = CONDUCTION
+                            0.7
+                                                             ANGLE
+                            0.6
+                                                                   120°
+                            0.5                                                                                                                                             0.1
+                                                                                                                   30°
+
+
+                                                                                                                                                 RESISTANCE (NORMALIZED)
+POWER DISSIPATION (WATTS)
+                            0.4                  α = 180°
+                                                                                                       60°
+                            0.3
+                                                dc                                              90°
+                            0.2
+                            0.1
+                             0                                                                                                                                        0.01
+                                  0       0.1          0.2       0.3    0.4    0.5    0.6                    0.7         0.8                                             0.0001         0.001           0.01         0.1      1.0             10            100
+                                                     IT(RMS), RMS ON‐STATE CURRENT (AMPS)                                                                                                                   t, TIME (SECONDS)
+                                                        Figure 8. Power Dissipation                                                                                                     Figure 9. Thermal Response, Device
+                                                                                                                                                                                      Mounted on Figure 1 Printed Circuit Board
+
+
+
+
+                                                                                                                                                         LL                                                         1N4007
+                                             200 VRMS
+                                         ADJUST FOR                                                                                                                               MEASURE
+                                        ITM, 60 Hz VAC                                                                                                                                           RS
+                                                                                                                                                                                     I
+
+
+
+
+                                                                                                                               TRIGGER CONTROL
+                                                                                       CHARGE
+                                                                    TRIGGER            CONTROL                                                                                                                       -
+                                                     CHARGE                                                                                                                                                                         200 V
+                                                                                                                                                                                             CS           ADJUST FOR +
+                                                                                                                                                                                      MT2                 dv/dt(c)
+                                                                                                                                                             1N914 51 W
+                                                                                       NON‐POLAR                                                                                            MT1
+                                                                                              CL                                                                                       G
+
+
+
+                                                                        Note: Component values are for verification of rated (dv/dt)c. See AN1048 for additional information.
+
+                                      Figure 10. Simplified Test Circuit to Measure the Critical Rate of Rise of Commutating Voltage (dv/dt)c
+
+
+
+                            10                                                                                                                                              10
+                                                                                                                                                                                                                                                  60 Hz
+                                                                            80°                       60°
+                                                                                                                                                                                                                                                   180 Hz
+                                                                                                                                                                                                      400 Hz
+
+
+  COMMUTATING dv/dt                                                                                                                                     COMMUTATING dv/dt
+                                                                                                                                                                                                                      300 Hz
+
+                                                                    110°
+
+    dv/dt c , (V/ μ S)                                                                                                                                    dv/dt c , (V/ μ S)
+                                  ITM
+                                                                                         100°                                                                                        VDRM = 200 V
+
+                                          tw
+                                                                  1
+                                                       f=
+                                                                 2 tw                 6fI
+                                                                                           TM
+                                         VDRM                           (dińdt) c + 1000
+                            1.0                                                                                                                                             1.0
+                               1.0                                                                                       10                                                    60           70                 80              90           100             110
+                                        di/dtc, RATE OF CHANGE OF COMMUTATING CURRENT (A/mS)                                                                                                      TJ, JUNCTION TEMPERATURE (°C)
+
+                                    Figure 11. Typical Commutating dv/dt versus                                                                                                      Figure 12. Typical Commutating dv/dt versus
+                                  Current Crossing Rate and Junction Temperature                                                                                                        Junction Temperature at 0.8 Amps RMS
+
+
+
+
+                                                                                                             http://onsemi.com
+                                                                                                                                  6
+                                                                                    Z0103MN, Z0107MN, Z0109MN
+
+                                    60                                                                                                                10
+                                                                                             600 Vpk                                                                         IGT3
+
+
+
+
+                                                                                                                   I GT , GATE TRIGGER CURRENT (mA)
+                                                                                             TJ = 110°C
+
+                                    50                                MAIN TERMINAL #2                                                                                       IGT2
+                                                                          POSITIVE
+
+
+
+
+STATIC dv/dt (V/ μs)
+                                                                                                                                                                                                                                 IGT4
+                                                                                                                                                                           IGT1
+                                    40                                                                                                                1.0
+
+
+
+                                    30
+                                              MAIN TERMINAL #1
+                                                  POSITIVE
+                                    20                                                                                                                0.1
+                                         10                   100                1000                 10,000                                            -40        -20           0      20      40     60                 80      100
+                                                  RG, GATE - MAIN TERMINAL 1 RESISTANCE (OHMS)                                                                                    TJ, JUNCTION TEMPERATURE (°C)
+
+                                                Figure 13. Exponential Static dv/dt versus                                                                       Figure 14. Typical Gate Trigger Current Variation
+                                                    Gate − Main Terminal 1 Resistance
+
+
+
+
+                                   6.0                                                                                                           1.1
+
+
+
+
+                                                                                                                            VGT , GATE TRIGGER VOLTAGE (VOLTS)
+                                   5.0
+
+
+
+
+       IH , HOLDING CURRENT (mA)
+                                   4.0                                                                                                                                                                   VGT3
+                                                                         MAIN TERMINAL #2                                                                                                                            VGT4
+                                                                             POSITIVE
+                                                                                                                                                                                      VGT2
+                                   3.0
+                                                                                                                                                                                                  VGT1
+
+                                   2.0
+                                                                      MAIN TERMINAL #1
+                                                                          POSITIVE
+                                   1.0
+
+                                    0                                                                                                            0.3
+                                    -40        -20      0      20       40      60        80     100                                             -40             -20          0          20     40          60          80      100
+                                                        TJ, JUNCTION TEMPERATURE (°C)                                                                                         TJ, JUNCTION TEMPERATURE (°C)
+
+                                              Figure 15. Typical Holding Current Variation                                                                           Figure 16. Gate Trigger Voltage Variation
+
+
+
+
+                                                                                                 http://onsemi.com
+                                                                                                               7
+                                                               Z0103MN, Z0107MN, Z0109MN
+
+                                                                        PACKAGE DIMENSIONS
+
+                                                                                SOT−223 (TO−261)
+                                                                                 CASE 318E−04
+                                                                                    ISSUE L                       NOTES:
+                                               D                                                                  1. DIMENSIONING AND TOLERANCING PER ANSI
+                                               b1                                                                     Y14.5M, 1982.
+                                                                                                                  2. CONTROLLING DIMENSION: INCH.
+
+                                                                                                                                     MILLIMETERS                        INCHES
+                                                                                                                     DIM      MIN        NOM    MAX            MIN        NOM       MAX
+                                               4
+                                                                                                                      A       1.50       1.63   1.75          0.060       0.064     0.068
+                           HE                                   E                                                    A1       0.02       0.06   0.10          0.001       0.002     0.004
+                                       1       2      3                                                               b       0.60       0.75   0.89          0.024       0.030     0.035
+                                                                                                                     b1       2.90       3.06   3.20          0.115       0.121     0.126
+                                                                                                                      c       0.24       0.29   0.35          0.009       0.012     0.014
+                                                                                                                      D       6.30       6.50   6.70          0.249       0.256     0.263
+                                                                                                                      E       3.30       3.50   3.70          0.130       0.138     0.145
+                                                              b                                                       e       2.20       2.30   2.40          0.087       0.091     0.094
+                           e1                                                                                        e1       0.85       0.94   1.05          0.033       0.037     0.041
+                                           e                                                                         L1       1.50       1.75   2.00          0.060       0.069     0.078
+                                                                                                                     HE       6.70       7.00   7.30          0.264       0.276     0.287
+                                                                                                       C              q        0°         −      10°            0°          −        10°
+                                                                            q                                      STYLE 11:
+                                                                  A                                                  PIN 1. MT 1
+                                                                                                                         2. MT 2
+        0.08 (0003)
+                                A1                                                                                       3. GATE
+                                                                                                  L1                     4. MT 2
+
+
+
+
+                                                                         SOLDERING FOOTPRINT*
+                                                                                            3.8
+                                                                                           0.15
+
+                                                                       2.0
+                                                                      0.079
+
+
+
+
+                                                                                                                    6.3
+                                                                                    2.3            2.3
+                                                                                                                   0.248
+                                                                                   0.091          0.091
+
+
+
+                                                              2.0
+                                                             0.079
+
+
+                                                                           1.5                      SCALE 6:1       ǒinches
+                                                                                                                       mm Ǔ
+                                                                          0.059
+
+                                                    *For additional information on our Pb−Free strategy and soldering
+                                                     details, please download the ON Semiconductor Soldering and
+                                                     Mounting Techniques Reference Manual, SOLDERRM/D.
+
+
+
+
+ ON Semiconductor and             are registered trademarks of Semiconductor Components Industries, LLC (SCILLC). SCILLC reserves the right to make changes without further notice
+ to any products herein. SCILLC makes no warranty, representation or guarantee regarding the suitability of its products for any particular purpose, nor does SCILLC assume any liability
+ arising out of the application or use of any product or circuit, and specifically disclaims any and all liability, including without limitation special, consequential or incidental damages.
+ “Typical” parameters which may be provided in SCILLC data sheets and/or specifications can and do vary in different applications and actual performance may vary over time. All
+ operating parameters, including “Typicals” must be validated for each customer application by customer’s technical experts. SCILLC does not convey any license under its patent rights
+ nor the rights of others. SCILLC products are not designed, intended, or authorized for use as components in systems intended for surgical implant into the body, or other applications
+ intended to support or sustain life, or for any other application in which the failure of the SCILLC product could create a situation where personal injury or death may occur. Should
+ Buyer purchase or use SCILLC products for any such unintended or unauthorized application, Buyer shall indemnify and hold SCILLC and its officers, employees, subsidiaries, affiliates,
+ and distributors harmless against all claims, costs, damages, and expenses, and reasonable attorney fees arising out of, directly or indirectly, any claim of personal injury or death
+ associated with such unintended or unauthorized use, even if such claim alleges that SCILLC was negligent regarding the design or manufacture of the part. SCILLC is an Equal
+ Opportunity/Affirmative Action Employer. This literature is subject to all applicable copyright laws and is not for resale in any manner.
+
+
+PUBLICATION ORDERING INFORMATION
+LITERATURE FULFILLMENT:                                                 N. American Technical Support: 800−282−9855 Toll Free             ON Semiconductor Website: www.onsemi.com
+ Literature Distribution Center for ON Semiconductor                     USA/Canada
+ P.O. Box 5163, Denver, Colorado 80217 USA                              Europe, Middle East and Africa Technical Support:                 Order Literature: http://www.onsemi.com/orderlit
+ Phone: 303−675−2175 or 800−344−3860 Toll Free USA/Canada                Phone: 421 33 790 2910
+ Fax: 303−675−2176 or 800−344−3867 Toll Free USA/Canada                 Japan Customer Focus Center                                       For additional information, please contact your local
+ Email: orderlit@onsemi.com                                              Phone: 81−3−5773−3850                                            Sales Representative
+
+
+                                                                                http://onsemi.com                                                                           Z0103MN/D
+                                                                                              8
+

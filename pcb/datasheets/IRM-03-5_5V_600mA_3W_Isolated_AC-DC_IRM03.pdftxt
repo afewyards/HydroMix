@@ -1,0 +1,279 @@
+                      3W AC-DC High Reliable PCB-Mount Green Industrial Power Module                                       I R M - 0 3 series
+                                                                                                                                                 User’s Manual
+
+
+
+
+                               Bauar t gepruft
+
+
+
+
+LPS
+                               Sicherheit
+                                egel ma ge
+                                 od    o s
+                                be wac     g
+
+
+                               www.tuv.com
+                               ID 2000000000
+
+
+          UL62368-1    BS EN/EN62368-1       R33100
+                                                       TPTC004   IEC62368-1
+                                              RoHS
+                       BS EN/EN60335-1                           IEC61558-1/-2-16
+                       BS EN/EN61558-1/-2-16
+■ Features                                                                                            ■ Applications
+ Universal AC input / Full range                                                                     Industrial electrical equipment
+ No load power consumption<0.075W                                                                    Mechanical equipment
+ Compact size                                                                                        Factory automation equipment
+ Comply with BS EN/EN55032 Class B without                                                           Handheld electronic device
+      any additional components
+ Wide operating temp. range -30~85℃
+                                                                                                       ■ GTIN CODE
+ Protections: Short circuit / Overload / Over voltage
+                                                                                                           MW Search: https://www.meanwell.com/serviceGTIN.aspx
+ Cooling by free air convection
+ Isolation ClassⅡ
+ High reliability, low cost
+ 3 years warranty
+
+■ Description
+  IRM-03 is a 3W miniature (37*24*15mm) AC-DC module-type power supply, ready to be soldered onto
+  the PCB boards of various kinds of electronic instruments or industrial automation equipments. This
+  product allows a universal input voltage range of 85~305Vac. The phenolic case and potted with silicone
+  enhance the heat dissipation and meet the anti-vibration demand up to 5G; moreover, it provides the
+  fundamental resistance to dust and moisture. With the high efficiency up to 80% and the extremely low
+  no-load power consumption below 0.075W, IRM-03 series fulfills the worldwide regulation for the low
+  power consumption requirement for electronics. The entire series is a Class Ⅱ design (no FG pin),
+  incorporating the built-in EMI filtering components, enabling the compliance with BS EN/ EN55032 Class
+  B; the supreme EMC features keep the end electronic units from electromagnetic interference. In
+  addition to module-type model, IRM-03 series also offers the SMD style model.
+
+■ Model Encoding
+
+                                                                         {
+                                                                                Blank   : PCB mounting style
+  IRM - 03 - 5 S                                                                S       : SMD style
+
+                                                 Output voltage(3.3V/5V/9V/12V/15V/24V)
+                                                 Output wattage
+                                                 Series name
+                                                                                                                                 File Name:IRM-03-SPEC 2025 - 08-08
+                      3W AC-DC High Reliable PCB-Mount Green Industrial Power Module                                     I R M - 0 3 series
+SPECIFICATION
+MODEL                                   IRM-03-3.3          IRM-03-5             IRM-03-9          IRM-03-12           IRM-03-15              IRM-03-24
+             DC VOLTAGE                 3.3V                5V                   9V                12V                 15V                   24V
+             RATED CURRENT              900mA               600mA                333mA             250mA               200mA                 125mA
+             CURRENT RANGE              0 ~ 900mA           0 ~ 600mA            0 ~ 333mA         0 ~ 250mA           0 ~ 200mA             0 ~ 125mA
+             RATED POWER                3W                  3W                   3W                3W                  3W                    3W
+             RIPPLE & NOISE (max.) Note.2 100mVp-p          100mVp-p             100mVp-p          150mVp-p            200mVp-p              240mVp-p
+OUTPUT
+             VOLTAGE TOLERANCE Note.3 ±2.5%                 ±2.5%                ±2.5%             ±2.5%               ±2.5%                 ±2.5%
+             LINE REGULATION            ±0.5%               ±0.5%                ±0.5%             ±0.5%               ±0.5%                 ±0.5%
+             LOAD REGULATION            ±1.0%               ±0.5%                ±0.5%             ±0.5%               ±0.5%                 ±0.5%
+             SETUP, RISE TIME           600ms, 30ms/230Vac           600ms, 30ms/115Vac at full load
+             HOLD UP TIME (Typ.)        40ms/230Vac         8ms/115Vac at full load
+             VOLTAGE RANGE              85 ~ 305Vac 120~430Vdc
+             FREQUENCY RANGE            47 ~ 63Hz
+             EFFICIENCY (Typ.)          68%                 72%                  77%               78%                78%                    80%
+INPUT
+             AC CURRENT (Typ.)          70mA/115Vac         40mA/230Vac          35mA/277Vac
+             INRUSH CURRENT (Typ.)      10A/115Vac        20A/230Vac
+             LEAKAGE CURRENT            < 0.25mA/277Vac
+                                        105%~260% rated output power
+             OVERLOAD
+                                        Protection type : Hiccup mode, recovers automatically after fault condition is removed
+PROTECTION
+                                        3.8 ~ 4.9V          5.2~ 6.8V           10.3 ~ 12.2V       12.6 ~ 16.2V       15.75 ~ 20.3V          25.2 ~ 32.4V
+             OVER VOLTAGE
+                                        Protection type : Shut off o/p voltage, clamping by zener diode
+             WORKING TEMP.              -30 ~ +85℃ (Refer to "Derating Curve")
+             WORKING HUMIDITY           20 ~ 90% RH non-condensing
+ENVIRONMENT STORAGE TEMP., HUMIDITY -40 ~ +100℃, 10 ~ 95% RH
+             TEMP. COEFFICIENT          ±0.03%/℃ (0 ~ 50℃)
+             VIBRATION                  10 ~ 500Hz, 5G 10min./1cycle, period for 60min. each along X, Y, Z axes
+             SOLDERING TEMPERATURE Wave soldering: 265℃,5s (max.); Manual soldering: 390℃,3s (max.); Reflow soldering(SMD style): 240℃,10s (max.)
+                                        IEC62368-1,IEC61558-1/-2-16,UL62368-1, TUV BS EN/EN62368, BS EN/EN60335-1, BS EN/EN61558-1/-2-16,
+             SAFETY STANDARDS
+                                        EAC TP TC 004, BSMI CNS15598-1 approved, design refer to IEC60601-1 (By request)
+             OVER VOLTAGE CATEGORY IEC/EN 61558-1/-2-16(OVC Ⅱ, altitude up to 2000m); IEC/EN/UL 62368-1(OVC Ⅱ, altitude up to 2000m)
+
+SAFETY & WITHSTAND VOLTAGE              I/P-O/P:4.2KVac
+EMC          ISOLATION RESISTANCE I/P-O/P:100M Ohms / 500Vdc / 25℃/ 70% RH
+             EMC EMISSION               Compliance to BS EN/EN55032 (CISPR32) Class B, BS EN/EN61000-3-2,-3, EAC TP TC 020, CNS15936 Class B
+             EMC IMMUNITY               Compliance to BS EN/EN61000-4-2,3,4,5,6,8,11, BS EN/EN55035, heavy industry level (surge L-N : 1KV), EAC TP TC 020
+             MTBF                       10762.8K hrs min.        Telcordia SR-332 (Bellcore) ; 2137.6K hrs min.   MIL-HDBK-217F (25℃)
+OTHERS DIMENSION                        PCB mounting style : 37*24*15mm (L*W*H)           SMD style : 37*24*16mm (L*W*H)
+             PACKING                    PCB mounting style : 0.023Kg;560pcs/14.1Kg/0.77CUFT               SMD style :0.023Kg;560pcs/14.1Kg/0.77CUFT
+NOTE         1. All parameters NOT specially mentioned are measured at 230VAC input, rated load and 25℃ of ambient temperature.
+             2. Ripple & noise are measured at 20MHz of bandwidth by using a 12" twisted pair-wire terminated with a 0.1uf & 47uf parallel capacitor.
+             3. Tolerance : includes set up tolerance, line regulation and load regulation.
+             4. The ambient temperature derating of 3.5℃/1000m with fanless models and of 5℃/1000m with fan models for operating altitude higher
+                than 2000m(6500ft).
+             ※ Product Liability Disclaimer：For detailed information, please refer to https://www.meanwell.com/serviceDisclaimer.aspx
+
+
+
+
+                                                                                                                                 File Name:IRM-03-SPEC 2025 - 08-08
+                         3W AC-DC High Reliable PCB-Mount Green Industrial Power Module                                                        I R M - 0 3 series
+   Block Diagram
+
+
+                                                                                                                                                                 fosc : 130KHz
+
+
+                                                   RECTIFIERS                                                   RECTIFIERS                                              +V
+                                  EMI                                    POWER
+             Input                                      &                                                            &
+                                FILTER                                  SWITCHING                                                                                       -V
+                                                     FILTER                                                       FILTER
+
+                                                                          PWM
+                                                                        CONTROL                                         DETECTION
+                                                                                                                          CIRCUIT
+
+
+
+
+   Derating Curve                                                                    Static Characteristics
+
+
+                                                                                                100
+           100
+                                                                                                 90
+            80
+                                                                                                 80
+
+            60                                                                                   70
+            50
+
+
+LOAD (%)                                                                             LOAD (%)
+                                                                                                 60
+            40
+                                                                                                 50
+            20
+                                                                                                 40
+
+
+             -30     0     10     20     30   40      50    70   85   (HORIZONTAL)                    85   95    100   115   120   140   160   180   200   220    240   305
+
+                         AMBIENT TEMPERATURE (℃)                                                                       INPUT VOLTAGE (VAC) 60Hz
+
+
+
+
+                                                                                                                                                       File Name:IRM-03-SPEC 2025 - 08-08
+                         3W AC-DC High Reliable PCB-Mount Green Industrial Power Module                                                                                                                                                  I R M - 0 3 series
+Mechanical Specification                                                                                                                                                                                                            Case No.IRM03 Unit:mm [inch]
+                                                                                                                                                                                                                                             Tolerance:±0.5[±0.02]
+PCB mounting style
+                                                                                                                                                                                                                                         unless otherwise specified
+                                                                                              37[1.46]
+
+
+
+
+                                                                                                                                                     3.11[0.12]
+                                              3.26[0.13]                                      25.4[1]
+                                                                                                                                                                                                                          15[0.59]
+                                                                                5.08[0.2]
+                                                                                                                                                                                                            3.5±1mm
+
+
+
+
+                                                   12[0.47]
+                                                                   AC/L AC/N         2-Ø4.5[0.177]                                 NC
+
+
+              24[0.94]                                                                                                                               17.78[0.7]
+                                                                                            BOTTOM
+                                                                                             VIEW
+
+                                                                                                                           +V      -V
+
+                                                                                                                                                                                                          0.6
+                                                                  10.28[0.404]       16.44[0.647]                                       3.26[0.13]
+
+                                                                                                     5.08[0.2]                                                                                              PIN diameter:0.6±0.1 [0.024±0.004]
+
+
+
+SMD style
+
+                                                                                                                                          0.25±0.1 [0.01±0.004 ]
+
+                                                                                                        1.5[0.059]
+
+
+                                                                                                                                                                                                                           Pin NO.                  Assignment
+
+                                                                                                                                                          3.26[0.13]
+                                                                               28.9[1.14]
+
+                                                                                24[0.94]                                                                                                                                        1                         AC/L
+                                                                        26                       1                                                                                                                              3                         AC/N
+                                                                        24                       3
+
+            0.5±0.1 [0.02±0.004]                                        22
+                                                                                                                                                                                                                             14                           -Vo
+                                                                                          5
+
+                                                                                                            16.44[0.647]                  37[1.46]
+                                                                                                                                                          2.54[0.10]
+                                                                               BOTTOM
+                                                                                VIEW 2-Ø4.5[0.177]                                                                                                                           16                           +Vo
+                                                                        17                    10                                                                                                                           others                         NC
+                                                                                                            10.28[0.404]
+                                                                        16                    11
+                                      1.0[0.04]                         15                    12
+                                                                        14                    13
+
+                                                                                      12[0.47]
+                                                                                                                                                                                 15.6[0.61]
+                                                                                                                                                                                 16[0.63]
+
+
+
+
+Recommended PCB layout (for SMD style) (Reflow soldering method available)
+
+                                                                                                          2.54mm
+                                                                                                                                                                                                                                       Peak. Temp 240℃
+                                                                                                                                                                                         240                                             10 sec. Max.
+
+                                                                                                                           2.54mm                                                        220                                           220℃
+                                                                                                                                                                                                                        60 sec. Max.
+
+
+
+
+                                                                                                                                                                       Temperature (℃)
+                                                         26        24     22                17 16 15 14                                                                                                                  (>220℃)
+                                                                                                                                                                                         150
+
+
+                         30.1[1.19]   28.07[1.1]
+                                                                          TOP VIEW                                                                                                       100
+
+                                                                                                                                                                                          50
+                                                              1    3      5                 10 11 12 13
+                                                                                                                      2.03[0.08]                                                          0
+                                                                                                                                                                                                                   Time(sec.)
+                                                              1.5[0.06]               2.54[0.1]                                                                                                Remark : The curve applies only to the " Hot Air Reflow Soldering"
+
+
+
+
+Installation Manual
+Please refer to : http://www.meanwell.com/manual.html
+
+
+
+                                                                                                                                                                                                                                                File Name:IRM-03-SPEC 2025 - 08-08
+

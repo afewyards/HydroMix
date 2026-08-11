@@ -1,0 +1,1765 @@
+SIOV metal oxide varistors
+
+Leaded varistors, StandarD series
+
+
+
+Series/Type:          B722*
+Date:                 March 2018
+
+
+
+
+© EPCOS AG 2018. Reproduction, publication and dissemination of this publication, enclosures hereto and the
+information contained therein without EPCOS' prior express consent is prohibited.
+
+EPCOS AG is a TDK Group Company.
+Leaded varistors                                                                                B722*
+StandarD series
+
+
+Construction
+  Round varistor element, leaded
+  Coating: epoxy resin, flame-retardant to UL 94 V-0
+  Terminals: tinned wire
+
+Features
+   Wide operating voltage range 11 … 1100 VRMS
+   High surge current ratings up to 8 kA
+   No derating up to 105 °C ambient temperature
+   PSpice models
+
+Approvals
+   UL
+   CSA (all types ≥ K115)
+   VDE
+   CQC S05/07 (K11 … K460), S10/S14 (K11 … K680), S20 (K11 … K1000)
+   IEC
+
+Delivery mode
+   Bulk (standard), taped versions on reel or in Ammo pack upon request.
+   For further details refer to chapter "Taping, packaging and lead configuration" for leaded
+   varistors.
+
+Options
+
+S10* types with lead spacing 5.0 mm and S20* types with lead spacing 7.5 mm are also
+available on request.
+
+General technical data
+
+Climatic category                              to IEC 60068-1          40/105/56
+Operating temperature                          to IEC 61051            40 ... +105   °C
+Storage temperature                                                    40 ... +125   °C
+Electric strength                              to IEC 61051            ≥ 2.5          kVRMS
+Insulation resistance                          to IEC 61051            ≥ 100          MΩ
+
+
+
+
+Please read Cautions and warnings and                   Page 2 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                                  B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                    Type                     VRMS        VDC      imax        In 1)     Wmax     Pmax
+                                 (untaped)                                     (8/20 µs)   (8/20 µs) (2 ms)
+                                 SIOV-                                         1 time      15 times
+                                                          V           V        A           A         J        W
+VRMS = 11 V
+B72205S0110K101                  S05K11                       11      14        100          50        0.3    0.01
+B72207S0110K101                  S07K11                       11      14        250         100        0.8    0.02
+B72210S0110K101                  S10K11                       11      14        500         250        1.7    0.05
+B72214S0110K101                  S14K11                       11      14       1000         500        3.2    0.10
+B72220S0110K101                  S20K11                       11      14       2000        1000       10.0    0.20
+VRMS = 14 V
+B72205S0140K101                  S05K14                       14      18        100          50        0.4    0.01
+B72207S0140K101                  S07K14                       14      182)      250         100        0.9    0.02
+B72210S0140K101                  S10K14                       14      182)      500         250        2.0    0.05
+B72214S0140K101                  S14K14                       14      182)     1000         500        4.0    0.10
+B72220S0140K101                  S20K14                       14      182)     2000        1000       12.0    0.20
+VRMS = 17 V
+B72205S0170K101                  S05K17                       17      22        100          50        0.5    0.01
+B72207S0170K101                  S07K17                       17      22        250         100        1.1    0.02
+B72210S0170K101                  S10K17                       17      22        500         250        2.5    0.05
+B72214S0170K101                  S14K17                       17      22       1000         500        5.0    0.10
+B72220S0170K101                  S20K17                       17      22       2000        1000       14.0    0.20
+VRMS = 20 V
+B72205S0200K101                  S05K20                       20      26        100          50        0.6    0.01
+B72207S0200K101                  S07K20                       20      26        250         100        1.3    0.02
+B72210S0200K101                  S10K20                       20      26        500         250        3.1    0.05
+B72214S0200K101                  S14K20                       20      26       1000         500        6.0    0.10
+B72220S0200K101                  S20K20                       20      26       2000        1000       18.0    0.20
+VRMS = 25 V
+B72205S0250K101                  S05K25                       25      31        100          50        0.7    0.01
+B72207S0250K101                  S07K25                       25      31        250         100        1.6    0.02
+B72210S0250K101                  S10K25                       25      31        500         250        3.7    0.05
+B72214S0250K101                  S14K25                       25      31       1000         500        7.0    0.10
+B72220S0250K101                  S20K25                       25      31       2000        1000       22.0    0.20
+VRMS = 30 V
+B72205S0300K101                  S05K30                       30      38        100          50        0.9    0.01
+B72207S0300K101                  S07K30                       30      38        250         100        2.0    0.02
+B72210S0300K101                  S10K30                       30      38        500         250        4.4    0.05
+B72214S0300K101                  S14K30                       30      38       1000         500        9.0    0.10
+B72220S0300K101                  S20K30                       30      38       2000        1000       26.0    0.20
+
+1) Note: Nominal discharge current In according to UL 1449, 4th edition.
+2) Jump-start strength (max. 24 V, 5 minutes)
+
+
+Please read Cautions and warnings and                           Page 3 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                         B722*
+                    StandarD series
+
+
+Characteristics (TA = 25 °C)
+
+
+
+Ordering code                      Vv          ∆Vv             vc,max    ic          Ctyp
+                                   (1 mA)      (1 mA)          (ic)                  (1 kHz)
+                                   V           %               V         A           pF
+VRMS = 11 V
+B72205S0110K101                       18       ±10                  36         1.0    1750
+B72207S0110K101                       18       ±10                  36         2.5    2750
+B72210S0110K101                       18       ±10                  36         5.0    6250
+B72214S0110K101                       18       ±10                  36        10.0   12100
+B72220S0110K101                       18       ±10                  36        20.0   23000
+VRMS = 14 V
+B72205S0140K101                       22       ±10                  43         1.0    1450
+B72207S0140K101                       22       ±10                  43         2.5    2300
+B72210S0140K101                       22       ±10                  43         5.0    5200
+B72214S0140K101                       22       ±10                  43        10.0    9950
+B72220S0140K101                       22       ±10                  43        20.0   19000
+VRMS = 17 V
+B72205S0170K101                       27       ±10                  53         1.0    1200
+B72207S0170K101                       27       ±10                  53         2.5    1900
+B72210S0170K101                       27       ±10                  53         5.0    4350
+B72214S0170K101                       27       ±10                  53        10.0    8200
+B72220S0170K101                       27       ±10                  53        20.0   15600
+VRMS = 20 V
+B72205S0200K101                       33       ±10                  65         1.0     980
+B72207S0200K101                       33       ±10                  65         2.5    1600
+B72210S0200K101                       33       ±10                  65         5.0    3650
+B72214S0200K101                       33       ±10                  65        10.0    6800
+B72220S0200K101                       33       ±10                  65        20.0   13000
+VRMS = 25 V
+B72205S0250K101                       39       ±10                  77         1.0     850
+B72207S0250K101                       39       ±10                  77         2.5    1400
+B72210S0250K101                       39       ±10                  77         5.0    3200
+B72214S0250K101                       39       ±10                  77        10.0    5850
+B72220S0250K101                       39       ±10                  77        20.0   11100
+VRMS = 30 V
+B72205S0300K101                       47       ±10                  93         1.0     720
+B72207S0300K101                       47       ±10                  93         2.5    1200
+B72210S0300K101                       47       ±10                  93         5.0    2750
+B72214S0300K101                       47       ±10                  93        10.0    4950
+B72220S0300K101                       47       ±10                  93        20.0    9350
+
+
+
+
+Please read Cautions and warnings and                Page 4 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                    B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                   Type           VRMS     VDC       imax        In 1)     Wmax     Pmax
+                                (untaped)                         (8/20 µs)   (8/20 µs) (2 ms)
+                                SIOV-                             1 time      15 times
+                                               V        V         A           A         J        W
+VRMS = 35 V
+B72205S0350K101        S05K35              35       45     100           50               1.1    0.01
+B72207S0350K101        S07K35              35       45     250          100               2.5    0.02
+B72210S0350K101        S10K35              35       45     500          250               5.4    0.05
+B72214S0350K101        S14K35              35       45    1000          500              10.0    0.10
+B72220S0350K101        S20K35              35       45    2000        1000               33.0    0.20
+VRMS = 40 V
+B72205S0400K101        S05K40              40       56     100           50               1.3    0.01
+B72207S0400K101        S07K40              40       56     250          100               3.0    0.02
+B72210S0400K101        S10K40              40       56     500          250               6.4    0.05
+B72214S0400K101        S14K40              40       56    1000          500              13.0    0.10
+B72220S0400K101        S20K40              40       56    2000        1000               37.0    0.20
+VRMS = 50 V
+B72205S0500K101        S05K50              50       65     400          150               1.8    0.10
+B72207S0500K101        S07K50              50       65    1200          500               4.2    0.25
+B72210S0500K101        S10K50              50       65    2500        1500                8.4    0.40
+B72214S0500K101        S14K50              50       65    4500        3000               15.0    0.60
+B72220S0500K101        S20K50              50       65    6500        3000               27.0    1.00
+VRMS = 60 V
+B72205S0600K101        S05K60              60       85     400          150               2.2    0.10
+B72207S0600K101        S07K60              60       85    1200          500               4.8    0.25
+B72210S0600K101        S10K60              60       85    2500        1500               10.0    0.40
+B72214S0600K101        S14K60              60       85    4500        3000               17.0    0.60
+B72220S0600K101        S20K60              60       85    6500        3000               33.0    1.00
+VRMS = 75 V
+B72205S0750K101        S05K75              75      100     400          150               2.5    0.10
+B72207S0750K101        S07K75              75      100    1200          500               5.9    0.25
+B72210S0750K101        S10K75              75      100    2500        1500               12.0    0.40
+B72214S0750K101        S14K75              75      100    4500        3000               20.0    0.60
+B72220S0750K101        S20K75              75      100    6500        3000               40.0    1.00
+VRMS = 95 V
+B72205S0950K101        S05K95              95      125     400          150               3.4    0.10
+B72207S0950K101        S07K95              95      125    1200          500               7.6    0.25
+B72210S0950K101        S10K95              95      125    2500        1500               15.0    0.40
+B72214S0950K101        S14K95              95      125    4500        3000               25.0    0.60
+B72220S0950K101        S20K95              95      125    6500        3000               50.0    1.00
+1)
+   Note: Nominal discharge current In according to UL 1449, 4thedition.
+
+
+
+Please read Cautions and warnings and              Page 5 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                        B722*
+                    StandarD series
+
+
+Characteristics (TA = 25 °C)
+
+
+
+Ordering code                      Vv          ∆Vv             vc,max   ic          Ctyp
+                                   (1 mA)      (1 mA)          (ic)                 (1 kHz)
+                                   V           %               V        A           pF
+VRMS = 35 V
+B72205S0350K101                       56       ±10              110           1.0     620
+B72207S0350K101                       56       ±10              110           2.5    1050
+B72210S0350K101                       56       ±10              110           5.0    2400
+B72214S0350K101                       56       ±10              110          10.0    4200
+B72220S0350K101                       56       ±10              110          20.0    8000
+VRMS = 40 V
+B72205S0400K101                       68       ±10              135           1.0     520
+B72207S0400K101                       68       ±10              135           2.5     900
+B72210S0400K101                       68       ±10              135           5.0    2100
+B72214S0400K101                       68       ±10              135          10.0    3550
+B72220S0400K101                       68       ±10              135          20.0    6750
+VRMS = 50 V
+B72205S0500K101                       82       ±10              135       5.0         300
+B72207S0500K101                       82       ±10              135      10.0         530
+B72210S0500K101                       82       ±10              135      25.0         950
+B72214S0500K101                       82       ±10              135      50.0        1800
+B72220S0500K101                       82       ±10              135     100.0        3800
+VRMS = 60 V
+B72205S0600K101                     100        ±10              165       5.0         250
+B72207S0600K101                     100        ±10              165      10.0         480
+B72210S0600K101                     100        ±10              165      25.0         870
+B72214S0600K101                     100        ±10              165      50.0        1650
+B72220S0600K101                     100        ±10              165     100.0        3600
+VRMS = 75 V
+B72205S0750K101                     120        ±10              200       5.0         210
+B72207S0750K101                     120        ±10              200      10.0         430
+B72210S0750K101                     120        ±10              200      25.0         720
+B72214S0750K101                     120        ±10              200      50.0        1370
+B72220S0750K101                     120        ±10              200     100.0        2900
+VRMS = 95 V
+B72205S0950K101                     150        ±10              250       5.0         185
+B72207S0950K101                     150        ±10              250      10.0         335
+B72210S0950K101                     150        ±10              250      25.0         690
+B72214S0950K101                     150        ±10              250      50.0        1200
+B72220S0950K101                     150        ±10              250     100.0        2500
+
+
+
+
+Please read Cautions and warnings and                Page 6 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                    B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                   Type           VRMS     VDC       imax        In 1)     Wmax     Pmax
+                                (untaped)                         (8/20 µs)   (8/20 µs) (2 ms)
+                                SIOV-                             1 time      15 times
+                                               V        V         A           A         J        W
+VRMS = 115 V
+B72205S0111K101        S05K115            115      150     400           150              3.6    0.10
+B72207S0111K101        S07K115            115      150    1200           500              8.4    0.25
+B72210S0111K101        S10K115            115      150    2500         1500              18.0    0.40
+B72214S0111K101        S14K115            115      150    4500         3000              30.0    0.60
+B72220S0111K101        S20K115            115      150    6500         3000              60.0    1.00
+VRMS = 130 V
+B72205S0131K101        S05K130            130      170     400           150              4.2    0.10
+B72207S0131K101        S07K130            130      170    1200           500              9.5    0.25
+B72210S0131K101        S10K130            130      170    2500         1500              19.0    0.40
+B72214S0131K101        S14K130            130      170    4500         3000              34.0    0.60
+B72220S0131K101        S20K130            130      170    8000         3000              74.0    1.00
+VRMS = 140 V
+B72205S0141K101        S05K140            140      180     400           150              4.5    0.10
+B72207S0141K101        S07K140            140      180    1200           500             10.0    0.25
+B72210S0141K101        S10K140            140      180    2500         1500              22.0    0.40
+B72214S0141K101        S14K140            140      180    4500         3000              36.0    0.60
+B72220S0141K101        S20K140            140      180    8000         3000              78.0    1.00
+VRMS = 150 V
+B72205S0151K101        S05K150            150      200     400           150              4.9    0.10
+B72207S0151K101        S07K150            150      200    1200           500             11.0    0.25
+B72210S0151K101        S10K150            150      200    2500         1500              24.0    0.40
+B72214S0151K101        S14K150            150      200    4500         3000              40.0    0.60
+B72220S0151K101        S20K150            150      200    8000         3000              85.0    1.00
+VRMS = 175 V
+B72205S0171K101        S05K175            175      225     400           150              5.6    0.10
+B72207S0171K101        S07K175            175      225    1200           500             13.0    0.25
+B72210S0171K101        S10K175            175      225    2500         1500              28.0    0.40
+B72214S0171K101        S14K175            175      225    4500         3000              46.0    0.60
+B72220S0171K101        S20K175            175      225    8000         3000              98.0    1.00
+VRMS = 230 V
+B72205S0231K101        S05K230            230      300     400           150             7.2     0.10
+B72207S0231K101        S07K230            230      300    1200           500            17.0     0.25
+B72210S0231K101        S10K230            230      300    2500         1500             36.0     0.40
+B72214S0231K101        S14K230            230      300    4500         3000             60.0     0.60
+B72220S0231K101        S20K230            230      300    8000         3000            130.0     1.00
+1)
+   Note: Nominal discharge current In according to UL 1449, 4th edition.
+
+
+
+Please read Cautions and warnings and              Page 7 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                    B722*
+                    StandarD series
+
+
+Characteristics (TA = 25 °C)
+
+
+
+Ordering code                      Vv          ∆Vv             vc,max   ic      Ctyp
+                                   (1 mA)      (1 mA)          (ic)             (1 kHz)
+                                   V           %               V        A       pF
+VRMS = 115 V
+B72205S0111K101                     180        ±10              300       5.0     155
+B72207S0111K101                     180        ±10              300      10.0     280
+B72210S0111K101                     180        ±10              300      25.0     580
+B72214S0111K101                     180        ±10              300      50.0    1000
+B72220S0111K101                     180        ±10              300     100.0    2100
+VRMS = 130 V
+B72205S0131K101                     205        ±10              340       5.0     135
+B72207S0131K101                     205        ±10              340      10.0     245
+B72210S0131K101                     205        ±10              340      25.0     500
+B72214S0131K101                     205        ±10              340      50.0     880
+B72220S0131K101                     205        ±10              340     100.0    1850
+VRMS = 140 V
+B72205S0141K101                     220        ±10              360       5.0     125
+B72207S0141K101                     220        ±10              360      10.0     230
+B72210S0141K101                     220        ±10              360      25.0     470
+B72214S0141K101                     220        ±10              360      50.0     820
+B72220S0141K101                     220        ±10              360     100.0    1700
+VRMS = 150 V
+B72205S0151K101                     240        ±10              395       5.0     115
+B72207S0151K101                     240        ±10              395      10.0     210
+B72210S0151K101                     240        ±10              395      25.0     430
+B72214S0151K101                     240        ±10              395      50.0     750
+B72220S0151K101                     240        ±10              395     100.0    1550
+VRMS = 175 V
+B72205S0171K101                     270        ±10              455       5.0     100
+B72207S0171K101                     270        ±10              455      10.0     190
+B72210S0171K101                     270        ±10              455      25.0     380
+B72214S0171K101                     270        ±10              455      50.0     670
+B72220S0171K101                     270        ±10              455     100.0    1350
+VRMS = 230 V
+B72205S0231K101                     360        ±10              595       5.0      70
+B72207S0231K101                     360        ±10              595      10.0     130
+B72210S0231K101                     360        ±10              595      25.0     265
+B72214S0231K101                     360        ±10              595      50.0     530
+B72220S0231K101                     360        ±10              595     100.0    1000
+
+
+
+
+Please read Cautions and warnings and                Page 8 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                    B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                   Type           VRMS     VDC       imax        In 1)     Wmax     Pmax
+                                (untaped)                         (8/20 µs)   (8/20 µs) (2 ms)
+                                SIOV-                             1 time      15 times
+                                               V        V         A           A         J        W
+VRMS = 250 V
+B72205S0251K101        S05K250            250      320     400           150             8.2     0.10
+B72207S0251K101        S07K250            250      320    1200           500            19.0     0.25
+B72210S0251K101        S10K250            250      320    2500         1500             38.0     0.40
+B72214S0251K101        S14K250            250      320    4500         3000             65.0     0.60
+B72220S0251K101        S20K250            250      320    8000         3000            140.0     1.00
+VRMS = 275 V
+B72205S0271K101        S05K275            275      350     400           150             8.6     0.10
+B72207S0271K101        S07K275            275      350    1200           500            21.0     0.25
+B72210S0271K101        S10K275            275      350    2500         1500             43.0     0.40
+B72214S0271K101        S14K275            275      350    4500         3000             71.0     0.60
+B72220S0271K101        S20K275            275      350    8000         3000            151.0     1.00
+VRMS = 300 V
+B72205S0301K101        S05K300            300      385     400           150             9.6     0.10
+B72207S0301K101        S07K300            300      385    1200           500            23.0     0.25
+B72210S0301K101        S10K300            300      385    2500         1500             47.0     0.40
+B72214S0301K101        S14K300            300      385    4500         3000             76.0     0.60
+B72220S0301K101        S20K300            300      385    8000         3000            173.0     1.00
+VRMS = 320 V
+B72205S0321K101        S05K320            320      420     400           150            11.0     0.10
+B72207S0321K101        S07K320            320      420    1200           500            25.0     0.25
+B72210S0321K101        S10K320            320      420    2500         1500             50.0     0.40
+B72214S0321K101        S14K320            320      420    4500         3000             84.0     0.60
+B72220S0321K101        S20K320            320      420    8000         3000            184.0     1.00
+VRMS = 350 V
+B72205S0351K101        S05K350            350      460     400           150            12.0     0.10
+B72207S0351K101        S07K350            350      460    1200           500            27.0     0.25
+B72210S0351K101        S10K350            350      460    2500         1500             45.0     0.40
+B72214S0351K101        S14K350            350      460    4500         3000             80.0     0.60
+B72220S0351K101        S20K350            350      460    8000         3000            150.0     1.00
+VRMS = 385 V
+B72205S0381K101        S05K385            385      505     400           150            13.0     0.10
+B72207S0381K101        S07K385            385      505    1200           500            28.0     0.25
+B72210S0381K101        S10K385            385      505    2500         1500             40.0     0.40
+B72214S0381K101        S14K385            385      505    4500         3000             80.0     0.60
+B72220S0381K101        S20K385            385      505    8000         3000            150.0     1.00
+1)
+   Note: Nominal discharge current In according to UL 1449, 4th edition.
+
+
+
+Please read Cautions and warnings and              Page 9 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                    B722*
+                    StandarD series
+
+
+Characteristics (TA = 25 °C)
+
+
+
+Ordering code                      Vv          ∆Vv             vc,max   ic      Ctyp
+                                   (1 mA)      (1 mA)          (ic)             (1 kHz)
+                                   V           %               V        A       pF
+VRMS = 250 V
+B72205S0251K101                     390        ±10               650      5.0      65
+B72207S0251K101                     390        ±10               650     10.0     120
+B72210S0251K101                     390        ±10               650     25.0     245
+B72214S0251K101                     390        ±10               650     50.0     490
+B72220S0251K101                     390        ±10               650    100.0     940
+VRMS = 275 V
+B72205S0271K101                     430        ±10               710      5.0      60
+B72207S0271K101                     430        ±10               710     10.0     110
+B72210S0271K101                     430        ±10               710     25.0     220
+B72214S0271K101                     430        ±10               710     50.0     440
+B72220S0271K101                     430        ±10               710    100.0     850
+VRMS = 300 V
+B72205S0301K101                     470        ±10               775      5.0      55
+B72207S0301K101                     470        ±10               775     10.0     100
+B72210S0301K101                     470        ±10               775     25.0     200
+B72214S0301K101                     470        ±10               775     50.0     400
+B72220S0301K101                     470        ±10               775    100.0     780
+VRMS = 320 V
+B72205S0321K101                     510        ±10               840      5.0      50
+B72207S0321K101                     510        ±10               840     10.0      90
+B72210S0321K101                     510        ±10               840     25.0     185
+B72214S0321K101                     510        ±10               840     50.0     370
+B72220S0321K101                     510        ±10               840    100.0     720
+VRMS = 350 V
+B72205S0351K101                     560        ±10               910      5.0      48
+B72207S0351K101                     560        ±10               910     10.0      80
+B72210S0351K101                     560        ±10               910     25.0     160
+B72214S0351K101                     560        ±10               910     50.0     350
+B72220S0351K101                     560        ±10               910    100.0     660
+VRMS = 385 V
+B72205S0381K101                     620        ±10             1025       5.0      45
+B72207S0381K101                     620        ±10             1025      10.0      85
+B72210S0381K101                     620        ±10             1025      25.0     175
+B72214S0381K101                     620        ±10             1025      50.0     315
+B72220S0381K101                     620        ±10             1025     100.0     600
+
+
+
+
+Please read Cautions and warnings and                Page 10 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                     B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                   Type           VRMS     VDC        imax        In 1)     Wmax     Pmax
+                                (untaped)                          (8/20 µs)   (8/20 µs) (2 ms)
+                                SIOV-                              1 time      15 times
+                                               V        V          A           A         J        W
+VRMS = 420 V
+B72205S0421K101        S05K420            420      560     400           150             14.0     0.10
+B72207S0421K101        S07K420            420      560    1200           500             32.0     0.25
+B72210S0421K101        S10K420            420      560    2500         1500              45.0     0.40
+B72214S0421K101        S14K420            420      560    4500         3000              90.0     0.60
+B72220S0421K101        S20K420            420      560    8000         3000             175.0     1.00
+VRMS = 440 V
+B72205S0441K101        S05K440            440      585     400           150             16.0     0.10
+B72207S0441K101        S07K440            440      585    1200           500             34.0     0.25
+B72210S0441K101        S10K440            440      585    2500         1500              47.0     0.40
+B72214S0441K101        S14K440            440      585    4500         3000              95.0     0.60
+B72220S0441K101        S20K440            440      585    8000         3000             185.0     1.00
+VRMS = 460 V
+B72205S0461K101        S05K460            460      615     400           150             18.0     0.10
+B72207S0461K101        S07K460            460      615    1200           500             36.0     0.25
+B72210S0461K101        S10K460            460      615    2500         1500              50.0     0.40
+B72214S0461K101        S14K460            460      615    4500         3000             100.0     0.60
+B72220S0461K101        S20K460            460      615    8000         3000             195.0     1.00
+VRMS = 510 V
+B72210S0511K101        S10K510            510      670    2500         1500              55.0     0.40
+B72214S0511K101        S14K510            510      670    4500         3000             110.0     0.60
+B72220S0511K101        S20K510            510      670    6500         3000             190.0     1.00
+VRMS = 550 V
+B72210S0551K101        S10K550            550      745    2500         1500              60.0     0.40
+B72214S0551K101        S14K550            550      745    4500         3000             120.0     0.60
+B72220S0551K101        S20K550            550      745    6500         3000             210.0     1.00
+VRMS = 625 V
+B72210S0621K101        S10K625            625      825    2500         1500              68.0     0.40
+B72214S0621K101        S14K625            625      825    4500         3000             130.0     0.60
+B72220S0621K101        S20K625            625      825    6500         3000             230.0     1.00
+1)
+   Note: Nominal discharge current In according to UL 1449, 4th edition.
+
+
+
+
+Please read Cautions and warnings and              Page 11 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                    B722*
+                    StandarD series
+
+
+Characteristics (TA = 25 °C)
+
+
+
+Ordering code                      Vv          ∆Vv             vc,max   ic      Ctyp
+                                   (1 mA)      (1 mA)          (ic)             (1 kHz)
+                                   V           %               V        A       pF
+VRMS = 420 V
+B72205S0421K101                     680        ±10             1120       5.0      40
+B72207S0421K101                     680        ±10             1120      10.0      75
+B72210S0421K101                     680        ±10             1120      25.0     165
+B72214S0421K101                     680        ±10             1120      50.0     290
+B72220S0421K101                     680        ±10             1120     100.0     550
+VRMS = 440 V
+B72205S0441K101                     715        ±10             1180       5.0      37
+B72207S0441K101                     715        ±10             1180      10.0      72
+B72210S0441K101                     715        ±10             1180      25.0     158
+B72214S0441K101                     715        ±10             1180      50.0     275
+B72220S0441K101                     715        ±10             1180     100.0     530
+VRMS = 460 V
+B72205S0461K101                     750        ±10             1240       5.0      35
+B72207S0461K101                     750        ±10             1240      10.0      70
+B72210S0461K101                     750        ±10             1240      25.0     150
+B72214S0461K101                     750        ±10             1240      50.0     260
+B72220S0461K101                     750        ±10             1240     100.0     500
+VRMS = 510 V
+B72210S0511K101                     820        ±10             1355      25.0     140
+B72214S0511K101                     820        ±10             1355      50.0     240
+B72220S0511K101                     820        ±10             1355     100.0     460
+VRMS = 550 V
+B72210S0551K101                     910        ±10             1500      25.0     120
+B72214S0551K101                     910        ±10             1500      50.0     215
+B72220S0551K101                     910        ±10             1500     100.0     410
+VRMS = 625 V
+B72210S0621K101                    1000        ±10             1650      25.0     110
+B72214S0621K101                    1000        ±10             1650      50.0     200
+B72220S0621K101                    1000        ±10             1650     100.0     380
+
+
+
+
+Please read Cautions and warnings and                Page 12 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                                      B722*
+StandarD series
+
+
+Electrical specifications and ordering codes
+Maximum ratings (TA = 105 °C)
+Ordering code                    Type                     VRMS         VDC        imax        In 1)     Wmax       Pmax
+                                 (untaped)                                        (8/20 µs)   (8/20 µs) (2 ms)
+                                 SIOV-                                            1 time      15 times
+                                                          V            V          A           A         J          W
+VRMS = 680 V
+B72210S0681K101                  S10K680                    680            895    2500        1500       72.0      0.40
+B72214S0681K101                  S14K680                    680            895    4500        3000      140.0      0.60
+B72220S0681K101                  S20K680                    680            895    6500        3000      250.0      1.00
+VRMS = 1100 V
+B72214S0102K101                  S14K10002)               1100         1465       4500        3000      230.0      0.60
+B72220S0102K101                  S20K10002)               1100         1465       6500        3000      410.0      1.00
+
+
+Characteristics (TA = 25 °C)
+
+
+Ordering code                       Vv                   ∆Vv                 vc,max           ic              Ctyp
+                                    (1 mA)               (1 mA)              (ic)                             (1 kHz)
+                                    V                    %                   V                A               pF
+VRMS = 680 V
+B72210S0681K101                     1100                 ±10                 1815              25.0              100
+B72214S0681K101                     1100                 ±10                 1815              50.0              180
+B72220S0681K101                     1100                 ±10                 1815             100.0              340
+VRMS = 1100 V
+B72214S0102K101                     1800                 ±10                 2970              50.0              110
+B72220S0102K101                     1800                 ±10                 2970             100.0              210
+
+
+
+
+1) Note: Nominal discharge current In according to UL 1449, 4th edition.
+2) Operating voltage differs from type designation.
+
+
+Please read Cautions and warnings and                          Page 13 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                                        B722*
+                    StandarD series
+
+
+Dimensional drawings                                             Weight
+                                                                 Nominal diameter     VRMS           Weight
+                                                                 mm                   V              g
+                                                                 5                    11 ... 460     0.3 ... 0.7
+                                                                 7                    11 ... 460     0.4 ... 1.1
+                                                                 10                   11 ... 680     1.0 ... 3.0
+                                                                 14                   11 ... 1000    1.4 ... 7.6
+                                                                 20                   11 ... 1000    2.7 ... 15.7
+
+                                                                 The weight of varistors in between these voltage
+                                                                 classes can be interpolated.
+
+
+
+
+Dimensions
+Ordering code                   [e] ±1         a (typical)     wmax       thmax     hmax      lmin       d ±0.05
+                                mm             mm              mm         mm        mm        mm         mm
+VRMS = 11 V
+B72205S0110K101                  5.0           1.2              7.0          3.3     8.5      25.0       0.6
+B72207S0110K101                  5.0           1.2              9.0          3.4    11.0      25.0       0.6
+B72210S0110K101                  7.5           1.4             12.0          4.0    14.5      25.0       0.8
+B72214S0110K101                  7.5           1.4             15.5          4.0    18.5      25.0       0.8
+B72220S0110K101                 10.0           1.5             21.5          4.5    25.5      25.0       1.0
+VRMS = 14 V
+B72205S0140K101                  5.0           1.3              7.0          3.4     8.5      25.0       0.6
+B72207S0140K101                  5.0           1.3              9.0          3.5    11.0      25.0       0.6
+B72210S0140K101                  7.5           1.5             12.0          4.2    14.5      25.0       0.8
+B72214S0140K101                  7.5           1.5             15.5          4.2    18.5      25.0       0.8
+B72220S0140K101                 10.0           1.6             21.5          4.6    25.5      25.0       1.0
+VRMS = 17 V
+B72205S0170K101                  5.0           1.4              7.0          3.5     8.5      25.0       0.6
+B72207S0170K101                  5.0           1.4              9.0          3.6    11.0      25.0       0.6
+B72210S0170K101                  7.5           1.6             12.0          4.4    14.5      25.0       0.8
+B72214S0170K101                  7.5           1.7             15.5          4.4    18.5      25.0       0.8
+B72220S0170K101                 10.0           1.8             21.5          4.8    25.5      25.0       1.0
+VRMS = 20 V
+B72205S0200K101                  5.0           1.2              7.0          3.5     8.5      25.0       0.6
+B72207S0200K101                  5.0           1.2              9.0          3.6    11.0      25.0       0.6
+B72210S0200K101                  7.5           1.6             12.0          4.5    14.5      25.0       0.8
+B72214S0200K101                  7.5           1.6             15.5          4.6    18.5      25.0       0.8
+B72220S0200K101                 10.0           2.1             21.5          5.1    25.5      25.0       1.0
+
+
+Please read Cautions and warnings and                        Page 14 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                          B722*
+StandarD series
+
+
+Ordering code                   [e] ±1         a (typical)     wmax      thmax     hmax   lmin    d ±0.05
+                                mm             mm              mm        mm        mm     mm      mm
+VRMS = 25 V
+B72205S0250K101                  5.0           1.3              7.0          3.6    8.5   25.0    0.6
+B72207S0250K101                  5.0           1.3              9.0          3.7   11.0   25.0    0.6
+B72210S0250K101                  7.5           1.4             12.0          4.2   14.5   25.0    0.8
+B72214S0250K101                  7.5           1.4             15.5          4.2   18.5   25.0    0.8
+B72220S0250K101                 10.0           1.8             21.5          4.7   25.5   25.0    1.0
+VRMS = 30 V
+B72205S0300K101                  5.0           1.5              7.0          3.6    8.5   25.0    0.6
+B72207S0300K101                  5.0           1.5              9.0          3.7   11.0   25.0    0.6
+B72210S0300K101                  7.5           1.5             12.0          4.4   14.5   25.0    0.8
+B72214S0300K101                  7.5           1.5             15.5          4.4   18.5   25.0    0.8
+B72220S0300K101                 10.0           2.0             21.5          4.9   25.5   25.0    1.0
+VRMS = 35 V
+B72205S0350K101                  5.0           1.6              7.0          3.7    8.5   25.0    0.6
+B72207S0350K101                  5.0           1.6              9.0          3.9   11.0   25.0    0.6
+B72210S0350K101                  7.5           1.6             12.0          4.4   14.5   25.0    0.8
+B72214S0350K101                  7.5           1.6             15.5          4.5   18.5   25.0    0.8
+B72220S0350K101                 10.0           2.2             21.5          5.1   25.5   25.0    1.0
+VRMS = 40 V
+B72205S0400K101                  5.0           1.8              7.0          3.9    8.5   25.0    0.6
+B72207S0400K101                  5.0           1.8              9.0          4.1   11.0   25.0    0.6
+B72210S0400K101                  7.5           1.7             12.0          4.8   14.5   25.0    0.8
+B72214S0400K101                  7.5           1.7             15.5          4.9   18.5   25.0    0.8
+B72220S0400K101                 10.0           2.4             21.5          5.4   25.5   25.0    1.0
+VRMS = 50 V
+B72205S0500K101                  5.0           1.3              7.0          3.3    8.5   25.0    0.6
+B72207S0500K101                  5.0           1.3              9.0          3.3   11.0   25.0    0.6
+B72210S0500K101                  7.5           1.4             12.0          3.9   14.5   25.0    0.8
+B72214S0500K101                  7.5           1.4             15.5          3.9   18.5   25.0    0.8
+B72220S0500K101                 10.0           1.6             21.5          4.3   25.5   25.0    1.0
+VRMS = 60 V
+B72205S0600K101                  5.0           1.4              7.0          3.3    8.5   25.0    0.6
+B72207S0600K101                  5.0           1.4              9.0          3.3   11.0   25.0    0.6
+B72210S0600K101                  7.5           1.4             12.0          4.0   14.5   25.0    0.8
+B72214S0600K101                  7.5           1.5             15.5          4.0   18.5   25.0    0.8
+B72220S0600K101                 10.0           1.7             21.5          4.4   25.5   25.0    1.0
+VRMS = 75 V
+B72205S0750K101                  5.0           1.5              7.0          3.4    8.5   25.0    0.6
+B72207S0750K101                  5.0           1.5              9.0          3.6   11.0   25.0    0.6
+B72210S0750K101                  7.5           1.5             12.0          4.2   14.5   25.0    0.8
+B72214S0750K101                  7.5           1.5             15.5          4.2   18.5   25.0    0.8
+B72220S0750K101                 10.0           1.8             21.5          4.6   25.5   25.0    1.0
+
+
+Please read Cautions and warnings and                        Page 15 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                               B722*
+                    StandarD series
+
+
+Ordering code                   [e] ±1         a (typical)     wmax      thmax     hmax   lmin   d ±0.05
+                                mm             mm              mm        mm        mm     mm     mm
+VRMS = 95 V
+B72205S0950K101                  5.0           1.5              7.0          3.4    8.5   25.0   0.6
+B72207S0950K101                  5.0           1.5              9.0          3.4   11.0   25.0   0.6
+B72210S0950K101                  7.5           1.5             12.0          4.0   14.5   25.0   0.8
+B72214S0950K101                  7.5           1.5             15.5          4.0   18.5   25.0   0.8
+B72220S0950K101                 10.0           1.8             21.5          4.5   25.5   25.0   1.0
+VRMS = 115 V
+B72205S0111K101                  5.0           1.5              7.0          3.6    8.5   25.0   0.6
+B72207S0111K101                  5.0           1.5              9.0          3.6   11.0   25.0   0.6
+B72210S0111K101                  7.5           1.6             12.0          4.2   14.5   25.0   0.8
+B72214S0111K101                  7.5           1.7             15.5          4.2   18.5   25.0   0.8
+B72220S0111K101                 10.0           1.9             21.5          4.6   25.5   25.0   1.0
+VRMS = 130 V
+B72205S0131K101                  5.0           1.6              7.0          3.6    8.5   25.0   0.6
+B72207S0131K101                  5.0           1.6              9.0          3.6   11.0   25.0   0.6
+B72210S0131K101                  7.5           1.8             12.0          4.2   14.5   25.0   0.8
+B72214S0131K101                  7.5           1.9             15.5          4.2   18.5   25.0   0.8
+B72220S0131K101                 10.0           2.0             21.5          4.7   25.5   25.0   1.0
+VRMS = 140 V
+B72205S0141K101                  5.0           1.7              7.0          3.7    8.5   25.0   0.6
+B72207S0141K101                  5.0           1.7              9.0          3.7   11.0   25.0   0.6
+B72210S0141K101                  7.5           1.9             12.0          4.3   14.5   25.0   0.8
+B72214S0141K101                  7.5           2.0             15.5          4.3   18.5   25.0   0.8
+B72220S0141K101                 10.0           2.1             21.5          4.8   25.5   25.0   1.0
+VRMS = 150 V
+B72205S0151K101                  5.0           1.8              7.0          3.8    8.5   25.0   0.6
+B72207S0151K101                  5.0           1.8              9.0          3.8   11.0   25.0   0.6
+B72210S0151K101                  7.5           2.0             12.0          4.4   14.5   25.0   0.8
+B72214S0151K101                  7.5           2.1             15.5          4.4   18.5   25.0   0.8
+B72220S0151K101                 10.0           2.2             21.5          4.9   25.5   25.0   1.0
+VRMS = 175 V
+B72205S0171K101                  5.0           2.0              7.0          3.9    8.5   25.0   0.6
+B72207S0171K101                  5.0           2.0              9.0          4.0   11.0   25.0   0.6
+B72210S0171K101                  7.5           2.2             12.0          4.6   14.5   25.0   0.8
+B72214S0171K101                  7.5           2.2             15.5          4.6   18.5   25.0   0.8
+B72220S0171K101                 10.0           2.3             21.5          5.0   25.5   25.0   1.0
+VRMS = 230 V
+B72205S0231K101                  5.0           1.5              7.0          4.0    8.5   25.0   0.6
+B72207S0231K101                  5.0           1.5              9.0          4.0   11.0   25.0   0.6
+B72210S0231K101                  7.5           1.7             12.0          4.7   14.5   25.0   0.8
+B72214S0231K101                  7.5           1.7             15.5          4.7   18.5   25.0   0.8
+B72220S0231K101                 10.0           1.8             21.5          5.1   25.5   25.0   1.0
+
+
+Please read Cautions and warnings and                        Page 16 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                          B722*
+StandarD series
+
+
+Ordering code                   [e] ±1         a (typical)     wmax      thmax     hmax   lmin    d ±0.05
+                                mm             mm              mm        mm        mm     mm      mm
+VRMS = 250 V
+B72205S0251K101                  5.0           1.5              7.0          4.2    8.5   25.0    0.6
+B72207S0251K101                  5.0           1.5              9.0          4.2   11.0   25.0    0.6
+B72210S0251K101                  7.5           1.7             12.0          4.8   14.5   25.0    0.8
+B72214S0251K101                  7.5           1.7             15.5          4.8   18.5   25.0    0.8
+B72220S0251K101                 10.0           1.9             21.5          5.3   25.5   25.0    1.0
+VRMS = 275 V
+B72205S0271K101                  5.0           1.6              7.0          4.3    8.5   25.0    0.6
+B72207S0271K101                  5.0           1.6              9.0          4.4   11.0   25.0    0.6
+B72210S0271K101                  7.5           1.8             12.0          5.0   14.5   25.0    0.8
+B72214S0271K101                  7.5           1.8             15.5          5.0   18.5   25.0    0.8
+B72220S0271K101                 10.0           2.0             21.5          5.4   25.5   25.0    1.0
+VRMS = 300 V
+B72205S0301K101                  5.0           1.7              7.0          4.5    8.5   25.0    0.6
+B72207S0301K101                  5.0           1.7              9.0          4.5   11.0   25.0    0.6
+B72210S0301K101                  7.5           1.9             12.0          5.1   14.5   25.0    0.8
+B72214S0301K101                  7.5           1.9             15.5          5.2   18.5   25.0    0.8
+B72220S0301K101                 10.0           2.1             21.5          5.6   25.5   25.0    1.0
+VRMS = 320 V
+B72205S0321K101                  5.0           1.9              7.0          4.8    9.0   25.0    0.6
+B72207S0321K101                  5.0           1.9              9.0          4.8   11.5   25.0    0.6
+B72210S0321K101                  7.5           2.1             12.0          5.4   15.0   25.0    0.8
+B72214S0321K101                  7.5           2.1             15.5          5.4   19.0   25.0    0.8
+B72220S0321K101                 10.0           2.3             21.5          5.8   25.5   25.0    1.0
+VRMS = 350 V
+B72205S0351K101                  5.0           2.0              7.0          4.9    9.0   25.0    0.6
+B72207S0351K101                  5.0           2.0              9.0          4.9   11.5   25.0    0.6
+B72210S0351K101                  7.5           2.2             12.0          5.6   15.0   25.0    0.8
+B72214S0351K101                  7.5           2.2             15.5          5.6   19.0   25.0    0.8
+B72220S0351K101                 10.0           2.4             21.5          6.0   25.5   25.0    1.0
+VRMS = 385 V
+B72205S0381K101                  5.0           2.1              7.0          5.1    9.0   25.0    0.6
+B72207S0381K101                  5.0           2.1              9.0          5.2   11.5   25.0    0.6
+B72210S0381K101                  7.5           2.4             12.0          5.8   15.0   25.0    0.8
+B72214S0381K101                  7.5           2.4             15.5          5.9   19.0   25.0    0.8
+B72220S0381K101                 10.0           2.5             21.5          6.3   26.0   25.0    1.0
+
+
+
+
+Please read Cautions and warnings and                        Page 17 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                               B722*
+                    StandarD series
+
+
+
+
+Ordering code                   [e] ±1         a (typical)     wmax      thmax     hmax   lmin   d ±0.05
+                                mm             mm              mm        mm        mm     mm     mm
+VRMS = 420 V
+B72205S0421K101                  5.0           2.4              7.0          5.4    9.0   25.0   0.6
+B72207S0421K101                  5.0           2.4              9.0          5.4   11.5   25.0   0.6
+B72210S0421K101                  7.5           2.6             12.0          6.1   15.0   25.0   0.8
+B72214S0421K101                  7.5           2.6             15.5          6.1   19.0   25.0   0.8
+B72220S0421K101                 10.0           2.7             21.5          6.5   26.0   25.0   1.0
+VRMS = 440 V
+B72205S0441K101                  5.0           2.4              7.0          5.5    9.0   25.0   0.6
+B72207S0441K101                  5.0           2.4              9.0          5.5   11.5   25.0   0.6
+B72210S0441K101                  7.5           2.7             12.0          6.2   15.0   25.0   0.8
+B72214S0441K101                  7.5           2.7             15.5          6.3   19.0   25.0   0.8
+B72220S0441K101                 10.0           2.8             21.5          6.7   26.0   25.0   1.0
+VRMS = 460 V
+B72205S0461K101                  5.0           2.6              7.0          5.7    9.0   25.0   0.6
+B72207S0461K101                  5.0           2.6              9.0          5.7   11.5   25.0   0.6
+B72210S0461K101                  7.5           2.8             12.0          6.3   15.0   25.0   0.8
+B72214S0461K101                  7.5           2.8             15.5          6.4   19.0   25.0   0.8
+B72220S0461K101                 10.0           3.0             21.5          6.8   26.0   25.0   1.0
+VRMS = 510 V
+B72210S0511K101                  7.5           3.1             12.0          6.7   15.0   25.0   0.8
+B72214S0511K101                  7.5           3.1             15.5          6.8   19.0   25.0   0.8
+B72220S0511K101                 10.0           3.2             21.5          7.1   26.0   25.0   1.0
+VRMS = 550 V
+B72210S0551K101                  7.5           3.4             12.0          7.1   15.0   25.0   0.8
+B72214S0551K101                  7.5           3.4             15.5          7.2   19.0   25.0   0.8
+B72220S0551K101                 10.0           3.6             21.5          7.5   26.0   25.0   1.0
+VRMS = 625 V
+B72210S0621K101                  7.5           3.7             12.0          7.5   15.0   25.0   0.8
+B72214S0621K101                  7.5           3.7             15.5          7.5   19.0   25.0   0.8
+B72220S0621K101                 10.0           3.9             21.5          7.9   26.0   25.0   1.0
+VRMS = 680 V
+B72210S0681K101                  7.5           4.1             12.0          7.9   15.0   25.0   0.8
+B72214S0681K101                  7.5           4.1             15.5          8.0   19.0   25.0   0.8
+B72220S0681K101                 10.0           4.2             21.5          8.4   26.0   25.0   1.0
+VRMS = 1100 V
+B72214S0102K101                  7.5           6.3             15.5      11.0      20.5   25.0   0.8
+B72220S0102K101                 10.0           6.4             21.5      11.4      28.5   25.0   1.0
+
+
+
+
+Please read Cautions and warnings and                        Page 18 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                         B722*
+StandarD series
+
+
+Reliability data
+Test                                   Test methods/conditions                    Requirement
+Varistor voltage                       The voltage between two terminals with To meet the specified value
+                                       the specified measuring current applied
+                                       is called VV (1 mADC @ 0.2 ... 2 s).
+Clamping voltage                       The maximum voltage between two            To meet the specified value
+                                       terminals with the specified standard
+                                       impulse current (8/20 µs) applied.
+Endurance at upper                     1000 h at UCT                              |∆V/V (1 mA)| ≤10%
+category temperature                   After having continuously applied the
+                                       maximum allowable AC voltage at UCT
+                                       ±2 °C for 1000 h, the specimen shall be
+                                       stored at room temperature and normal
+                                       humidity for 1 to 2 h.
+                                       Thereafter, the change of VV shall be
+                                       measured.
+Surge current derating,                10 surge currents (8/20 µs), unipolar,     |∆V/V (1 mA)| ≤10%
+8/20 µs                                interval 30 s, amplitude corresponding     (measured in direction of
+                                       to derating curve for 10 impulses at       surge current)
+                                       20 µs                                      No visible damage
+Surge current derating,                10 surge currents (2 ms), unipolar,     |∆V/V (1 mA)| ≤10%
+2 ms                                   interval 120 s, amplitude corresponding (measured in direction of
+                                       to derating curve for 10 impulses at    surge current)
+                                       2 ms
+                                                                               No visible damage
+Electric strength                      IEC 61051-1, test 4.9.2                    No breakdown
+                                       Metal balls method, 2500 VRMS, 60 s
+                                       The varistor is placed in a container
+                                       holding 1.6 ±0.2 mm diameter metal
+                                       balls such that only the terminations of
+                                       the varistor are protruding.
+                                       The specified voltage shall be applied
+                                       between both terminals of the specimen
+                                       connected together and the electrode
+                                       inserted between the metal balls.
+
+
+
+
+Please read Cautions and warnings and                  Page 19 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                                  B722*
+                    StandarD series
+
+
+Test                                   Test methods/conditions                   Requirement
+Climatic sequence                      The specimen shall be subjected to:       |∆V/V (1 mA)| ≤10%
+                                       a) dry heat at UCT, 16 h, IEC             Rins ≥100 MΩ
+                                       60068-2-2, test Ba
+                                       b) damp heat, 1st cycle:
+                                           55 °C, 93% r. H., 24 h, IEC
+                                       60068-2-30, test Db
+                                       c) cold, LCT, 2 h, IEC 60068-2-1, test
+                                       Aa
+                                       d) damp heat, additional 5 cycles:
+                                           55 °C/25 °C, 93% r. H., 24 h/cycle,
+                                       IEC 60068-2-30, test Db.
+                                       Then the specimen shall be stored at
+                                       room temperature and normal humidity
+                                       for 1 to 2 h.
+                                       Thereafter, the change of VV shall be
+                                       measured. Thereafter, insulation resis-
+                                       tance Rins shall be measured at
+                                       V = 500 V.
+Rapid change of                        IEC 60068-2-14, test Na, LCT/UCT,         |∆V/V (1 mA)| ≤5%
+temperature                            dwell time 30 min, 5 cycles               No visible damage
+Damp heat, steady state                IEC 60068-2-78, test Ca                   |∆V/V (1 mA)| ≤10%
+                                       The specimen shall be subjected to        Rins ≥100 MΩ
+                                       40 ±2 °C, 90 to 95% r. H. for 56 days
+                                       without load / with 10% of the maxi-
+                                       mum continuous DC operating voltage
+                                       VDC. Then stored at room temperature
+                                       and normal humidity for 1 to 2 h.
+                                       Thereafter, the change of VV shall be
+                                       measured. Thereafter, insulation resis-
+                                       tance Rins shall be measured at
+                                       V = 500 V (insulated varistors only).
+
+
+
+
+Please read Cautions and warnings and                  Page 20 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                        B722*
+StandarD series
+
+
+Test                                   Test methods/conditions                   Requirement
+Solderability                          IEC 60068-2-20, test Ta,                  The inspection shall be
+                                       method 1 with modified conditions for     carried out under adequate
+                                       lead-free solder alloys: 245 °C, 3 s:     light with normal eyesight or
+                                                                                 with the assistance of a
+                                       After dipping the terminals to a depth of
+                                                                                 magnifier capable of giving
+                                       approximately 3 mm from the body in a
+                                                                                 a magnification of 4 to
+                                       soldering bath of 245 °C for 3 s, the
+                                                                                 10 times. The dipped
+                                       terminals shall be visually examined.
+                                                                                 surface shall be covered
+                                                                                 with a smooth and bright
+                                                                                 solder coating with no more
+                                                                                 than small amounts of
+                                                                                 scattered imperfections
+                                                                                 such as pinholes or
+                                                                                 un-wetted or de-wetted
+                                                                                 areas. These imperfections
+                                                                                 shall not be concentrated in
+                                                                                 one area.
+Resistance to soldering                IEC 60068-2-20, test Tb, method 1A,       |∆V/V (1 mA)| ≤5%
+heat                                   260 °C, 10 s:                             No visible damage
+                                       Each lead shall be dipped into a solder
+                                       bath having a temperature of 260 ±5 °C
+                                       to a point 2.0 to 2.5 mm from the body
+                                       of the specimen, be held there for
+                                       10 ±1 s and then be stored at room
+                                       temperature and normal humidity for
+                                       1 to 2 h.
+                                       The change of VV shall be measured
+                                       and the specimen shall be visually
+                                       examined.
+Tensile strength                       IEC 60068-2-21, test Ua1                  |∆V/V (1 mA)| ≤5%
+                                       After gradually applying the force        No break of solder joint,
+                                       specified below and keeping the unit      no wire break
+                                       fixed for 10 s, the terminal shall be
+                                       visually examined for any damage.
+                                       Force for wire diameter:
+                                       0.6 mm = 10 N
+                                       0.8 mm = 10 N
+                                       1.0 mm = 20 N
+
+
+
+
+Please read Cautions and warnings and                  Page 21 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                               B722*
+                    StandarD series
+
+
+Test                                   Test methods/conditions                 Requirement
+Vibration                              IEC 60068-2-6, test Fc, method B4       |∆V/V (1 mA)| ≤5%
+                                       Frequency range: 10 … 55 Hz             No visible damage
+                                       Amplitude:         0.75 mm or 98 m/s2
+                                       Duration:          6 h (3 · 2 h)
+                                       Pulse:             sine wave
+                                       After repeatedly applying a single
+                                       harmonic vibration according to the
+                                       table above.
+                                       The change of VV shall be measured
+                                       and the specimen shall be visually
+                                       examined.
+Bump                                   IEC 60068-2-29, test Eb                 |∆V/V (1 mA)| ≤5%
+                                       Pulse duration:    6 ms                 No visible damage
+                                       Max. acceleration: 400 m/s2
+                                       Number of bumps: 4000
+                                       Pulse:             half sine
+Fire hazard                            IEC 60695-11-5 (needle flame test)      5 s max.
+                                       Severity: vertical 10 s
+Note:
+UCT = Upper category temperature
+LCT = Lower category temperature
+Rins = Insulation resistance
+
+
+
+
+Please read Cautions and warnings and                   Page 22 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                  B722*
+StandarD series
+
+
+v/i characteristics
+
+v = f (i) - for explanation of the characteristics refer to "General technical information", 1.6.3
+A = Leakage current, B = Protection level } for worst-case varistor tolerances
+
+
+
+
+SIOV-S05 ...
+
+Please read Cautions and warnings and          Page 23 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                             B722*
+                    StandarD series
+
+
+v/i characteristics
+
+v = f (i) - for explanation of the characteristics refer to "General technical information", 1.6.3
+A = Leakage current, B = Protection level } for worst-case varistor tolerances
+
+
+
+
+SIOV-S07 ...
+
+Please read Cautions and warnings and          Page 24 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                  B722*
+StandarD series
+
+
+v/i characteristics
+
+v = f (i) - for explanation of the characteristics refer to "General technical information", 1.6.3
+A = Leakage current, B = Protection level } for worst-case varistor tolerances
+
+
+
+
+SIOV-S10 ...
+
+Please read Cautions and warnings and          Page 25 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                             B722*
+                    StandarD series
+
+
+v/i characteristics
+
+v = f (i) - for explanation of the characteristics refer to "General technical information", 1.6.3
+A = Leakage current, B = Protection level } for worst-case varistor tolerances
+
+
+
+
+SIOV-S14 ...
+
+Please read Cautions and warnings and          Page 26 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                  B722*
+StandarD series
+
+
+v/i characteristics
+
+v = f (i) - for explanation of the characteristics refer to "General technical information", 1.6.3
+A = Leakage current, B = Protection level } for worst-case varistor tolerances
+
+
+
+
+SIOV-S20 ...
+
+Please read Cautions and warnings and          Page 27 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                         B722*
+                    StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S05K11 ... K40
+
+
+
+
+SIOV-S05K50 ... K460
+
+
+Please read Cautions and warnings and          Page 28 of 47
+Important notes at the end of this document.
+Leaded varistors                                                              B722*
+StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S07K11 ... K40
+
+
+
+
+SIOV-S07K50 ... K460
+
+
+Please read Cautions and warnings and          Page 29 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                         B722*
+                    StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S10K11 ... K40
+
+
+
+
+SIOV-S10K50 ... K320
+
+
+Please read Cautions and warnings and          Page 30 of 47
+Important notes at the end of this document.
+Leaded varistors                                                              B722*
+StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S10K350 ... K680
+
+
+
+
+SIOV-S14K11 ... K40
+
+
+Please read Cautions and warnings and          Page 31 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                         B722*
+                    StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S14K50 ... K320
+
+
+
+
+SIOV-S14K350 ... K1000
+
+
+Please read Cautions and warnings and          Page 32 of 47
+Important notes at the end of this document.
+Leaded varistors                                                              B722*
+StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S20K11 ... K40
+
+
+
+
+SIOV-S20K50 ... K115
+
+
+Please read Cautions and warnings and          Page 33 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                         B722*
+                    StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S20K130 ... K320
+
+
+
+
+SIOV-S20K350 ... K460
+
+
+Please read Cautions and warnings and          Page 34 of 47
+Important notes at the end of this document.
+Leaded varistors                                                              B722*
+StandarD series
+
+
+Derating curves
+Maximum surge current imax = f (tr, pulse train)
+For explanation of the derating curves refer to "General technical information", section 1.8.1
+
+
+
+
+SIOV-S20K510 ... K1000
+
+
+
+
+Please read Cautions and warnings and          Page 35 of 47
+Important notes at the end of this document.
+                     Leaded varistors                                                                              B722*
+                     StandarD series
+
+
+Taping, packaging and lead configuration
+
+1           EPCOS ordering code system
+
+For leaded varistors
+
+
+    B722 or B723                  10              S                 2            271            K          1   0     1
+
+    Monolithic
+    varistor
+
+
+        Nominal
+        disc diameter
+
+
+                 Design:
+                 F = Fail-safe varistor
+                 Q = EnergetiQ
+                 S = Leaded varistor
+                 T = ThermoFuse
+                 U = Disk type, SNF
+                 X = Disk type, SNF (AEC-Q200)
+
+
+                              Series:
+                              0 = StandarD
+                              1 = Automotive
+                              2 = AdvanceD
+                              3 = SuperioR
+                              4 = SuperioR
+
+
+                                       Max. AC operating voltage:
+                                       271 = 27  101 = 275 VAC
+                                       140 = 14  100 = 14 VAC
+                                       141 = 14  101 = 140 VAC
+
+
+                                                      Tolerance of varistor voltage:
+                                                      K = ±10%
+                                                      J = ±5%
+                                                      S = Special tolerance
+
+
+                                                               Lead configuration:
+                                                               1 = Straight leads
+                                                               2 thru 9 = Kinked form
+
+
+                                                                         Packaging:
+                                                                         0 = Bulk,
+                                                                         1 thru 7 = Taping style
+
+
+                                                                                        Internal coding:
+                                                                                        1 = Standard
+
+
+
+
+Please read Cautions and warnings and                      Page 36 of 47
+Important notes at the end of this document.
+Leaded varistors                                                           B722*
+StandarD series
+
+
+2          Taping and packaging of leaded varistors
+
+Tape packaging for lead spacing     = 5 fully conforms to IEC 60286-2, while for lead spacings
+   = 7.5 and 10 the taping mode is based on this standard.
+
+
+2.1        Taping in accordance with IEC 60286-2 for lead spacing 5.0 mm
+
+
+
+
+2.2        Taping based on IEC 60286-2 for lead spacing 7.5 and 10 mm
+
+
+
+
+Please read Cautions and warnings and          Page 37 of 47
+Important notes at the end of this document.
+                     Leaded varistors                                                                     B722*
+                     StandarD series
+
+
+
+2.3        Tape dimensions (in mm)
+
+Sym-            = 5.0 Tolerance                  = 7.5 Tolerance             = 10.0 Tolerance   Remarks
+bol
+w                        max.                             max.                      max.        see tables in
+                                                                                                each series
+th                       max.                             max.                      max.        under
+                                                                                                "Dimensions"
+d        0.6             ±0.05            0.8             ±0.05       1.0           ±0.05
+P0       12.7            ±0.3             12.71)          ±0.3        12.7          ±0.3        ±1 mm/20
+                                                                                                sprocket holes
+P1       3.85            ±0.7             8.95      ±0.8              7.7        ±0.8
+F        5.0             +0.6/0.1        7.5       ±0.8              10.0       ±0.8
+∆h       0               ±2.0             depends on s                depends on s              measured at
+∆p       0               ±1.3             0         ±2.0              0          ±2.0           top of compo-
+                                                                                                nent body
+W        18.0            ±0.5             18.0            ±0.5        18.0          ±0.5
+W0       5.5             min.             11.0            min.        11.0          min.        Peel-off
+                                                                                                force > 5 N
+W1       9.0             ±0.5             9.0             +0.75/0.5 9.0            +0.75/0.5
+W2       3.0             max.             3.0             max.       3.0            max.
+                                                                                               2)
+H        18.0            +2.0/0          18.0            +2.0/0    18.0           +2.0/0
+H0       16.0            ±0.5             16.0            ±0.5       16.0           ±0.5       3)
+
+         (18.0)                           (18.0)
+H1       32.2            max.             45.0            max.        45.0          max.
+D0       4.0             ±0.2             4.0             ±0.2        4.0           ±0.2
+t        0.9             max.             0.9             max.        0.9           max.        without lead
+L        11.0            max.             11.0            max.        11.0          max.
+L1       0.5             max.
+1) Taping with P0 = 15.0 mm upon request
+2) Applies only to uncrimped types
+3) Applies only to crimped types (H0 = 18 upon request)
+
+
+
+
+Please read Cautions and warnings and                       Page 38 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                    B722*
+StandarD series
+
+
+
+2.4        Taping mode
+
+Example: B72210S0271K1 5 1
+                         |
+                    Digit 14
+
+Digit 14 Taping Reel type         Seating plane height H0         Seating plane height H Pitch distance
+         mode                     for crimped types               for uncrimped types    P0
+                                  mm                              mm                     mm
+0                  Bulk                                                               
+1         G         I             16                              18                     12.7
+2         G2        I             18                                                    12.7
+3         G3        II            16                              18                     12.7
+4         G4        II            18                                                    12.7
+5         G5        III           16                              18                     12.7
+6         GA        Ammo pack 16                                  18                     12.7
+7         G2A       Ammo pack 18                                                        12.7
+Internal coding for special taping
+          G6        III           18                                                    12.7
+          G10       II            16                              18                     15.0
+          G11       II            18                                                    15.0
+          G10A Ammo pack 16                                       18                     15.0
+          G11A Ammo pack 18                                                             15.0
+
+
+2.5        Reel dimension
+
+
+
+
+Dimensions (in mm)
+Reel type                   d                  f                    n                 w
+I                           360 max.           31 ±1                approx. 45        54 max.
+II                          360 max.           31 ±1                approx. 55        64 max.
+III                         500 max.           23 ±1                approx. 59        72 max.
+
+If reel type III is not compatible with insertion equipment because of its large diameter, nominal
+disk diameter 10 mm and 14 mm can be supplied on reel II upon request (taping mode G3).
+
+Please read Cautions and warnings and             Page 39 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                        B722*
+                    StandarD series
+
+
+
+
+2.6        Ammo pack dimensions
+
+
+
+
+3          Lead configuration
+
+Straight leads are standard for disk varistors. Other lead configurations as crimp style or cus-
+tomer-specific lead wire length according to 3.1, 3.2, 3.3 and 3.4 are optional. Crimped leads
+(non-standard) are differently crimped for technical reasons; the individual crimp styles are denot-
+ed by consecutive numbers (S, S2 through S5) as shown in the dimensional drawings below.
+The crimp styles of the individual types can be seen from the type designation in the ordering ta-
+bles.
+
+3.1        Crimp style mode
+Example: B72210S0271K 5 01
+                       |
+                    Digit 13
+
+Digit 13 of ordering code                      Crimp style                   Figure
+1                                              Standard, straight leads      1
+2                                              S2                            2
+3                                              S3                            3
+5                                              S5                            4
+Available upon request
+Internal coding                                                             5
+
+
+
+
+Please read Cautions and warnings and                        Page 40 of 47
+Important notes at the end of this document.
+Leaded varistors                                                                 B722*
+StandarD series
+
+
+
+3.2        Standard leads and non-standard crimp styles
+
+The basic dimensions in figure 1 to 5 are valid for types with either round or square
+(EnergetiQ series) component head.
+
+Standard, straight leads                       Non-standard,              Non-standard,
+                                               crimp style S2             crimp style S3
+
+
+
+
+Figure 1                                       Figure 2                   Figure 3
+
+
+Non-standard, crimp style S5
+
+
+
+
+Figure 4
+
+
+
+
+Please read Cautions and warnings and                     Page 41 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                B722*
+                    StandarD series
+
+
+
+3.3        Trimmed leads (non-standard)
+
+Varistors with cut leads available upon request.
+Lead length tolerances:
+Straight leads                          +/0.8 mm
+Crimped leads                           +/0.5 mm
+Minimum lead length                     3.0 mm
+
+
+
+
+Figure 5
+
+
+
+
+Please read Cautions and warnings and               Page 42 of 47
+Important notes at the end of this document.
+Leaded varistors                                                            B722*
+StandarD series
+
+
+Cautions and warnings
+
+General
+1. EPCOS metal oxide varistors are designed for specific applications and should not be used
+   for purposes not identified in our specifications, application notes and data books unless oth-
+   erwise agreed with EPCOS during the design-in-phase.
+2. Ensure suitability of SIOVs through reliability testing during the design-in phase. SIOVs
+   should be evaluated taking into consideration worst-case conditions.
+3. For applications of SIOVs in line-to-ground circuits based on various international and local
+   standards there are restrictions existing or additional safety measures required.
+
+Storage
+1. Store SIOVs only in original packaging. Do not open the package prior to processing.
+2. Recommended storage conditions in original packaging:
+   Storage temperature: 25 °C ... +45 °C,
+   Relative humidity:   <75% annual average,
+                        <95% on maximum 30 days a year.
+   Dew precipitation:   is to be avoided.
+3. Avoid contamination of an SIOV's during storage, handling and processing.
+4. Avoid storage of SIOVs in harmful environments that can affect the function during long-term
+   operation (examples given under operation precautions).
+5. The SIOV type series should be soldered after shipment from EPCOS within the time speci-
+   fied:
+  SIOV-S, -Q, -LS, -B, -SNF   24 months
+  ETFV/ T series, -CU         12 months.
+
+Handling
+1. SIOVs must not be dropped.
+2. Components must not be touched with bare hands. Gloves are recommended.
+3. Avoid contamination of the surface of SIOV electrodes during handling, be careful of the
+   sharp edge of SIOV electrodes.
+
+Soldering (where applicable)
+1. Use rosin-type flux or non-activated flux.
+2. Insufficient preheating may cause ceramic cracks.
+3. Rapid cooling by dipping in solvent is not recommended.
+4. Complete removal of flux is recommended.
+5. Temperatures of all preheat stages and the solder bath must be strictly controlled especially
+   for T series (T14 and T20).
+
+Please read Cautions and warnings and           Page 43 of 47
+Important notes at the end of this document.
+                    Leaded varistors                                                       B722*
+                    StandarD series
+
+
+Mounting
+1. Potting, sealing or adhesive compounds can produce chemical reactions in the SIOV ceramic
+   that will degrade the component’s electrical characteristics.
+2. Overloading SIOVs may result in ruptured packages and expulsion of hot materials. For this
+   reason SIOVs should be physically shielded from adjacent components.
+
+Operation
+1. Use SIOVs only within the specified temperature operating range.
+2. Use SIOVs only within the specified voltage and current ranges.
+3. Environmental conditions must not harm SIOVs. Use SIOVs only in normal atmospheric con-
+   ditions. Avoid use in deoxidizing gases (chlorine gas, hydrogen sulfide gas, ammonia gas,
+   sulfuric acid gas etc), corrosive agents, humid or salty conditions.Contact with any liquids and
+   solvents should be prevented.
+
+
+Display of ordering codes for EPCOS products
+
+The ordering code for one and the same EPCOS product can be represented differently in data
+sheets, data books, other publications, on the EPCOS website, or in order-related documents
+such as shipping notes, order confirmations and product labels. The varying representations of
+the ordering codes are due to different processes employed and do not affect the
+specifications of the respective products. Detailed information can be found on the Internet
+under www.epcos.com/orderingcodes
+
+
+
+
+Please read Cautions and warnings and          Page 44 of 47
+Important notes at the end of this document.
+    Leaded varistors                                                            B722*
+    StandarD series
+
+
+Symbols and terms
+
+Symbol               Term
+C                    Capacitance
+Ctyp                 Typical capacitance
+i                    Current
+ic                   Current at which Vc, max is measured
+Ileak                Leakage current
+imax                 Maximum surge current (also termed peak current)
+Imax                 Maximum discharge current
+In                   Nominal discharge current to UL 1449
+LCT                  Lower category temperature
+Ltyp                 Typical inductance
+Pmax                 Maximum average power dissipation
+Rins                 Insulation resistance
+Rmin                 Minimum resistance
+TA                   Ambient temperature
+tr                   Duration of equivalent rectangular wave
+UCT                  Upper category temperature
+v                    Voltage
+Vclamp               Clamping voltage
+vc, max              Maximum clamping voltage at specified current ic
+VDC                  DC operating voltage
+Vjump                Maximum jump start voltage
+vmax                 Maximum voltage
+Vop                  Operating voltage
+VRMS                 AC operating voltage, root-mean-square value
+VRMS, op, max        Root-mean-square value of max. DC operating voltage incl. ripple current
+Vsurge               Super imposed surge voltage
+VV                   Varistor voltage
+∆VV                  Tolerance of varistor voltage
+WLD                  Maximum load dump
+Wmax                 Maximum energy absorption
+
+                     Lead spacing
+
+
+All dimensions are given in mm.
+The commas used in numerical values denote decimal points.
+
+Please read Cautions and warnings and                Page 45 of 47
+Important notes at the end of this document.
+ Important notes
+
+
+
+
+The following applies to all products named in this publication:
+1. Some parts of this publication contain statements about the suitability of our products for
+   certain areas of application. These statements are based on our knowledge of typical
+   requirements that are often placed on our products in the areas of application concerned. We
+   nevertheless expressly point out that such statements cannot be regarded as binding
+   statements about the suitability of our products for a particular customer application. As a
+   rule we are either unfamiliar with individual customer applications or less familiar with them than
+   the customers themselves. For these reasons, it is always ultimately incumbent on the customer
+   to check and decide whether a product with the properties described in the product specification is
+   suitable for use in a particular customer application.
+2. We also point out that in individual cases, a malfunction of electronic components or failure
+   before the end of their usual service life cannot be completely ruled out in the current state
+   of the art, even if they are operated as specified. In customer applications requiring a very high
+   level of operational safety and especially in customer applications in which the malfunction or
+   failure of an electronic component could endanger human life or health (e.g. in accident
+   prevention or life-saving systems), it must therefore be ensured by means of suitable design of the
+   customer application or other action taken by the customer (e.g. installation of protective circuitry
+   or redundancy) that no injury or damage is sustained by third parties in the event of malfunction or
+   failure of an electronic component.
+3. The warnings, cautions and product-specific notes must be observed.
+4. In order to satisfy certain technical requirements, some of the products described in this
+   publication may contain substances subject to restrictions in certain jurisdictions (e.g.
+   because they are classed as hazardous). Useful information on this will be found in our Material
+   Data Sheets on the Internet (www.tdk-electronics.tdk.com/material). Should you have any more
+   detailed questions, please contact our sales offices.
+5. We constantly strive to improve our products. Consequently, the products described in this
+   publication may change from time to time. The same is true of the corresponding product
+   specifications. Please check therefore to what extent product descriptions and specifications
+   contained in this publication are still applicable before or when you place an order.
+   We also reserve the right to discontinue production and delivery of products. Consequently,
+   we cannot guarantee that all products named in this publication will always be available.
+   The aforementioned does not apply in the case of individual agreements deviating from the
+   foregoing for customer-specific products.
+6. Unless otherwise agreed in individual contracts, all orders are subject to our General Terms
+   and Conditions of Supply.
+7. Our manufacturing sites serving the automotive business apply the IATF 16949 standard.
+   The IATF certifications confirm our compliance with requirements regarding the quality
+   management system in the automotive industry. Referring to customer requirements and
+   customer specific requirements (“CSR”) TDK always has and will continue to have the policy of
+   respecting individual agreements. Even if IATF 16949 may appear to support the acceptance of
+   unilateral requirements, we hereby like to emphasize that only requirements mutually agreed
+   upon can and will be implemented in our Quality Management System. For clarification
+   purposes we like to point out that obligations from IATF 16949 shall only become legally binding if
+   individually agreed upon.
+
+
+
+
+                                                Page 46 of 47
+ Important notes
+
+
+
+
+8. The trade names EPCOS, CeraCharge, CeraDiode, CeraLink, CeraPad, CeraPlas, CSMP, CTVS,
+   DeltaCap, DigiSiMic, ExoCore, FilterCap, FormFit, LeaXield, MiniBlue, MiniCell, MKD, MKK,
+   MotorCap, PCC, PhaseCap, PhaseCube, PhaseMod, PhiCap, PowerHap, PQSine, PQvar,
+   SIFERRIT, SIFI, SIKOREL, SilverCap, SIMDAD, SiMic, SIMID, SineFormer, SIOV, ThermoFuse,
+   WindCap are trademarks registered or pending in Europe and in other countries. Further
+   information will be found on the Internet at www.tdk-electronics.tdk.com/trademarks.
+
+
+Release 2018-10
+
+
+
+
+                                          Page 47 of 47
+

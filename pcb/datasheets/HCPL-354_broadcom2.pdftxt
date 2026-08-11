@@ -1,0 +1,462 @@
+                                                                                                         Data Sheet
+
+
+HCPL-354
+AC Input Phototransistor Optocoupler
+SMD Mini-Flat Type
+
+
+
+
+Description                                                     Features
+The Broadcom® HCPL-354 contains a phototransistor,                 AC input response
+optically coupled to two LEDs connected inverse parallel. It       Current transfer ratio
+can operate directly by AC input current. It is packaged in a       (CTR: min. 20% at IF = ± 1 mA, VCE = 5V)
+4-pin mini-flat SMD package with a 2.0-mm profile. The
+                                                                   Isolation voltage between input and output
+small dimension of this product allows significant space            (Viso = 3,750 Vrms)
+savings. The package volume is 30% smaller than that of
+                                                                   Subminiature type
+conventional DIP type. Input-output isolation voltage is
+                                                                    (The volume is smaller than that of conventional DIP
+3750 Vrms. Response time, tr, is typically 4 µs and minimum
+                                                                    type by as far as 30%)
+CTR is 20% at input current of ±1 mA.
+                                                                   Mini-flat package
+Functional Diagram                                                 2.0 mm profile
+                                                                   UL approved
+                                                                   CSA approved
+     1                              4
+                                                                   IEC/EN 60747-5-5 approved
+                                                                   Options available:
+                                                                    – IEC/EN 60747-5-5 approvals (060)
+
+     2                              3                           Applications
+                                                                   Detecting or monitoring AC signals
+                                                                   Programmable controllers
+ 1. ANODE, CATHODE        3. EMITTER
+ 2. CATHODE, ANODE        4. COLLECTOR                             AC/DC-input modules
+                                                                   AC line/digital logic isolation
+
+
+
+
+CAUTION! Take normal static precautions in handling and assembly of this component to prevent damage and/or
+         degradation that might be induced by electrostatic discharge (ESD). The components featured in this data
+         sheet are not to be used in military or aerospace applications or environments. The components are not
+         AEC-Q100 qualified and not recommended for automotive applications.
+
+
+
+Broadcom                                                                                                            AV02-0775EN
+                                                                                                                 January 19, 2024
+HCPL-354 Data Sheet                                                               AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Ordering Information
+HCPL-354 is UL Recognized with 3750 Vrms for 1 minute per UL1577 and is approved under CSA Component Acceptance
+Notice #5, File CA 88324.
+
+                      RoHS Compliant Option
+
+                     Rank '0’        'Rank 'A’                Surface    Gull   Tape and         IEC/EN
+Part Number       20%<CTR<400%    50%<CTR<150%      Package    Mount     Wing     Reel          60747-5-5             Quantity
+HCPL-354              -000E            -00AE         SO-4        X                  X                           3000 pieces per
+                                                                                                                reel
+                      -060E            -06AE         SO-4        X                  X                X          3000 pieces per
+                                                                                                                reel
+
+
+To order, choose a part number from the part number column and combine with the desired option from the option column
+to form an order entry.
+
+Example 1:
+    HCPL-354-00AE to order product of Miniflat-4 AC Surface Mount package in Tape and Reel packaging with
+    50%<CTR<150% and RoHS compliant.
+
+Example 2:
+    HCPL-354-060E to order product of Miniflat-4 AC Surface Mount package in Tape and Reel pack- aging with
+    20%<CTR<400%, IEC/EN 60747-5-5 Safety Approval and RoHS compliant.
+
+Option data sheets are available. Contact your Broadcom sales representative or authorized distributor for information.
+
+
+
+
+Broadcom                                                                                                                   AV02-0775EN
+                                                                                                                                     2
+HCPL-354 Data Sheet                                                                  AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Package Outline Drawing
+HCPL-354-000E
+                2.54
+               r 0.25
+
+
+
+
+                                                    3.60 r 0.3                        5.30 r 0.3
+
+
+            A 354                       DATE CODE
+
+                Y WW                                               2.00 r 0.2                                      0.2 r 0.05
+                               4.40 r 0.2
+ LEAD
+ FREE
+
+                                                                        0.10 r 0.1          + 0.2
+                                                      0.40 r 0.1                     7.00
+                                                                                            – 0.7
+                                        RANK
+
+
+        DIMENSIONS IN MILLIMETERS.
+
+
+
+HCPL-354-060E
+                2.54
+               r 0.25
+
+
+
+
+                                                    3.60 r 0.3                        5.30 r 0.3
+
+
+           A 354 V                      DATE CODE
+
+                Y WW           4.40 r 0.2                          2.00 r 0.2                                     0.2 r 0.05
+LEAD
+FREE
+
+                                                                        0.10 r 0.1          + 0.2
+                                                      0.40 r 0.1                     7.00
+                                                                                            – 0.7
+                                        RANK
+
+
+        DIMENSIONS IN MILLIMETERS.
+
+
+
+
+Solder Reflow Profile
+Recommended reflow condition as per JEDEC Standard, J-STD-020 (latest revision). Non-halide flux should be used.
+
+
+
+
+Broadcom                                                                                                                        AV02-0775EN
+                                                                                                                                          3
+HCPL-354 Data Sheet                                                                                AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Absolute Maximum Ratings
+Parameters                                                                                Symbol             Min.             Max.            Units
+Storage Temperature                                                                          TS               –55             150               °C
+Ambient Operating Temperature                                                                TA               –55             100               °C
+Lead Solder Temperature for 10s (1.6 mm below seating plane)                                Tsol               —              260               °C
+Average Forward Current                                                                      IF                —              ±50              mA
+Input Power Dissipation                                                                      PI                —               70              mW
+Collector Current                                                                            IC                —               50              mA
+Collector-Emitter Voltage                                                                  VCEO                —               35               V
+Emitter-Collector Voltage                                                                  VECO                —                6               V
+Collector Power Dissipation                                                                  PC                —              150              mW
+Total Power Dissipation                                                                     Ptot               —              170              mW
+
+Isolation Voltage (AC for 1 minute, RH = 40 ~ 60%)     a                                    Viso               —              3750            Vrms
+    a. Isolation voltage shall be measured using the following method:
+       (a) Short between anode and cathode on the primary side and between collector and emitter on the secondary side.
+       (b) The isolation voltage tester with zero-cross circuit is used.
+       (c) The waveform of applied voltage is a sine wave.
+
+
+
+Electrical Specifications (TA = 25°C)
+Parameter                                            Symbol          Min.        Typ.        Max.          Units             Test Conditions
+Forward Voltage                                            VF         —           1.2         1.4             V       IF = ± 20 mA
+Terminal Capacitance                                       Ct         —           30          250            pF       V = 0, f = 1 kHz
+Collector Dark Current                                 ICEO           —            -          100            nA       VCE = 20V, IF = 0
+Collector-Emitter Breakdown Voltage                   BVCEO           35          —           —               V       IC = 0.1 mA, IF = 0
+Emitter-Collector Breakdown Voltage                   BVECO           6           —           —               V       IE = 10 µA, IF = 0
+Collector Current                                          IC        0.2          —            4             mA       IF = ± 1 mA
+
+Current Transfer Ratioa                                CTR            20          —           400            %        VCE = 5V
+Collector-Emitter Saturation Voltage                 VCE(sat)         —           0.1         0.2             V       IF = ± 20 mA, IC = 1 mA
+Isolation Resistance                                   Riso        5 × 1010    1 × 1011       —               Ω       DC 500V, 40 ~ 60% RH
+Floating Capacitance                                       Cf         —           0.6          1             pF       V = 0, f = 1 MHz
+Response Time (Rise)                                       tr         —            4          18             µs       VCE = 2V, IC = 2 mA
+Response Time (Fall)                                       tf         —            3          18             µs       RL = 100Ω
+    a. CTR = (IC / IF) × 100%.
+
+
+
+
+                  Rank Mark                                         CTR (%)                                            Conditions
+                        A                                          50 ~ 150                               IF = ± 1 mA, VCE = 5V, TA = 25°C
+                      No Mark                                      20 ~ 400
+
+
+
+
+Broadcom                                                                                                                                    AV02-0775EN
+                                                                                                                                                      4
+HCPL-354 Data Sheet                                                                                                                                                                       AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Figure 1: Forward Current vs. Ambient Temperature                                                                 Figure 2: Collector Power Dissipation vs. Ambient
+                                                                                                                  Temperature
+
+                                            60
+
+
+
+
+                                                                                                                      PC – COLLECTOR POWER DISSIPATION – mW
+                                                                                                                                                          200
+
+                                            50
+
+
+
+
+IF – FORWARD CURRENT – mA
+                                                                                                                                                          150
+                                            40
+
+                                            30                                                                                                            100
+
+                                            20
+                                                                                                                                                              50
+                                            10
+
+                                             0                                                                                                                 0
+                                             -55            0         25         50        75   100       125                                                  -55          0        25       50       75      100     125
+                                                          TA – AMBIENT TEMPERATURE – °C                                                                                TA – AMBIENT TEMPERATURE – °C
+
+
+Figure 3: Collector-Emitter Saturation Voltage vs. Forward                                                        Figure 4: Forward Current vs. Forward Voltage
+Current
+
+                                                  6                                                                                                 500
+                                                                                                TA = 25°C                                                              TA = 75°C
+
+
+
+
+ VCE(SAT.) – COLLECTOR-EMITTER
+                                                                                                                                                                       TA = 50°C
+                                                  5
+
+
+
+
+                                                                                                                  IF – FORWARD CURRENT – mA
+                                                                                       IC = 0.5 mA                                                  200
+                                                                                                                                                                       TA = 25°C                         TA = 0°C
+                                                                                       IC = 1 mA                                                    100                                                  TA = -25°C
+                                                  4
+                                                                                       IC = 3 mA                                                              50
+                                                  3                                    IC = 5 mA
+                                                                                                                                                              20
+
+
+
+   SATURATION VOLTAGE – V
+                                                                                       IC = 7 mA                                                              10
+                                                  2
+                                                                                                                                                               5
+                                                  1
+                                                                                                                                                               2
+                                                  0                                                                                                            1
+                                                      0         2.5        5.0       7.5    10.0   12.5    15.0                                                    0       0.5   1.0         1.5       2.0     2.5     3.0
+                                                                IF – FORWARD CURRENT – mA                                                                                  VF – FORWARD VOLTAGE – V
+
+
+
+Figure 5: Current Transfer Ratio vs. Forward Current                                                              Figure 6: Collector Current vs. Collector-Emitter Voltage
+
+                                            140                                                                                                               50
+                                                      VCE = 5 V                                                                                                                                         TA = 25°C
+
+
+
+
+         CTR – CURRENT TRANSFER RATIO – %
+                                                                                                                   IC – COLLECTOR CURRENT – mA
+                                            120       TA = 25°C
+                                                                                                                                                              40
+                                            100                                                                                                                        IF = 30 mA
+
+                                                                                                                                                              30                                   PC (MAX.)
+                                             80
+
+                                             60                                                                                                                                        IF = 20 mA
+                                                                                                                                                              20
+
+                                            40                                                                                                                                         IF = 10 mA
+                                                                                                                                                              10
+                                             20                                                                                                                                           IF = 5 mA
+                                                                                                                                                                                          IF = 1 mA
+                                             0                                                                                                                0
+                                             0.1 0.2 0.5 1                       2     5 10 20        50 100                                                       0   1     2   3     4     5     6     7   8       9 10
+
+                                                            IF – FORWARD CURRENT – mA                                                                              VCE – COLLECTOR-EMITTER VOLTAGE – V
+
+
+
+
+Broadcom                                                                                                                                                                                                                           AV02-0775EN
+                                                                                                                                                                                                                                             5
+HCPL-354 Data Sheet                                                                                                                                 AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Figure 7: Relative Current Transfer Ratio vs. Ambient                                          Figure 8: Collector-Emitter Saturation Voltage vs. Ambient
+Temperature                                                                                    Temperature
+
+                                       150                                                                                      0.10
+
+
+
+
+ RELATIVE CURRENT TRANSFER RATIO – %
+                                                                         IF = 1 mA                                                          IF = 20 mA
+
+
+
+                                                                                                VCE(SAT.) – COLLECTOR-EMITTER
+                                                                         VCE = 5 V                                                           IC = 1 mA
+                                                                                                                                0.08
+
+                                       100
+                                                                                                                                0.06
+
+
+
+
+                                                                                                  SATURATION VOLTAGE – V
+                                                                                                                                0.04
+                                        50
+
+                                                                                                                                0.02
+
+
+                                         0                                                                                          0
+                                          20           40          60       80          100                                          20        40              60                80            100
+                                                   TA – AMBIENT TEMPERATURE – °C                                                          TA – AMBIENT TEMPERATURE – °C
+
+
+
+Figure 9: Collector Dark Current vs. Ambient Temperature                                       Figure 10: Response Time vs. Load Resistance
+
+                                       10000                                                                             100
+
+
+
+
+  ICEO – COLLECTOR DARK CURRENT – nA
+                                                                                                                                       VCE = 2 V
+                                                                                                                          50
+                                                                                                                                       IC = 2 mA                        tr
+                                                     VCE = 20 V
+                                                                                                                          20           TA = 25°C
+                                       1000
+
+
+
+
+                                                                                                    RESPONSE TIME – μs
+                                                                                                                          10                                            tf
+                                                                                                                                5
+                                        100                                                                                                                         td
+                                                                                                                                2
+                                                                                                                                                                        ts
+                                                                                                                                1
+                                         10                                                                              0.5
+
+                                                                                                                         0.2
+                                             1                                                                           0.1
+                                              20         40         60       80          100                                                0.1 0.2      0.5        1        2        5   10
+                                                    TA – AMBIENT TEMPERATURE – °C                                                         RL – LOAD RESISTANCE – k:
+
+
+
+
+Figure 11: Frequency Response
+
+                                                                            VCE = 2 V
+                                                                            IC = 2 mA
+                                          0                                 TA = 25°C
+
+
+
+
+        VOLTAGE GAIN AV – dB
+                                                    RL = 10 k:
+
+                                        -10          RL = 1 k:
+                                                   RL = 100 :
+
+
+
+
+                                        -20
+                                          0.2       0.5 1 2       5 10      100         1000
+                                                         f – FREQUENCY – kHz
+
+
+
+
+Broadcom                                                                                                                                                                                             AV02-0775EN
+                                                                                                                                                                                                               6
+HCPL-354 Data Sheet                                                        AC Input Phototransistor Optocoupler SMD Mini-Flat Type
+
+
+Figure 12: Test Circuit for Response Time
+
+
+
+                             VCC
+                                                  INPUT
+
+                           RL
+              RD
+ INPUT                                           OUTPUT                  10%
+                                      OUTPUT
+
+                                                                         90%
+
+
+                                                     td        ts
+
+                                                          tr        tf
+
+
+
+Figure 13: Test Circuit for Frequency Response
+
+                                VCC
+
+
+                             RL
+                RD
+
+                                       OUTPUT
+
+
+
+
+Broadcom                                                                                                            AV02-0775EN
+                                                                                                                              7
+Copyright © 2007–2024 Broadcom. All Rights Reserved. The term “Broadcom” refers to Broadcom Inc. and/or its
+subsidiaries. For more information, go to www.broadcom.com. All trademarks, trade names, service marks, and logos
+referenced herein belong to their respective companies.
+
+Broadcom reserves the right to make changes without further notice to any products or data herein to improve reliability,
+function, or design. Information furnished by Broadcom is believed to be accurate and reliable. However, Broadcom does
+not assume any liability arising out of the application or use of this information, nor the application or use of any product or
+circuit described herein, neither does it convey any license under its patent rights nor the rights of others.
+

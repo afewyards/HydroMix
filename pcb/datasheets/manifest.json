@@ -1,0 +1,645 @@
+{
+  "schematic": "pcb/ValveController.kicad_sch",
+  "last_sync": "2026-08-11T08:37:30.798924+00:00",
+  "parts": {
+    "CL32A107MQVNNNE": {
+      "manufacturer": "",
+      "description": "",
+      "value": "100uF",
+      "references": [
+        "C1"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'CL32A107MQVNNNE'",
+      "last_attempt": "2026-08-11T08:30:28.827035+00:00"
+    },
+    "GCM31CR71H225KA55L": {
+      "manufacturer": "",
+      "description": "Boost converter output cap (24V rail)",
+      "value": "2.2uF",
+      "references": [
+        "C10",
+        "C11"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'GCM31CR71H225KA55L'",
+      "last_attempt": "2026-08-11T08:30:44.482376+00:00"
+    },
+    "C0402C103K5RECAUTO": {
+      "manufacturer": "",
+      "description": "Pump feedback filter cap",
+      "value": "10nF",
+      "references": [
+        "C12"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'C0402C103K5RECAUTO'",
+      "last_attempt": "2026-08-11T08:31:00.008248+00:00"
+    },
+    "GRM1555C1H820JA01D": {
+      "manufacturer": "",
+      "description": "Boost FB feedforward cap (across R10)",
+      "value": "82pF",
+      "references": [
+        "C13"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'GRM1555C1H820JA01D'",
+      "last_attempt": "2026-08-11T08:31:15.543652+00:00"
+    },
+    "GRM155R71C104KA88D": {
+      "manufacturer": "",
+      "description": "U7 decoupling (100nF)",
+      "value": "100nF",
+      "references": [
+        "C14",
+        "C8",
+        "C17",
+        "C7",
+        "C16",
+        "C2"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:31:31.079838+00:00"
+    },
+    "CL05A105KP5NNNC": {
+      "manufacturer": "",
+      "description": "U7 decoupling (1uF bulk)",
+      "value": "1uF",
+      "references": [
+        "C15",
+        "C3"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:31:31.681429+00:00"
+    },
+    "CL21A106KOFNNNE": {
+      "manufacturer": "",
+      "description": "LDO output cap",
+      "value": "10uF",
+      "references": [
+        "C5",
+        "C6",
+        "C4"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'CL21A106KOFNNNE'",
+      "last_attempt": "2026-08-11T08:31:32.311235+00:00"
+    },
+    "GRM21BR71C475KE51K": {
+      "manufacturer": "",
+      "description": "Boost converter input cap (5V rail)",
+      "value": "4.7uF",
+      "references": [
+        "C9"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:31:47.846477+00:00"
+    },
+    "R413F147050T1K": {
+      "manufacturer": "",
+      "description": "",
+      "value": "4.7nF X1/Y2",
+      "references": [
+        "CS2",
+        "CS1",
+        "C18"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:02.024286+00:00"
+    },
+    "SMF51CA": {
+      "manufacturer": "",
+      "description": "AUX1 24VAC surge clamp across terminals",
+      "value": "SMF51CA",
+      "references": [
+        "D18",
+        "D19"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:10.381615+00:00"
+    },
+    "Z0103MN 5AA4": {
+      "manufacturer": "",
+      "description": "4Q Triac, 1A RMS, 600V VDRM, 3mA Igt, 7mA Ih, SOT-223",
+      "value": "Z0103MN",
+      "references": [
+        "D2",
+        "D3"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:12.430275+00:00"
+    },
+    "SMF33A": {
+      "manufacturer": "",
+      "description": "Pump PWM line TVS clamp",
+      "value": "SMF33A",
+      "references": [
+        "D20",
+        "D21"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:40.409533+00:00"
+    },
+    "MBR130LSFT1G": {
+      "manufacturer": "",
+      "description": "OR-ing diode from IRM-03-5",
+      "value": "MBR130LSFT1G",
+      "references": [
+        "D4",
+        "D5"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:41.059150+00:00"
+    },
+    "RB160MM-60TR": {
+      "manufacturer": "",
+      "description": "Boost converter rectifier (SW node to 24V)",
+      "value": "RB160MM-60TR",
+      "references": [
+        "D6"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:32:55.681580+00:00"
+    },
+    "BZT52B27": {
+      "file": "BZT52B27_24V_rail_Zener_clamp_(FB-open_fault_protection_TPS61040_has_no_internal_OVP).pdf",
+      "manufacturer": "",
+      "description": "24V rail Zener clamp (FB-open fault protection, TPS61040 has no internal OVP)",
+      "value": "BZT52B27",
+      "datasheet_url": "https://diotec.com/request/datasheet/bzt52b2v4.pdf",
+      "downloaded_date": "2026-08-11T08:33:12.302686+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "D7"
+      ],
+      "size_bytes": 276972,
+      "verification": "verified"
+    },
+    "PEC3205CS_R1_00701": {
+      "file": "PEC3205CS_R1_00701_TEMP_SUPPLY_ESD_clamp_at_connector.pdf",
+      "manufacturer": "",
+      "description": "TEMP_SUPPLY ESD clamp at connector",
+      "value": "PEC3205CS",
+      "datasheet_url": "https://www.panjit.com.tw/en/Product/downloadPDF/PEC3205CS",
+      "downloaded_date": "2026-08-11T08:33:12.572408+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "D8",
+        "D9",
+        "D10",
+        "D11",
+        "D12"
+      ],
+      "size_bytes": 285361,
+      "verification": "likely"
+    },
+    "KWM-20881AGB": {
+      "manufacturer": "",
+      "description": "8x8 20mm dot matrix LED display, yellow-green GaP, common-row-anode",
+      "value": "KWM-20881AGB",
+      "references": [
+        "DS1"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'KWM-20881AGB'",
+      "last_attempt": "2026-08-11T08:33:15.086586+00:00"
+    },
+    "https://www.digikey.com/en/products/detail/littelfuse-inc/46205000000/2515987": {
+      "file": ".pdf",
+      "manufacturer": "",
+      "description": "",
+      "value": "46205000000",
+      "datasheet_url": "https://datasheet.octopart.com/46205000000-Littelfuse-datasheet-32024637.pdf",
+      "downloaded_date": "2026-08-11T08:33:30.564454+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "F2"
+      ],
+      "size_bytes": 1008059,
+      "verification": "verified"
+    },
+    "https://www.digikey.com/en/products/detail/phoenix-contact/1770966/2192468": {
+      "manufacturer": "",
+      "description": "",
+      "value": "1770966",
+      "references": [
+        "J10",
+        "J11",
+        "J8",
+        "J9",
+        "J12"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for ''",
+      "last_attempt": "2026-08-11T08:33:31.520838+00:00"
+    },
+    "USB4145-03-0170-C": {
+      "file": "USB4145-03-0170-C_USB-C_receptacle_USB_2.0.pdf",
+      "manufacturer": "",
+      "description": "USB-C receptacle, USB 2.0",
+      "value": "USB4145-03-0170-C",
+      "datasheet_url": "https://gct.co/files/drawings/usb4145.pdf",
+      "downloaded_date": "2026-08-11T08:33:32.145437+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "J13"
+      ],
+      "size_bytes": 209110,
+      "verification": "likely"
+    },
+    "https://www.digikey.com/en/products/detail/phoenix-contact/1990999/3605138": {
+      "manufacturer": "",
+      "description": "Phoenix SPT 2,5/4-H-5,0 push-in terminal, 4-pos, 5mm pitch, 400V/24A - AUX1+AUX2 field wiring",
+      "value": "1990999",
+      "references": [
+        "J15"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for ''",
+      "last_attempt": "2026-08-11T08:33:32.346204+00:00"
+    },
+    "https://www.digikey.com/en/products/detail/phoenix-contact/1990986/3605139": {
+      "manufacturer": "",
+      "description": "Phoenix SPT 2,5/3-H-5,0 push-in terminal, 250V",
+      "value": "1990986",
+      "references": [
+        "J2",
+        "J14",
+        "J3"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for ''",
+      "last_attempt": "2026-08-11T08:33:33.077485+00:00"
+    },
+    "LSXND4040TKL100MDG": {
+      "manufacturer": "",
+      "description": "Boost converter inductor",
+      "value": "10uH",
+      "references": [
+        "L1"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:33:33.669616+00:00"
+    },
+    "MOC3063S-TA1": {
+      "manufacturer": "",
+      "description": "",
+      "value": "MOC3063S-TA1",
+      "references": [
+        "Q3",
+        "Q4"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'MOC3063S-TA1'",
+      "last_attempt": "2026-08-11T08:33:48.893702+00:00"
+    },
+    "CSD17313Q2": {
+      "file": "CSD17313Q2_Logic-level_N-ch_MOSFET_low-side_pump_PWM_line_driver_(Wilo_iPWM2.pdf",
+      "manufacturer": "",
+      "description": "Logic-level N-ch MOSFET, low-side pump PWM line driver (Wilo iPWM2 interface), SON 2x2mm",
+      "value": "CSD17313Q2",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/csd17313q2.pdf",
+      "downloaded_date": "2026-08-11T08:34:04.436239+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "Q5"
+      ],
+      "size_bytes": 480071,
+      "verification": "verified"
+    },
+    "CPC1035NTR": {
+      "manufacturer": "",
+      "description": "Form A PhotoMOS SSR 350V, 0.1A, 35Ohm, AC/DC, SO-4",
+      "value": "CPC1035N",
+      "references": [
+        "Q6",
+        "Q7"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'CPC1035NTR'",
+      "last_attempt": "2026-08-11T08:34:04.646040+00:00"
+    },
+    "B72210S0271K101": {
+      "file": "B72210S0271K101.pdf",
+      "manufacturer": "",
+      "description": "",
+      "value": "B72210S0271K101",
+      "datasheet_url": "https://www.tdk-electronics.tdk.com/inf/70/db/var/SIOV_Leaded_StandarD.pdf",
+      "downloaded_date": "2026-08-11T08:34:20.218941+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "R1"
+      ],
+      "size_bytes": 1156703,
+      "verification": "unverified"
+    },
+    "RC0402FR-07249KL": {
+      "manufacturer": "",
+      "description": "Boost FB divider, upper (24V side)",
+      "value": "249k",
+      "references": [
+        "R10"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'RC0402FR-07249KL'",
+      "last_attempt": "2026-08-11T08:34:20.362477+00:00"
+    },
+    "RC0402FR-0713K3L": {
+      "manufacturer": "",
+      "description": "Boost FB divider, lower (GND side)",
+      "value": "13.3k",
+      "references": [
+        "R11"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'RC0402FR-0713K3L'",
+      "last_attempt": "2026-08-11T08:34:35.906167+00:00"
+    },
+    "RC0402FR-07100RL": {
+      "manufacturer": "",
+      "description": "Pump PWM gate series resistor",
+      "value": "100",
+      "references": [
+        "R12",
+        "R34",
+        "R35",
+        "R36",
+        "R37",
+        "R38"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:34:51.443855+00:00"
+    },
+    "ERJ-P08J222V": {
+      "manufacturer": "",
+      "description": "Wilo iPWM2 24V/2.2k pull-up (pump PWM line)",
+      "value": "2.2k",
+      "references": [
+        "R14"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:34:52.028561+00:00"
+    },
+    "ERJ-P08J101V": {
+      "manufacturer": "",
+      "description": "Pump PWM line series/protection resistor to J14",
+      "value": "100",
+      "references": [
+        "R15",
+        "RS2",
+        "R17",
+        "RS1"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:35:06.402127+00:00"
+    },
+    "RC0402FR-074K7L": {
+      "manufacturer": "",
+      "description": "",
+      "value": "4700",
+      "references": [
+        "RS7",
+        "RS5",
+        "RS4",
+        "RS8",
+        "RS6"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:36:25.877982+00:00"
+    },
+    "user stock (1k 0402)": {
+      "manufacturer": "",
+      "description": "AUX1 wetting return",
+      "value": "1k",
+      "references": [
+        "R30",
+        "R31"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'user stock (1k 0402)'",
+      "last_attempt": "2026-08-11T08:35:21.937996+00:00"
+    },
+    "RC0402FR-07100KL": {
+      "manufacturer": "",
+      "description": "AUX2_DET pull-up",
+      "value": "100k",
+      "references": [
+        "R33",
+        "R32"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:35:37.474185+00:00"
+    },
+    "RC0402FR-075K1L": {
+      "manufacturer": "",
+      "description": "CC2 pull-down (UFP)",
+      "value": "5.1k",
+      "references": [
+        "R6",
+        "R5"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:35:38.110222+00:00"
+    },
+    "AC0402FR-0710KL": {
+      "manufacturer": "",
+      "description": "GPIO8 strap pull-up (download mode)",
+      "value": "10k",
+      "references": [
+        "R7",
+        "R13",
+        "R2",
+        "R22",
+        "R21",
+        "R9",
+        "R24",
+        "R29",
+        "R16",
+        "R8",
+        "R26",
+        "R27",
+        "R28",
+        "R20",
+        "R3"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'AC0402FR-0710KL'",
+      "last_attempt": "2026-08-11T08:35:38.683201+00:00"
+    },
+    "RC0603FR-07360RL": {
+      "manufacturer": "",
+      "description": "",
+      "value": "360",
+      "references": [
+        "RG4",
+        "RG3"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'RC0603FR-07360RL'",
+      "last_attempt": "2026-08-11T08:35:54.226015+00:00"
+    },
+    "RC0402FR-07180RL": {
+      "manufacturer": "",
+      "description": "",
+      "value": "180",
+      "references": [
+        "RL2",
+        "RL1"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'RC0402FR-07180RL'",
+      "last_attempt": "2026-08-11T08:36:09.754966+00:00"
+    },
+    "RC0402FR-07680RL": {
+      "manufacturer": "",
+      "description": "AUX2 PhotoMOS LED current limit",
+      "value": "680",
+      "references": [
+        "RL4",
+        "RL3"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:36:25.296070+00:00"
+    },
+    "TL9320AF400QG": {
+      "file": "TL9320AF400QG_Tactile_switch_SPST-NO_sealed_IP67_BOOT_Zigbee_commissioning.pdf",
+      "manufacturer": "",
+      "description": "Tactile switch SPST-NO, sealed IP67, BOOT / Zigbee commissioning",
+      "value": "TL9320AF400QG",
+      "datasheet_url": "https://configured-product-images.s3.amazonaws.com/Datasheets/TL9320.pdf",
+      "downloaded_date": "2026-08-11T08:36:26.450039+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "SW1"
+      ],
+      "size_bytes": 654487,
+      "verification": "unverified"
+    },
+    "A6S-1102-H": {
+      "manufacturer": "",
+      "description": "Mode: ON = 24V continuity wetting (external-switching mode)",
+      "value": "A6S-1102-H",
+      "references": [
+        "SW3"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'A6S-1102-H'",
+      "last_attempt": "2026-08-11T08:36:27.300953+00:00"
+    },
+    "IRM-03-5": {
+      "file": "IRM-03-5_5V_600mA_3W_Isolated_AC-DC_IRM03.pdf",
+      "manufacturer": "",
+      "description": "5V, 600mA, 3W, Isolated, AC-DC, IRM03",
+      "value": "IRM-03-5",
+      "datasheet_url": "https://www.meanwell.com/Upload/PDF/IRM-03/IRM-03-SPEC.PDF",
+      "downloaded_date": "2026-08-11T08:36:42.901785+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "U1"
+      ],
+      "size_bytes": 143968,
+      "verification": "verified"
+    },
+    "USBLC6-2SC6": {
+      "manufacturer": "",
+      "description": "USB 2.0 ESD array, 2 data lines + VBUS clamp",
+      "value": "USBLC6-2SC6",
+      "references": [
+        "U10"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:36:44.696353+00:00"
+    },
+    "TLV75733PDRVR": {
+      "file": "TLV75733PDRVR_1A_3.3V_LDO_WSON-6_EN_tied_to_IN.pdf",
+      "manufacturer": "",
+      "description": "1A 3.3V LDO, WSON-6, EN tied to IN",
+      "value": "TLV75733P",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tlv757p.pdf",
+      "downloaded_date": "2026-08-11T08:37:05.312362+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "U2"
+      ],
+      "size_bytes": 2855726,
+      "verification": "likely"
+    },
+    "ESP32-C6-WROOM-1-N4": {
+      "manufacturer": "",
+      "description": "",
+      "value": "ESP32-C6-WROOM-1-N4",
+      "references": [
+        "U5"
+      ],
+      "status": "failed",
+      "error": "No datasheet URL or all download methods failed",
+      "last_attempt": "2026-08-11T08:37:05.620531+00:00"
+    },
+    "TPS61040DRVR": {
+      "file": "TPS61040DRVR_5V_to_24V_boost_converter_WSON-6_(Wilo_iPWM2_pump_drive_supply).pdf",
+      "manufacturer": "",
+      "description": "5V to 24V boost converter, WSON-6 (Wilo iPWM2 pump drive supply)",
+      "value": "TPS61040",
+      "datasheet_url": "https://www.ti.com/lit/ds/symlink/tps61040.pdf",
+      "downloaded_date": "2026-08-11T08:37:06.195259+00:00",
+      "source": "schematic",
+      "status": "ok",
+      "references": [
+        "U6"
+      ],
+      "size_bytes": 2280343,
+      "verification": "unverified"
+    },
+    "IS31FL3730-QFLS2-TR": {
+      "manufacturer": "",
+      "description": "8x8 LED matrix driver, I2C, QFN-24 (audio input unused, SDB tied high)",
+      "value": "IS31FL3730",
+      "references": [
+        "U7"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'IS31FL3730-QFLS2-TR'",
+      "last_attempt": "2026-08-11T08:37:06.505817+00:00"
+    },
+    "HCPL-354-06AE": {
+      "manufacturer": "",
+      "description": "AUX1 AC/continuity detect opto (AC-input)",
+      "value": "HCPL-354-06AE",
+      "references": [
+        "U9",
+        "U8"
+      ],
+      "status": "not_found",
+      "error": "No LCSC results for 'HCPL-354-06AE'",
+      "last_attempt": "2026-08-11T08:37:22.040059+00:00"
+    }
+  }
+}

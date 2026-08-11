@@ -1,0 +1,304 @@
+H
+                                                                         2.56±0.04
+                                                                                                                    1.20±0.05
+                                           8.34+0.06
+                                                                          3.69
+                                               -0.02
+                                                                   A12                                                                4.65                 T=0.12
+                                                                                                                    0.70±0.05
+                              A1                        A
+
+G
+
+
+
+                              B12                       A          B1                                                                 Section: A-A
+                                             8.70
+                                                                                                                                                                                                                                 Specifications
+F                                                                                                                                                                                                                                Material
+                                             8.94                                                                           3.16                                                                                                  Insulator: PA9T, UL 94V-0, Black
+                                                                                                                                                                                                                                  Contact: Copper Alloy
+                                                                                                                                                                                                                                  Mid Plate: Stainless Steel
+                                                                                                                                                                                                                                  EMI Plate: Stainless Steel
+
+
+
+
+                                                                                     (2.3mm stake shown)
+                                                                                                                                                                                                                                  Shell: Stainless Steel
+
+E
+                                                                                                                                                   5.90
+                                                                            S+0.10
+                                                                                                                                                                                                                                 Plating
+                                                               7.41          -0.20                         7.46                                                                                                                   Contact
+                                                                                                                                                                                                                                    Contact Area: 3u" Au over 50µ" min. Nickel
+                                                                                                                  0.64                                                                                                              Solder Tails: Gold Flash over 50µ" min. Nickel
+                                                                                                                                                                                                                                  Shell: 30µ" min. Nickel
+                                                                                                                                                   0.10                                                                           Mid Plate: Clear
+                                                                                                                                                                                                                                  EMI Plate: Clear
+D
+                                                                                                                                                                                                                                 Electrical
+                                                                                                                                                                                                                                  Current Rating:      5.00A collectively for VBUS pins
+                                         4x 0.70±0.05                        0.30±0.05                                                                                                                                                                 6.25A collectively for GND pins
+                                         2x 8.00±0.15                      2x 1.43±0.15                                                                                                                                                                1.25A for A5/B5 pin
+                                                                                                                                                                                                                                                       0.25A per pin for all other pins
+                                                                            2x 2.86±0.15                                                                                                                                             Voltage Rating: 48V DC
+
+
+
+
+                 1.845±0.15
+C                                         8.00±0.10                                                                                                                                                                                  Power Rating: 240W
+                                                                                                                                                                                                                                     Contact Resistance: 40mΩ max initial.
+                                             5.50                                                                                  Ordering Grid
+
+
+
+
+    1.845±0.15
+                                                                                                                                                                                                                                                          50mΩ max after test
+                                B12                           B1                                                                USB4145            03     XXXX             C
+                                                                                                                                                                                 Request Samples
+                                                                                                                                                                                  and Quotation                                      Dielectric Withstanding Voltage: 100V AC
+                                                                                                                                                                                                                                     Insulation Resistance 100MΩ min
+                                                                   2x Ø0.56±0.05                                                Contact Plating                              Packing Options
+                                                                                                                                03 = 3u" Gold                                C = Tape & Reel with Cap                            Mechanical & Environmental
+B                                                                                                                                                                          Shell Stake Length "S"                                 Operating Temperature: -25°C to +85°C
+                                                                                                                                                                           0070 = 0.70mm                                          Mating Force: 5 to 20 N.
+                                                                                                                                                                           0170 = 1.70mm                                          Unmated Force: 6 to 20 N after test
+                                                                                                                                                                           0230 = 2.30mm                                          Durability: 20K cycles
+                                                              A12
+                                    A1           0.50 pitch                                                                                                   Part Number                                 Product Description
+                                                                                                                                                              USB4145
+                 0.20±0.05                                                                                                                                    Drawing Date
+                                                                                                                                                                                                          USB2.0 Type C Receptacle, Vertical, SMT, H=7.46mm,
+                                                                                                                                                                                                          16 Pin
+A                                                                                                                                                             28th June 2022
+                                                                                                                                                                   By            CC       Tolerances (Except as Noted)     Units:                        This drawing is confidential and
+                                                                                                                                                                               Drawing
+                                                                                                                                                                                             Length          Angle
+                                                                                                                                                                                                                         Metric (mm)                     copyright of Global Connector          www.gct.co
+                                                                                                                                                                  Detail
+
+                                                                                                                                                              Revision
+                                                                                                                                                                               Release
+                                                                                                                                                                                  A2
+                                                                                                                                                                                           X.X ± 0.30
+                                                                                                                                                                                          X.XX ± 0.20            -
+                                                                                                                                                                                                                                                    C    Technology, Ltd (GCT).
+                                                                                                                                                                                                                                                         This drawing must not be copied
+                                                                                                                                                                                                                                                         or disclosed without written       Not to   Drawn By   Sheet No.
+                                                                                                                                                               Date            31/01/23   X.XXX ± 0.10                   3rd Angle Projection            consent. E & OE                    Scale       CC        1/4
+                          1                         2                            3                                                     4                      5                                              6                                       7                                               8
+H
+
+
+
+
+G
+
+
+
+
+                                         2x 8.00
+F
+                                           5.50
+               0.50 pitch                                            4x 0.60
+                                                                                                                               Mating                                                   Mating
+                                                                                             Pin         Signal                                         Pin               Signal
+                                                                      4x 1.10
+                                                                                                                              Sequence                                                 Sequence
+
+          Ø0.71        A1                                      A12
+                                                                                0.71
+                                                                                             A1           GND                    First                 B12                 GND              First
+
+E                                                                                            A4           VBUS                   First                   B9                VBUS             First
+
+                                                                                             A5             CC1                Second                    B8               SBU2           Second
+
+        2.86                                                                                 A6             Dp1                Second                    B7                Dn2           Second
+
+                                                                                             A7             Dn1                Second                    B6                Dp2           Second
+
+D
+                                                                     B1                      A8          SBU1                  Second                    B5                CC2           Second
+
+           1.15                                                         1.01                 A9           VBUS                   First                   B4                VBUS             First
+                      B12                0.30
+                                                                      4x 1.10               A12           GND                    First                   B1                GND              First
+             1.82                                                    4x 1.60                        SHELL                        GND                                    SHELL              GND
+
+
+C
+                         Recommended PCB Layout
+                                    Tolerance: ±0.05mm
+                      Solder Area       Keep Out Area    Component Outline
+
+
+B
+
+
+
+
+                                                                                       Part Number                                Product Description
+                                                                                       USB4145                                    USB2.0 Type C Receptacle, Vertical, SMT, H=7.46mm,
+                                                                                       Drawing Date
+                                                                                                                                  16 Pin
+A                                                                                      28th June 2022
+                                                                                            By         CC         Tolerances (Except as Noted)     Units:                              This drawing is confidential and
+                                                                                                     Drawing
+                                                                                                                     Length          Angle
+                                                                                                                                                 Metric (mm)                           copyright of Global Connector          www.gct.co
+                                                                                           Detail
+
+                                                                                       Revision
+                                                                                                     Release
+                                                                                                        A2
+                                                                                                                   X.X ± 0.30
+                                                                                                                  X.XX ± 0.20            -
+                                                                                                                                                                                   C   Technology, Ltd (GCT).
+                                                                                                                                                                                       This drawing must not be copied
+                                                                                                                                                                                       or disclosed without written       Not to   Drawn By   Sheet No.
+                                                                                        Date         31/01/23     X.XXX ± 0.10                   3rd Angle Projection                  consent. E & OE                    Scale       CC         2/4
+    1             2                          3                        4                5                                             6                                             7                                               8
+H
+
+
+
+
+                                                                                                                                                 USB4155
+                                                                                                                                              (Plug assembly)
+G                                                                                                                                                                                               PCB
+
+            10.00
+                                                                                    USB4151
+                                                                                 (Plug assembly)
+                                                                                                                PCB
+F
+                              4.00
+                                                         4.60 max.
+                                                                                                               Panel for plug                                                                     Panel for plug                  Cable Plug
+                                                          1.35
+E
+
+                                                 11.15
+
+
+                                     14.0 ref.                                                     6.55 min.                                                                        6.55 min.
+                                                                                                                                                                                                                                                              2.00
+
+                                                                     0.05 ref.                                                    0.05 ref.
+                                                          4.65                                                         4.65                                                                                                                                    6.65
+                                                         4.60                                                         4.60
+                              8.46
+D
+
+
+
+                                                              2.81                                                       2.81
+                                                                                                                PCB                                                                                      PCB                                                             PCB
+C
+
+
+
+        Cap Information                                                   USB4145                                                    USB4145                                                                           USB4145
+                                                                     (Receptacle assembly)                                      (Receptacle assembly)                                                             (Receptacle assembly)
+
+B                                                                                                                      Plug and Receptacle Mating View
+
+
+
+                                                                                                                           Part Number                                   Product Description
+                                                                                                                            USB4145                                      USB2.0 Type C Receptacle, Vertical, SMT, H=7.46mm,
+                                                                                                                           Drawing Date
+                                                                                                                                                                         16 Pin
+A                                                                                                                           28th June 2022
+                                                                                                                                By              CC       Tolerances (Except as Noted)        Units:                    This drawing is confidential and
+                                                                                                                                              Drawing
+                                                                                                                                                            Length          Angle
+                                                                                                                                                                                           Metric (mm)                 copyright of Global Connector          www.gct.co
+                                                                                                                               Detail
+
+                                                                                                                           Revision
+                                                                                                                                              Release
+                                                                                                                                                 A2
+                                                                                                                                                          X.X ± 0.30
+                                                                                                                                                         X.XX ± 0.20            -
+                                                                                                                                                                                                                  C    Technology, Ltd (GCT).
+                                                                                                                                                                                                                       This drawing must not be copied
+                                                                                                                                                                                                                       or disclosed without written       Not to   Drawn By   Sheet No.
+                                                                                                                            Date              31/01/23   X.XXX ± 0.10                      3rd Angle Projection        consent. E & OE                    Scale       CC         3/4
+    1                     2                                  3                               4                             5                                                6                                      7                                               8
+                                                                                                                                            Paper Board
+H       Unloaded Section              Load Section                   Unloaded Section                                                                                                       Folder Paper Board
+           (10 Pockets)                                                (10 Pockets)
+
+
+
+
+G
+
+                                                                                                      Vacuum Bag
+                                Peeling     165°~180°
+                                Angle
+
+                                                                                                      Reel and Tape
+F
+
+                                               Direction of Unreeling
+
+
+
+          Ø380                                                                                                                                                                                                                                   Inner Carton
+E
+
+
+                                               Ø13
+
+                                       Label                                           W+0.5                                                                                                                                                          320
+
+D                                                                                                      Paper Board                                                                                           40
+                                    12.00                                                                                                                                                                      0                               0
+                                                                                                                                                                                                                                             40
+
+
+
+
+C                                                                                                                                                                     Outer Carton
+                 24.00
+
+
+
+                                                                                                                                                                                      330
+B
+                               Direction of Unreeling                                                                                40                                     5
+                                                                                                                                       5                                  40
+
+
+                                                                                                                                                           Product Description
+                                                                               Pcs /        Reels /     Total     Part Number
+                                                              Part Number                             Quantity
+                                                                                                                  USB4145                                  USB2.0 Type C Receptacle, Vertical, SMT, H=7.46mm,
+                                                                               Reel         Carton                Drawing Date
+                                                                                                                                                           16 Pin
+A                                                       USB4145-03-0070-C       700           10      7,000 pcs   28th June 2022
+                                                                                                                       By         CC       Tolerances (Except as Noted)      Units:                       This drawing is confidential and
+                                                        USB4145-03-0170-C       600           10      6,000 pcs                 Drawing
+                                                                                                                                              Length          Angle
+                                                                                                                                                                           Metric (mm)                    copyright of Global Connector          www.gct.co
+                                                        USB4145-03-0230-C       600           10      6,000 pcs
+                                                                                                                      Detail
+
+                                                                                                                  Revision
+                                                                                                                                Release
+                                                                                                                                   A2
+                                                                                                                                            X.X ± 0.30
+                                                                                                                                           X.XX ± 0.20            -
+                                                                                                                                                                                                     C    Technology, Ltd (GCT).
+                                                                                                                                                                                                          This drawing must not be copied
+                                                                                                                                                                                                          or disclosed without written       Not to   Drawn By   Sheet No.
+                                                                                                                   Date         31/01/23   X.XXX ± 0.10                    3rd Angle Projection           consent. E & OE                    Scale       CC         4/4
+    1                      2                              3                             4                         5                                           6                                       7                                               8
+
