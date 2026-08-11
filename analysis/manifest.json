@@ -1,0 +1,318 @@
+{
+  "version": 1,
+  "project": "ValveController.kicad_pro",
+  "current": "2026-08-11_1144",
+  "runs": {
+    "2026-08-05_1041": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:82dc6f3e2582164e833bebe76e6b31f73c3e12202103579c03238aacb46a2b84",
+        "ValveController.kicad_pcb": "sha256:53a53aacfba0d6db5b76e3499b1204dad95d7eaece3c3929567598371d56154e",
+        "schematic.json": "sha256:ba80afc1658605ae2a397620e5bf3fc2d851c743b3fecc1721adfa08a07b19b0",
+        "pcb.json": "sha256:e787ebf24c3022af2eac569cfb5cd2be0562fb17406660ceb068b6a24333c871"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-05T10:56:51+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0757": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:c0f4bfaa85748dd26ba03b2e7369e7c27e7aac531a524bfcd4e8c17103660bc7"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T07:57:10+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0827": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:c9d957b939c3558ebbaeebfbe11c6d98b5d271d5c62116a8da1815b23248830f"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T08:27:46+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0836": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:23f1b3dfc27f4434991a112e8f64097b647c6906b65a96003b1bbff62456db8f"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T08:36:03+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0839": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:332afe02ff20276464edff30f8fea451a51f2871038015d008c02f0227169d75"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T08:39:56+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0840": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:db7f21051015102687520e63a5b38f0ad72aae1f9541b82c0b3dfdf24548501c"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T08:40:43+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0856": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:4cfc4a0529b7a82b1dcc910755637991c83d6513d8c78d5f61a75124b688fa34"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T08:56:27+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0911": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:54726d31419ebc2a77a4a618a22210f79b7237b7a3fe99799e27b289f6bcec89"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T09:11:46+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0915": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:0773ed7edbb1327d9c63b44c88491dc7e5463f0e7b0f4f7c8d856f9f797503ad"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T09:15:03+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0921": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:0df31cf122a2521452d8a59dd81c86c70e97ac27308fb2541dbe66f31c95b2ad"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T09:21:43+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0925": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:516da3eb01ce30ae032bae16ef2dd25c6a6486ef77e3f792fc91ede63ad018f8"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T09:25:22+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0932": {
+      "source_hashes": {
+        "ValveController.kicad_pcb": "sha256:3ff15bd7b997f824e4f0bd8bce672285107edaf6cb6cf53754f88870934c6ef4"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "pcb": "analyze_pcb.py ValveController.kicad_pcb"
+      },
+      "generated": "2026-08-11T09:32:32+02:00",
+      "pinned": false
+    },
+    "2026-08-11_0940": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:f6fb122f2a8f0d463d70c8b0751575c1cbad8682ea9f3f782d2252ed5fca07df"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T09:48:03+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1004": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:2fbbe5847e0a5df5f2281b67ea041fefd65a2d9707874e8e495a2b33a7347bf5"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T10:20:25+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1029": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:2fbbe5847e0a5df5f2281b67ea041fefd65a2d9707874e8e495a2b33a7347bf5"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T10:29:46+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1029-2": {
+      "source_hashes": {
+        "ValveController.kicad_pcb": "sha256:41e39f92a049c22fd32490fc566a8ebe56569c3bdd175a7a97a198a6ac4243b1"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json"
+      },
+      "scripts": {
+        "pcb": "analyze_pcb.py ValveController.kicad_pcb"
+      },
+      "generated": "2026-08-11T10:30:04+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1030": {
+      "source_hashes": {
+        "schematic.json": "sha256:f6b3a0742b494bc0ea6802106f0f0890ac0b608e28f4ba0f63f7886c234a6762",
+        "pcb.json": "sha256:bfe161cf7b5353cfb145e41104b80d661ce7745060dfd2beeca5b20876630525"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json",
+        "thermal": "thermal.json"
+      },
+      "scripts": {
+        "emc": "analyze_emc.py"
+      },
+      "generated": "2026-08-11T10:30:05+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1136": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:fb71cfde8ad92b0048872830c6dccb2406187940f8ea5504b8957da5e1640ea2"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json",
+        "thermal": "thermal.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T11:36:48+02:00",
+      "pinned": false
+    },
+    "2026-08-11_1144": {
+      "source_hashes": {
+        "ValveController.kicad_sch": "sha256:1d5de2546ba2852257178dcc9ef32c1d73ab0950e65d7b419722b9402fda57e5"
+      },
+      "outputs": {
+        "schematic": "schematic.json",
+        "pcb": "pcb.json",
+        "cross_analysis": "cross_analysis.json",
+        "emc": "emc.json",
+        "thermal": "thermal.json"
+      },
+      "scripts": {
+        "schematic": "analyze_schematic.py ValveController.kicad_sch"
+      },
+      "generated": "2026-08-11T11:44:18+02:00",
+      "pinned": false
+    }
+  }
+}
