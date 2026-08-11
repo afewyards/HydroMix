@@ -1,4 +1,5 @@
 #include "sensors_hw.h"
+#include <stddef.h>
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -12,6 +13,7 @@
 #include "onewire_bus.h"
 #include "onewire_crc.h"
 #include "ctrl_core/sensor_policy.h"
+#include "ctrl_core/diag_ring.h"
 #include "taskhb.h"
 
 static const char *TAG = "sensors";
@@ -69,13 +71,9 @@ static const char *const SENS_NAME[SENS_COUNT] = {
     "supply", "return", "source", "hx_a", "hx_b"
 };
 
-#define SENSOR_STATS_MAGIC 0x5EA5C0DFu
-/* Depth, not a single previous run. Reaching this console costs TWO resets -- plugging
- * the cable in is one, opening the port is another -- so a one-deep record always
- * describes the run your own reset ended, never the run the fault ended. On 2026-08-10
- * that lost the entire 13 h outage: the tally was read after the cable had already
- * consumed it. Four runs means two resets cannot reach the interesting one. */
-#define SENSOR_HISTORY 4
+/* 0x5EA5C0E0, bumped from 0x5EA5C0DF: the store gained a diag_hdr_t at the front, so
+ * RTC contents written by 1.6.x no longer describe this layout. */
+#define SENSOR_STATS_MAGIC 0x5EA5C0E0u
 
 typedef struct {
     uint32_t sweeps;
@@ -85,11 +83,12 @@ typedef struct {
 } sensor_stats_t;
 
 typedef struct {
-    uint32_t       magic;
-    uint32_t       seq;                      /* boot counter, so runs are identifiable */
+    diag_hdr_t     hdr;                          /* MUST be first */
     sensor_stats_t cur;
-    sensor_stats_t hist[SENSOR_HISTORY];     /* hist[0] = most recently ended run */
+    sensor_stats_t hist[DIAG_RING_DEPTH];        /* hist[0] = most recently ended run */
 } sensor_store_t;
+
+_Static_assert(offsetof(sensor_store_t, hdr) == 0, "diag_hdr_t must be the first member");
 
 static RTC_NOINIT_ATTR sensor_store_t s_store;
 #define s_stats (s_store.cur)
@@ -221,39 +220,41 @@ static void sweep_task(void *arg)
     }
 }
 
+/* Shift the just-ended run into history and log it. Attaching a console resets this
+ * board, so for an operator chasing an intermittent fault the history is the only view
+ * of the run they were actually trying to observe. */
+static void sensors_roll_history(void)
+{
+    if (!diag_ring_warm(&s_store, sizeof s_store, SENSOR_STATS_MAGIC)) {
+        ESP_LOGI(TAG, "no previous-run sensor stats (cold power-on)");
+        return;
+    }
+    diag_ring_shift(s_store.hist, sizeof s_store.hist[0], DIAG_RING_DEPTH);
+    s_store.hist[0] = s_store.cur;
+
+    const sensor_stats_t *p = &s_store.hist[0];
+    ESP_LOGW(TAG, "previous run#%lu: %lu sweeps",
+             (unsigned long)(s_store.hdr.seq - 1), (unsigned long)p->sweeps);
+    for (int i = 0; i < SENS_COUNT; ++i) {
+        uint32_t bad = 0;
+        for (int r = OW_OK + 1; r < OW_REASONS; ++r) bad += p->fail[i][r];
+        if (!bad && !p->convert_fail[i]) continue;
+        ESP_LOGW(TAG, "  %s ok=%lu fail=%lu (rmt=%lu reset=%lu write=%lu read=%lu "
+                      "crc=%lu por85=%lu) convert_fail=%lu",
+                 SENS_NAME[i], (unsigned long)p->ok[i], (unsigned long)bad,
+                 (unsigned long)p->fail[i][OW_BUS],
+                 (unsigned long)p->fail[i][OW_RESET],
+                 (unsigned long)p->fail[i][OW_WRITE],
+                 (unsigned long)p->fail[i][OW_READ],
+                 (unsigned long)p->fail[i][OW_CRC],
+                 (unsigned long)p->fail[i][OW_POR],
+                 (unsigned long)p->convert_fail[i]);
+    }
+}
+
 void sensors_start(void)
 {
-    /* Shift the just-ended run into history and report it. Attaching a console resets
-     * this board, so for an operator chasing an intermittent fault the history is the
-     * only view of the run they were actually trying to observe. */
-    if (s_store.magic == SENSOR_STATS_MAGIC) {
-        for (int h = SENSOR_HISTORY - 1; h > 0; --h) s_store.hist[h] = s_store.hist[h - 1];
-        s_store.hist[0] = s_store.cur;
-        s_store.seq++;
-        const sensor_stats_t *p = &s_store.hist[0];
-        ESP_LOGW(TAG, "previous run#%lu: %lu sweeps",
-                 (unsigned long)(s_store.seq - 1), (unsigned long)p->sweeps);
-        for (int i = 0; i < SENS_COUNT; ++i) {
-            uint32_t bad = 0;
-            for (int r = OW_OK + 1; r < OW_REASONS; ++r) bad += p->fail[i][r];
-            if (!bad && !p->convert_fail[i]) continue;
-            ESP_LOGW(TAG, "  %s ok=%lu fail=%lu (rmt=%lu reset=%lu write=%lu read=%lu "
-                          "crc=%lu por85=%lu) convert_fail=%lu",
-                     SENS_NAME[i], (unsigned long)p->ok[i], (unsigned long)bad,
-                     (unsigned long)p->fail[i][OW_BUS],
-                     (unsigned long)p->fail[i][OW_RESET],
-                     (unsigned long)p->fail[i][OW_WRITE],
-                     (unsigned long)p->fail[i][OW_READ],
-                     (unsigned long)p->fail[i][OW_CRC],
-                     (unsigned long)p->fail[i][OW_POR],
-                     (unsigned long)p->convert_fail[i]);
-        }
-    } else {
-        memset(&s_store, 0, sizeof s_store);
-        s_store.magic = SENSOR_STATS_MAGIC;
-        s_store.seq   = 1;
-        ESP_LOGI(TAG, "no previous-run sensor stats (cold power-on)");
-    }
+    sensors_roll_history();
     memset(&s_store.cur, 0, sizeof s_store.cur);
 
     g_lock = xSemaphoreCreateMutex();
@@ -324,40 +325,36 @@ void sensors_fill_faults(sensor_faults_t *o)
 
 static size_t fmt_run(char *o, size_t n, size_t u, const char *label, const sensor_stats_t *s)
 {
-    int k = snprintf(o + u, n - u, "%s: %lu sweeps\n", label, (unsigned long)s->sweeps);
-    if (k > 0) u += (size_t)k;
-    if (u >= n) return n - 1;
-    for (int i = 0; i < SENS_COUNT; ++i) {
-        k = snprintf(o + u, n - u,
-                     "  %-6s ok=%lu rmt=%lu rst=%lu wr=%lu rd=%lu crc=%lu por85=%lu cnv=%lu\n",
-                     SENS_NAME[i], (unsigned long)s->ok[i],
-                     (unsigned long)s->fail[i][OW_BUS],
-                     (unsigned long)s->fail[i][OW_RESET],
-                     (unsigned long)s->fail[i][OW_WRITE],
-                     (unsigned long)s->fail[i][OW_READ],
-                     (unsigned long)s->fail[i][OW_CRC],
-                     (unsigned long)s->fail[i][OW_POR],
-                     (unsigned long)s->convert_fail[i]);
-        if (k > 0) u += (size_t)k;
-        if (u >= n) return n - 1;
-    }
+    u = diag_appendf(o, n, u, "%s: %lu sweeps\n", label, (unsigned long)s->sweeps);
+    for (int i = 0; i < SENS_COUNT; ++i)
+        u = diag_appendf(o, n, u,
+                         "  %-6s ok=%lu rmt=%lu rst=%lu wr=%lu rd=%lu crc=%lu por85=%lu cnv=%lu\n",
+                         SENS_NAME[i], (unsigned long)s->ok[i],
+                         (unsigned long)s->fail[i][OW_BUS],
+                         (unsigned long)s->fail[i][OW_RESET],
+                         (unsigned long)s->fail[i][OW_WRITE],
+                         (unsigned long)s->fail[i][OW_READ],
+                         (unsigned long)s->fail[i][OW_CRC],
+                         (unsigned long)s->fail[i][OW_POR],
+                         (unsigned long)s->convert_fail[i]);
     return u;
 }
 
-/* Console `stats`: this run, plus the previous one when RTC memory carried it
- * across a reset -- including the reset that opening the console just caused. */
+/* Console `stats`: this run, plus the previous ones RTC memory carried across resets --
+ * including the reset that opening the console just caused. */
 void sensors_format_stats(char *o, size_t n)
 {
     if (!o || n == 0) return;
+    o[0] = '\0';
     char lbl[24];
-    snprintf(lbl, sizeof lbl, "run#%lu", (unsigned long)s_store.seq);
+    snprintf(lbl, sizeof lbl, "run#%lu", (unsigned long)s_store.hdr.seq);
     size_t u = fmt_run(o, n, 0, lbl, &s_store.cur);
     bool any = false;
-    for (int h = 0; h < SENSOR_HISTORY && u < n - 1; ++h) {
+    for (int h = 0; h < DIAG_RING_DEPTH; ++h) {
         if (!s_store.hist[h].sweeps) continue;
         snprintf(lbl, sizeof lbl, "prev-%d", h + 1);
         u = fmt_run(o, n, u, lbl, &s_store.hist[h]);
         any = true;
     }
-    if (!any && u < n - 1) snprintf(o + u, n - u, "prev: none (cold power-on)\n");
+    if (!any) diag_appendf(o, n, u, "prev: none (cold power-on)\n");
 }
