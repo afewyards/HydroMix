@@ -9,6 +9,7 @@
 #include <string.h>
 #include "esp_attr.h"
 #include "esp_log.h"
+#include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_app_desc.h"
 #include "freertos/FreeRTOS.h"
@@ -647,6 +648,12 @@ typedef struct {
     uint32_t ticks;            /* telemetry iterations completed this run */
     uint32_t sweeps;           /* sensor sweeps completed this run */
     uint16_t faults;           /* control_task_faults() at the last tick */
+    /* Why THIS run started -- which is to say why the previous one ended. On mains alone
+     * this board resets about every 40 s and runs indefinitely once USB VBUS shares the
+     * load through the diode-OR, so the distinction that matters is brownout (a supply
+     * problem) against watchdog or panic (a firmware problem). The console cannot answer
+     * it: attaching USB is exactly the intervention that stops the resets. */
+    uint8_t  reset_reason;     /* esp_reset_reason_t */
 } zb_run_t;
 
 typedef struct {
@@ -707,11 +714,13 @@ void zigbee_report_temps(void)
 /* Console `zbtemp`: the live run plus the last ZB_RUN_HISTORY completed ones. Read the
  * history, not `run` -- by the time you can type this, the run that mattered is two
  * resets back. */
+static const char *reset_reason_name(uint8_t r);
+
 static size_t fmt_run_block(char *o, size_t n, size_t u, const char *label, const zb_run_t *r)
 {
-    int k = snprintf(o + u, n - u, "%s ticks=%lu sweeps=%lu faults=0x%02x\n",
+    int k = snprintf(o + u, n - u, "%s ticks=%lu sweeps=%lu faults=0x%02x boot=%s\n",
                      label, (unsigned long)r->ticks, (unsigned long)r->sweeps,
-                     (unsigned)r->faults);
+                     (unsigned)r->faults, reset_reason_name(r->reset_reason));
     if (k > 0) u += (size_t)k;
     if (u >= n) return n - 1;
     for (int i = 0; i < 5; ++i) {
@@ -740,16 +749,36 @@ void zigbee_format_temp_stats(char *o, size_t n)
     }
 }
 
+static const char *reset_reason_name(uint8_t r)
+{
+    switch ((esp_reset_reason_t)r) {
+        case ESP_RST_POWERON:  return "poweron";
+        case ESP_RST_EXT:      return "ext";
+        case ESP_RST_SW:       return "sw";        /* esp_restart(), incl. our self-heal */
+        case ESP_RST_PANIC:    return "PANIC";
+        case ESP_RST_INT_WDT:  return "INT_WDT";
+        case ESP_RST_TASK_WDT: return "TASK_WDT";
+        case ESP_RST_WDT:      return "WDT";
+        case ESP_RST_BROWNOUT: return "BROWNOUT";
+        case ESP_RST_DEEPSLEEP: return "deepsleep";
+        case ESP_RST_SDIO:     return "sdio";
+        case ESP_RST_USB:      return "usb";
+        default:               return "unknown";
+    }
+}
+
 static void zb_temp_stats_init(void)
 {
+    uint8_t rr = (uint8_t)esp_reset_reason();
     if (s_zb.magic == ZB_TEMP_STATS_MAGIC) {
         for (int h = ZB_RUN_HISTORY - 1; h > 0; --h) s_zb.hist[h] = s_zb.hist[h - 1];
         s_zb.hist[0] = s_zb.cur;
         s_zb.seq++;
         const zb_run_t *p = &s_zb.hist[0];
-        ESP_LOGW(TAG, "previous run#%lu: ticks=%lu sweeps=%lu faults=0x%02x",
+        ESP_LOGW(TAG, "previous run#%lu: ticks=%lu sweeps=%lu faults=0x%02x boot=%s (ended -> %s)",
                  (unsigned long)(s_zb.seq - 1), (unsigned long)p->ticks,
-                 (unsigned long)p->sweeps, (unsigned)p->faults);
+                 (unsigned long)p->sweeps, (unsigned)p->faults,
+                 reset_reason_name(p->reset_reason), reset_reason_name(rr));
         for (int i = 0; i < 5; ++i) {
             if (!p->fail[i] && !p->mismatch[i]) continue;
             ESP_LOGW(TAG, "  ep%d %s ok=%lu fail=%lu mism=%lu err=0x%02lx val=%d read=%d",
@@ -764,6 +793,9 @@ static void zb_temp_stats_init(void)
         ESP_LOGI(TAG, "no previous attr-write history (cold power-on)");
     }
     memset(&s_zb.cur, 0, sizeof s_zb.cur);
+    s_zb.cur.reset_reason = rr;
+    ESP_LOGW(TAG, "run#%lu started, reset reason: %s (%u)",
+             (unsigned long)s_zb.seq, reset_reason_name(rr), (unsigned)rr);
 }
 
 /* configure_reporting_running_mode() below only arms the ZCL reporting engine's
