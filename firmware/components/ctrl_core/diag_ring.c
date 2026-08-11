@@ -42,6 +42,9 @@ const char *diag_reset_reason_name(int reason)
         case 10: return "sdio";
         case 11: return "usb";
         case 12: return "jtag";
+        case 13: return "efuse";
+        case 14: return "PWR_GLITCH";
+        case 15: return "CPU_LOCKUP";
         default: return "other";
     }
 }

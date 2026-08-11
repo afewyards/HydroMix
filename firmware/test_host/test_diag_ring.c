@@ -109,10 +109,16 @@ void test_appendf_degenerate_buffers(void){
 
 void test_reset_reason_names(void){
     /* Values confirmed against the installed IDF in Step 1. */
-    TEST_ASSERT_EQUAL_STRING("poweron",  diag_reset_reason_name(1));
-    TEST_ASSERT_EQUAL_STRING("TASK_WDT", diag_reset_reason_name(6));
-    TEST_ASSERT_EQUAL_STRING("BROWNOUT", diag_reset_reason_name(9));
-    TEST_ASSERT_EQUAL_STRING("other",    diag_reset_reason_name(9999));
+    TEST_ASSERT_EQUAL_STRING("poweron",    diag_reset_reason_name(1));
+    TEST_ASSERT_EQUAL_STRING("TASK_WDT",   diag_reset_reason_name(6));
+    TEST_ASSERT_EQUAL_STRING("BROWNOUT",   diag_reset_reason_name(9));
+    /* Past the plan's table: this IDF's esp_reset_reason_t goes to 15. Losing these to
+     * "other" would repeat exactly the mistake the ring exists to prevent -- this board's
+     * whole 1.6.x history was watchdog and suspected-power faults. */
+    TEST_ASSERT_EQUAL_STRING("efuse",      diag_reset_reason_name(13));
+    TEST_ASSERT_EQUAL_STRING("PWR_GLITCH", diag_reset_reason_name(14));
+    TEST_ASSERT_EQUAL_STRING("CPU_LOCKUP", diag_reset_reason_name(15));
+    TEST_ASSERT_EQUAL_STRING("other",      diag_reset_reason_name(9999));
 }
 
 int main(void){

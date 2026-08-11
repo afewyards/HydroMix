@@ -1,21 +1,28 @@
 #include "taskhb.h"
-#include <stdio.h>
+#include <stddef.h>
 #include <string.h>
 #include "esp_attr.h"
 #include "esp_log.h"
 #include "esp_system.h"
 #include "esp_timer.h"
+#include "ctrl_core/diag_ring.h"
 
 static const char *TAG = "hb";
 
 static const char *const HB_NAME[HB_COUNT] = { "sensors", "control", "valve", "telem" };
 
-#define HB_MAGIC 0x48425402u
-/* Depth, for the third time in this investigation. A one-deep record cannot answer the
- * question it exists for: reaching the console costs a reset, so the run you can read is
- * always the one YOUR reset ended, never the one the fault ended. The watchdog run is
- * already two boots back by the time anyone types a command. */
-#define HB_HISTORY 4
+#define HB_MAGIC 0x48425403u   /* bumped: the store layout changed with the hdr */
+
+/* diag_reset_reason_name() is numeric because ctrl_core cannot see esp_system.h.
+ * Pin the mapping here, where the real enum IS visible, so an IDF renumbering breaks
+ * the build instead of quietly mislabelling every recorded run. */
+_Static_assert(ESP_RST_POWERON     == 1,  "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_PANIC       == 4,  "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_TASK_WDT    == 6,  "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_BROWNOUT    == 9,  "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_EFUSE       == 13, "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_PWR_GLITCH  == 14, "diag_reset_reason_name table is stale");
+_Static_assert(ESP_RST_CPU_LOCKUP  == 15, "diag_reset_reason_name table is stale");
 
 typedef struct {
     uint32_t last_ms[HB_COUNT];
@@ -24,29 +31,14 @@ typedef struct {
 } hb_run_t;
 
 typedef struct {
-    uint32_t magic;
-    uint32_t seq;
-    uint32_t last_ms[HB_COUNT];  /* live run */
-    hb_run_t hist[HB_HISTORY];   /* hist[0] = most recently ended run */
-} hb_state_t;
+    diag_hdr_t hdr;                    /* MUST be first: diag_ring_warm() casts to it */
+    uint32_t   last_ms[HB_COUNT];      /* live run */
+    hb_run_t   hist[DIAG_RING_DEPTH];  /* hist[0] = most recently ended run */
+} hb_store_t;
 
-static RTC_NOINIT_ATTR hb_state_t s_hb;
+_Static_assert(offsetof(hb_store_t, hdr) == 0, "diag_hdr_t must be the first member");
 
-static const char *rr_name(uint8_t r)
-{
-    switch ((esp_reset_reason_t)r) {
-        case ESP_RST_POWERON:   return "poweron";
-        case ESP_RST_EXT:       return "ext";
-        case ESP_RST_SW:        return "sw";
-        case ESP_RST_PANIC:     return "PANIC";
-        case ESP_RST_INT_WDT:   return "INT_WDT";
-        case ESP_RST_TASK_WDT:  return "TASK_WDT";
-        case ESP_RST_WDT:       return "WDT";
-        case ESP_RST_BROWNOUT:  return "BROWNOUT";
-        case ESP_RST_USB:       return "usb";
-        default:                return "other";
-    }
-}
+static RTC_NOINIT_ATTR hb_store_t s_hb;
 
 void hb_note(hb_id_t id)
 {
@@ -66,24 +58,20 @@ void hb_boot_report(void)
 {
     uint8_t rr = (uint8_t)esp_reset_reason();
 
-    if (s_hb.magic == HB_MAGIC) {
-        for (int h = HB_HISTORY - 1; h > 0; --h) s_hb.hist[h] = s_hb.hist[h - 1];
+    if (diag_ring_warm(&s_hb, sizeof s_hb, HB_MAGIC)) {
+        diag_ring_shift(s_hb.hist, sizeof s_hb.hist[0], DIAG_RING_DEPTH);
         memcpy(s_hb.hist[0].last_ms, s_hb.last_ms, sizeof s_hb.last_ms);
         s_hb.hist[0].end_reason = rr;      /* why the run that just ended, ended */
         s_hb.hist[0].valid = 1;
-        s_hb.seq++;
 
         const hb_run_t *p = &s_hb.hist[0];
         uint32_t newest = newest_of(p->last_ms);
         ESP_LOGW(TAG, "run#%lu ended by %s; heartbeat ages at death (0 = last to run):",
-                 (unsigned long)(s_hb.seq - 1), rr_name(rr));
+                 (unsigned long)(s_hb.hdr.seq - 1), diag_reset_reason_name(rr));
         for (int i = 0; i < HB_COUNT; ++i)
             ESP_LOGW(TAG, "  %-7s last=%lu ms  age=%lu ms", HB_NAME[i],
                      (unsigned long)p->last_ms[i], (unsigned long)(newest - p->last_ms[i]));
     } else {
-        memset(&s_hb, 0, sizeof s_hb);
-        s_hb.magic = HB_MAGIC;
-        s_hb.seq   = 1;
         ESP_LOGI(TAG, "no previous heartbeats (cold power-on)");
     }
     memset(s_hb.last_ms, 0, sizeof s_hb.last_ms);
@@ -92,27 +80,23 @@ void hb_boot_report(void)
 void hb_format(char *o, size_t n)
 {
     if (!o || n == 0) return;
+    o[0] = '\0';
     uint32_t now = (uint32_t)(esp_timer_get_time() / 1000);
-    size_t u = 0;
-    int k = snprintf(o, n, "run#%lu now=%lu ms\n", (unsigned long)s_hb.seq, (unsigned long)now);
-    if (k > 0) u += (size_t)k;
-    for (int i = 0; i < HB_COUNT && u < n - 1; ++i) {
-        k = snprintf(o + u, n - u, "  %-7s age=%lu\n", HB_NAME[i],
-                     (unsigned long)(now - s_hb.last_ms[i]));
-        if (k > 0) u += (size_t)k;
-    }
-    for (int h = 0; h < HB_HISTORY && u < n - 1; ++h) {
+    size_t u = diag_appendf(o, n, 0, "run#%lu now=%lu ms\n",
+                            (unsigned long)s_hb.hdr.seq, (unsigned long)now);
+    for (int i = 0; i < HB_COUNT; ++i)
+        u = diag_appendf(o, n, u, "  %-7s age=%lu\n", HB_NAME[i],
+                         (unsigned long)(now - s_hb.last_ms[i]));
+    for (int h = 0; h < DIAG_RING_DEPTH; ++h) {
         if (!s_hb.hist[h].valid) continue;
         const hb_run_t *p = &s_hb.hist[h];
         uint32_t newest = newest_of(p->last_ms);
-        k = snprintf(o + u, n - u, "prev-%d (run#%lu) ended by %s:\n", h + 1,
-                     (unsigned long)(s_hb.seq - (uint32_t)(h + 1)), rr_name(p->end_reason));
-        if (k > 0) u += (size_t)k;
-        for (int i = 0; i < HB_COUNT && u < n - 1; ++i) {
-            k = snprintf(o + u, n - u, "  %-7s last=%lu age=%lu\n", HB_NAME[i],
-                         (unsigned long)p->last_ms[i],
-                         (unsigned long)(newest - p->last_ms[i]));
-            if (k > 0) u += (size_t)k;
-        }
+        u = diag_appendf(o, n, u, "prev-%d (run#%lu) ended by %s:\n", h + 1,
+                         (unsigned long)(s_hb.hdr.seq - (uint32_t)(h + 1)),
+                         diag_reset_reason_name(p->end_reason));
+        for (int i = 0; i < HB_COUNT; ++i)
+            u = diag_appendf(o, n, u, "  %-7s last=%lu age=%lu\n", HB_NAME[i],
+                             (unsigned long)p->last_ms[i],
+                             (unsigned long)(newest - p->last_ms[i]));
     }
 }
