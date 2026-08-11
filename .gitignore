@@ -25,5 +25,10 @@ sdkconfig
 sdkconfig.old
 managed_components/
 
+# host test build trees (each carries its own fetched copy of Unity)
+firmware/test_host/build*/
+# ESP-IDF component-manager cache
+firmware/.cache/
+
 # Claude worktrees
 .claude/worktrees/
