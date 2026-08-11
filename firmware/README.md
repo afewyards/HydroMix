@@ -4,6 +4,63 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.7.0 — one diagnostics ring, one clamp table, and `zigbee.c` split four ways
+
+No behaviour change. This release pays down the duplication the 1.6.x debugging work
+left behind, so the display/AUX board firmware has clean seams to attach to instead of
+three copies of everything to keep in sync.
+
+### Diagnostics: three hand-rolled RTC rings become one
+
+1.6.2 through 1.6.4 added three independent RTC-RAM history mechanisms under time
+pressure, one per hypothesis: the 1-Wire tally in `sensors_hw.c`, the per-task
+heartbeats in `taskhb.c`, and the Zigbee attribute-write tally in `zigbee.c`. Each
+reinvented the same warm/cold-boot detection, 4-deep history shift, and reset-reason
+name table — with the two reset-reason tables drifting apart in the process. All three
+now sit on one portable `ctrl_core/diag_ring` module (host-tested, zero ESP-IDF
+dependencies), and the typed payloads each owner keeps are unchanged. The merged
+reset-reason table also **gained** `efuse`, `PWR_GLITCH` and `CPU_LOCKUP`, which neither
+of the two originals had. The Zigbee tally's extraction into its own `zigbee_diag.c`
+(on the shared ring) was already done in the prior commit; this release is the other
+two plus the consolidation.
+
+### Config clamping: three implementations become one table
+
+`clamp_config`, `config_apply_custom` and `tunable_apply` each re-derived the same
+per-field min/max/default independently, which is exactly the kind of place a range
+quietly drifts between call sites. All three now delegate to a single `SPEC[]` table in
+`ctrl_core/config_map.c`, and `config_t` embeds `tunable_cfg_t` directly rather than
+duplicating its fields.
+
+`sizeof(config_t) == 76` and every field's offset are pinned by ten `_Static_assert`s,
+because `config_load()` tells NVS blob versions apart **by size** — a silent size change
+would make every deployed device's stored tuning unreadable and silently revert it to
+defaults on next boot. The v1→v2→v3 migration path is untouched and the blob stays
+byte-compatible with every device already in the field.
+
+### `zigbee.c`: 984 lines become four files
+
+`zigbee.c` shrinks from 984 to 411 lines, with `zigbee_attrs.c` (169 lines — the
+custom-cluster write dispatch), `zigbee_telem.c` (278 lines — telemetry task and
+attribute reporting) and `zigbee_diag.c` (137 lines — the write tally, extracted in an
+earlier commit of this same release) taking the rest. `zigbee.c` itself keeps only
+init, endpoint/cluster registration, and join/steer signal handling. Lock discipline
+is unchanged: still exactly 5 `esp_zb_lock_acquire`/`release` pairs, none of them in
+the attrs or diag files. This is the seam the display/AUX board's two on/off endpoints
+will attach to.
+
+### Image size
+
+712,800 bytes, 64 bytes **smaller** than 1.6.4 (712,864), 62% of the 1.9 MB OTA slot
+free either way. Flash was never the constraint here — the Zigbee stack alone is about
+half the image, and all of `main/` plus `ctrl_core` together is roughly 3%. This
+release traded duplicated logic for a table and a shared module; it did not chase
+space, because there was no space problem to chase. (The `-Og`→`-Os` optimisation-level
+change is deferred to 1.7.1 as its own single-variable release, shipped alone with
+nothing else changed, since it alters code generation on a live heating plant.)
+
+Host suite 19/19.
+
 ## 1.6.4 — the console REPL was starving the idle task
 
 Two days of "every temperature probe is dead" were a reboot loop wearing a sensor
