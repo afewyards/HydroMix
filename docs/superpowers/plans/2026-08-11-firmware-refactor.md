@@ -40,7 +40,14 @@ cd /Users/kleist/Sites/ValveController/firmware
 idf.py reconfigure && idf.py build
 ```
 
-**`idf.py reconfigure` is mandatory before any build whose version matters.** This project has been bitten by a stale cached `PROJECT_VER`: without it the app descriptor keeps the previous version string and the OTA/`update.installed_version` reporting lies.
+**`idf.py reconfigure` is mandatory in two cases**, and both have already bitten this project:
+
+1. **Any build whose version matters.** A stale cached `PROJECT_VER` leaves the app descriptor carrying the previous version string, so OTA and `update.installed_version` both report a lie.
+2. **Any build on a build tree older than a commit that added or removed a `.c` file in `components/ctrl_core/`.** That component's `CMakeLists.txt` uses `file(GLOB "*.c")`, which only re-scans at configure time. Hit during Task 2: `firmware/build` predated `diag_ring.c`, so the glob never saw it and the link failed with `undefined reference to diag_ring_warm`. Confirmed by `ar t build/esp-idf/ctrl_core/libctrl_core.a` showing `diag_ring.c.obj` absent before the reconfigure and present after.
+
+Same class of staleness in both cases — a cached configure that no longer describes the tree. When a link error names a symbol you can see in the source, reconfigure before debugging anything else.
+
+Hand-edited `main/CMakeLists.txt` SRCS changes do **not** need this; CMake notices the file's own mtime.
 
 ---
 
