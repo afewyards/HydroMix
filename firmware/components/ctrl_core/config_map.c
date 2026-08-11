@@ -1,21 +1,62 @@
 #include "ctrl_core/config_map.h"
+#include "ctrl_core/interlock.h"
 #include <math.h>
+#include <stddef.h>
 
-/* NaN -> reject (keep cur); finite -> clamp to [lo,hi]. Mirrors config.c's
- * sane_f(): a NaN passes both ctrl_clampf() comparisons as false and would
- * otherwise flow through unmodified. */
-static float sane_f(float cur, float v, float lo, float hi)
+float tunable_sane_f(float cur, float v, float lo, float hi)
 {
     if (isnan(v)) return cur;
     return ctrl_clampf(v, lo, hi);
 }
 
-/* Range-only clamp for u32 tunables (NaN is a float-only concept). */
-static uint32_t clamp_u32(uint32_t v, uint32_t lo, uint32_t hi)
+uint32_t tunable_clamp_u32(uint32_t v, uint32_t lo, uint32_t hi)
 {
     if (v < lo) return lo;
     if (v > hi) return hi;
     return v;
+}
+
+float valve_deadband_floor_pct(uint32_t travel_time_s)
+{
+    if (travel_time_s == 0) return 5.0f;      /* degenerate: clamp to the ceiling */
+    float q = 1.2f * (INTERLOCK_MIN_PULSE_MS / 1000.0f) * 100.0f / (2.0f * (float)travel_time_s);
+    return q > 0.2f ? q : 0.2f;
+}
+
+#define F(field) (uint16_t)offsetof(tunable_cfg_t, field)
+
+/* THE table. Every clamp range in the firmware is defined here exactly once.
+ * gov_high/gov_low bounds keep the governor's trip thresholds strictly outside the
+ * 35/17 release band (control_task.c) -- inside it, the governor limit-cycles. Observed
+ * live with gov_low written as 17, sitting on the band edge. */
+static const tunable_spec_t SPEC[TUNABLE_COUNT] = {
+    [TUNABLE_HEAT_THRESHOLD] = { TK_F32,  F(heat_threshold),    10.0f, 60.0f,  0, 0 },
+    [TUNABLE_COOL_THRESHOLD] = { TK_F32,  F(cool_threshold),     0.0f, 40.0f,  0, 0 },
+    [TUNABLE_TRAVEL_TIME_S]  = { TK_U32,  F(travel_time_s),      0.0f,  0.0f, 30, 600 },
+    [TUNABLE_PARK_POS]       = { TK_F32,  F(park_pos),           0.0f, 100.0f, 0, 0 },
+    [TUNABLE_DIRECTION_SWAP] = { TK_BOOL, F(direction_swap),     0.0f,  0.0f,  0, 0 },
+    [TUNABLE_KP]             = { TK_F32,  F(kp),                 0.5f, 15.0f,  0, 0 },
+    [TUNABLE_KI]             = { TK_F32,  F(ki),                 0.0f,  5.0f,  0, 0 },
+    [TUNABLE_GOV_HIGH]       = { TK_F32,  F(gov_high),          36.0f, 60.0f,  0, 0 },
+    [TUNABLE_GOV_LOW]        = { TK_F32,  F(gov_low),            0.0f, 16.0f,  0, 0 },
+    [TUNABLE_ALARM_DWELL_MS] = { TK_U32,  F(alarm_dwell_ms),     0.0f,  0.0f, 10000, 3600000 },
+    [TUNABLE_HEAT_SETPOINT]  = { TK_F32,  F(heat_setpoint),     17.0f, 35.0f,  0, 0 },
+    [TUNABLE_COOL_SETPOINT]  = { TK_F32,  F(cool_setpoint),     17.0f, 35.0f,  0, 0 },
+    [TUNABLE_DEADTIME_S]     = { TK_F32,  F(deadtime_s),         0.0f, 120.0f, 0, 0 },
+    [TUNABLE_PI_DEADBAND]    = { TK_F32,  F(pi_deadband_k),      0.0f,  1.0f,  0, 0 },
+    /* flo is the STATIC floor; the real floor is dynamic, see valve_deadband_floor_pct() */
+    [TUNABLE_VALVE_DEADBAND] = { TK_F32,  F(valve_deadband_pct), 0.2f,  5.0f,  0, 0 },
+    [TUNABLE_HYSTERESIS]     = { TK_F32,  F(hysteresis),         0.0f, 10.0f,  0, 0 },
+    [TUNABLE_ENTER_DWELL_MS] = { TK_U32,  F(enter_dwell_ms),     0.0f,  0.0f, 10000, 3600000 },
+    [TUNABLE_LEAVE_DWELL_MS] = { TK_U32,  F(leave_dwell_ms),     0.0f,  0.0f, 10000, 7200000 },
+};
+
+#undef F
+
+const tunable_spec_t *tunable_spec(tunable_id_t id)
+{
+    if ((int)id < 0 || (int)id >= TUNABLE_COUNT) return NULL;
+    return &SPEC[id];
 }
 
 void tunable_cfg_defaults(tunable_cfg_t *c){
@@ -24,26 +65,76 @@ void tunable_cfg_defaults(tunable_cfg_t *c){
     c->travel_time_s=120; c->direction_swap=false; c->kp=2.8f; c->ki=0.9f;
     c->gov_high=36; c->gov_low=16; c->alarm_dwell_ms=300000;
     c->enter_dwell_ms=60000; c->leave_dwell_ms=420000;
-    c->deadtime_s=30.0f; c->pi_deadband_k=0.25f;
+    c->deadtime_s=30.0f; c->pi_deadband_k=0.25f; c->valve_deadband_pct=1.0f;
 }
 
-void tunable_apply(tunable_cfg_t *c, tunable_id_t id, const void *v){
-    switch (id){
-    case TUNABLE_HEAT_THRESHOLD: c->heat_threshold = sane_f(c->heat_threshold, *(const float*)v, 10.0f, 60.0f); break;
-    case TUNABLE_COOL_THRESHOLD: c->cool_threshold = sane_f(c->cool_threshold, *(const float*)v, 0.0f, 40.0f); break;
-    case TUNABLE_TRAVEL_TIME_S:  c->travel_time_s  = clamp_u32(*(const uint32_t*)v, 30, 600); break;
-    case TUNABLE_PARK_POS:       c->park_pos = sane_f(c->park_pos, *(const float*)v, 0.0f, 100.0f); break;
-    case TUNABLE_DIRECTION_SWAP: c->direction_swap = *(const bool*)v; break;
-    case TUNABLE_KP:             c->kp = sane_f(c->kp, *(const float*)v, 0.5f, 15.0f); break;
-    case TUNABLE_KI:             c->ki = sane_f(c->ki, *(const float*)v, 0.0f, 5.0f); break;
-    /* release band is 35/17 (control_task.c) — trip thresholds must stay strictly outside it or the
-     * governor limit-cycles; observed live (gov_low written as 17, sitting on the band edge) */
-    case TUNABLE_GOV_HIGH:       c->gov_high = sane_f(c->gov_high, *(const float*)v, 36.0f, 60.0f); break;
-    case TUNABLE_GOV_LOW:        c->gov_low = sane_f(c->gov_low, *(const float*)v, 0.0f, 16.0f); break;
-    case TUNABLE_ALARM_DWELL_MS: c->alarm_dwell_ms = clamp_u32(*(const uint32_t*)v, 10000, 3600000); break;
-    case TUNABLE_HEAT_SETPOINT:  c->heat_setpoint = sane_f(c->heat_setpoint, *(const float*)v, 17.0f, 35.0f); break;
-    case TUNABLE_COOL_SETPOINT:  c->cool_setpoint = sane_f(c->cool_setpoint, *(const float*)v, 17.0f, 35.0f); break;
-    case TUNABLE_DEADTIME_S:     c->deadtime_s = sane_f(c->deadtime_s, *(const float*)v, 0.0f, 120.0f); break;
-    case TUNABLE_PI_DEADBAND:    c->pi_deadband_k = sane_f(c->pi_deadband_k, *(const float*)v, 0.0f, 1.0f); break;
+void tunable_apply(tunable_cfg_t *c, tunable_id_t id, const void *v)
+{
+    const tunable_spec_t *s = tunable_spec(id);
+    if (!c || !v || !s) return;
+    char *base = (char *)c;
+    switch (s->kind) {
+    case TK_F32: {
+        float *f = (float *)(void *)(base + s->off);
+        float lo = (id == TUNABLE_VALVE_DEADBAND)
+                 ? valve_deadband_floor_pct(c->travel_time_s) : s->flo;
+        *f = tunable_sane_f(*f, *(const float *)v, lo, s->fhi);
+        break;
     }
+    case TK_U32: {
+        uint32_t *u = (uint32_t *)(void *)(base + s->off);
+        *u = tunable_clamp_u32(*(const uint32_t *)v, s->ulo, s->uhi);
+        break;
+    }
+    case TK_BOOL: {
+        bool *b = (bool *)(void *)(base + s->off);
+        *b = *(const bool *)v;
+        break;
+    }
+    }
+    /* Shortening travel raises valve_deadband_pct's stability floor, so an already-set
+     * deadband must be re-clamped or it is left stranded below the new floor. */
+    if (id == TUNABLE_TRAVEL_TIME_S) {
+        float lo = valve_deadband_floor_pct(c->travel_time_s);
+        c->valve_deadband_pct = ctrl_clampf(c->valve_deadband_pct, lo, 5.0f);
+    }
+}
+
+void tunable_clamp_all(tunable_cfg_t *c)
+{
+    if (!c) return;
+    tunable_cfg_t d;
+    tunable_cfg_defaults(&d);
+    char *base = (char *)c;
+    const char *dbase = (const char *)&d;
+
+    /* travel_time_s FIRST: valve_deadband_pct's floor is derived from it, so the floor
+     * must be computed from the final, in-range travel value. */
+    c->travel_time_s = tunable_clamp_u32(c->travel_time_s, 30, 600);
+
+    for (int id = 0; id < TUNABLE_COUNT; ++id) {
+        const tunable_spec_t *s = &SPEC[id];
+        if (id == TUNABLE_VALVE_DEADBAND) continue;   /* dynamic floor, handled below */
+        switch (s->kind) {
+        case TK_F32: {
+            float *f  = (float *)(void *)(base + s->off);
+            float dv  = *(const float *)(const void *)(dbase + s->off);
+            *f = tunable_sane_f(dv, *f, s->flo, s->fhi);   /* NaN -> shipped default */
+            break;
+        }
+        case TK_U32: {
+            uint32_t *u = (uint32_t *)(void *)(base + s->off);
+            *u = tunable_clamp_u32(*u, s->ulo, s->uhi);
+            break;
+        }
+        case TK_BOOL: break;                              /* always in range */
+        }
+    }
+
+    /* The "cur" fallback is itself clamped into the dynamic range so a NaN-corrupted
+     * stored value cannot fall back to a stale 1.0 that is below the floor for a short
+     * travel_time_s. */
+    float lo = valve_deadband_floor_pct(c->travel_time_s);
+    c->valve_deadband_pct = tunable_sane_f(ctrl_clampf(d.valve_deadband_pct, lo, 5.0f),
+                                           c->valve_deadband_pct, lo, 5.0f);
 }
