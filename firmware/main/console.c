@@ -2,6 +2,9 @@
 #include <string.h>
 #include <stdlib.h>
 #include "esp_console.h"
+#include "driver/usb_serial_jtag.h"
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
 #include "esp_log.h"
 
 __attribute__((weak)) void console_hook_status(char *o, size_t n){ snprintf(o,n,"no status\n"); }
@@ -18,13 +21,45 @@ static int cmd_valve(int c, char **v){ if(c<2){printf("usage: valve <0-100>\n");
 static int cmd_resync(int c, char **v){ console_hook_resync(); printf("resync requested\n"); return 0; }
 static int cmd_mode(int c, char **v){ char b[64]; console_hook_mode(b,sizeof b); printf("%s",b); return 0; }
 static int cmd_freset(int c, char **v){ console_hook_factory_reset(); printf("factory reset\n"); return 0; }
-/* Two runs x 5 sensors x 8 counters; 1280 keeps the whole dump un-truncated. */
-static int cmd_stats(int c, char **v){ char b[1280]; console_hook_stats(b,sizeof b); printf("%s",b); return 0; }
-/* Two runs x 5 endpoints x one line each. */
-static int cmd_zbtemp(int c, char **v){ char b[768]; console_hook_zbtemp(b,sizeof b); printf("%s",b); return 0; }
-static int cmd_hb(int c, char **v){ char b[512]; console_hook_hb(b,sizeof b); printf("%s",b); return 0; }
+/* Up to 5 runs x (header + 5 sensors); sized so the whole history prints un-truncated. */
+static int cmd_stats(int c, char **v){ char b[2816]; console_hook_stats(b,sizeof b); printf("%s",b); return 0; }
+/* Up to 5 runs x (header + 5 endpoints). */
+static int cmd_zbtemp(int c, char **v){ char b[2048]; console_hook_zbtemp(b,sizeof b); printf("%s",b); return 0; }
+static int cmd_hb(int c, char **v){ char b[1024]; console_hook_hb(b,sizeof b); printf("%s",b); return 0; }
+
+/* The REPL is started only once a USB host is actually attached.
+ *
+ * Measured 2026-08-11: on mains alone the board resets about every 40 s with
+ * ESP_RST_TASK_WDT, and the per-task heartbeats show every watchdog-subscribed app task
+ * fed on schedule right up to the reset (sensors 9.9 s stale on a 10 s loop, control
+ * 0.1 s, valve 0 s). The only remaining subscriber is the idle task
+ * (CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=y), so nothing BLOCKED -- something spun.
+ * A spinner above idle (priority 0) but below the app tasks (4-6) starves idle alone,
+ * which is exactly the observed picture, and the REPL sits in that band.
+ *
+ * With no host attached its console reads return immediately instead of blocking, so
+ * the line-editing loop free-runs. Attaching USB makes the reads block, which is why
+ * the fault vanishes precisely when it becomes observable.
+ *
+ * Waiting in a task rather than testing once at boot: enumeration is not complete the
+ * instant app_main runs, and the cable can be plugged in at any time. The poll blocks on
+ * vTaskDelay, so it costs nothing while it waits. */
+static void console_repl_start(void);
+
+static void console_wait_for_host(void *arg)
+{
+    while (!usb_serial_jtag_is_connected()) vTaskDelay(pdMS_TO_TICKS(500));
+    console_repl_start();
+    vTaskDelete(NULL);
+}
 
 void console_start(void)
+{
+    if (xTaskCreate(console_wait_for_host, "con_wait", 4096, NULL, 2, NULL) != pdPASS)
+        ESP_LOGE("console", "xTaskCreate(con_wait) failed -- console unavailable");
+}
+
+static void console_repl_start(void)
 {
     esp_console_repl_t *repl = NULL;
     esp_console_repl_config_t rc = ESP_CONSOLE_REPL_CONFIG_DEFAULT();

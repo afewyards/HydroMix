@@ -4,35 +4,59 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
-## 1.6.3 — instrument the temperature attribute writes
+## 1.6.4 — the console REPL was starving the idle task
 
-1.6.2 addressed a real robustness gap but not the fault actually in front of us, because
-the fault is not in the sensors at all. Measured live on 2026-08-11 with the board on
-mains only:
+Two days of "every temperature probe is dead" were a reboot loop wearing a sensor
+costume. Root cause: with no USB host attached, the console REPL's reads return
+immediately instead of blocking, so its line-editing loop free-runs. It sits at a
+priority above the idle task (0) and below the app tasks (4-6), so every
+watchdog-subscribed app task kept feeding normally while the idle task never got
+scheduled — and the idle task is a subscriber
+(`CONFIG_ESP_TASK_WDT_CHECK_IDLE_TASK_CPU0=y`). 30 s later, `ESP_RST_TASK_WDT`. Forever,
+every ~40 s, but **only when no USB host was attached**.
 
-- `local_temperature_1` climbs smoothly — 20.56 → 20.68 → 20.75 over 70 s — so
-  `temp_centi(SENS_SUPPLY)` is returning real values and supply is **not** faulted;
-- `temperature_2`, the same sensor through the same function in the same telemetry
-  iteration, publishes `null` (the 0x8000 sentinel) continuously;
-- no `deviceAnnounce` in 75 s of broker traffic, so the board is not rebooting either.
+That is the whole illusion. Probes boot latched-faulted for ~30 s by design
+(`SENSOR_CLEAR_AFTER` = 3 sweeps at 10 s), and the board reset at ~40 s. So the only
+value that ever reached the coordinator was the ZCL invalid sentinel 0x8000 — five
+simultaneously dead probes, over and over, on a plant whose probes were perfect.
 
-The ZCL reporting engine transmits straight from the attribute table, so a report of
-0x8000 means the table still holds the `add_temp_ep()` seed — the write is not landing
-on endpoints 2–6 while the identical call against the thermostat cluster on endpoint 1
-succeeds. `esp_zb_zcl_set_attribute_val()` returns a status, and every call site
-discarded it, so which endpoint failed and why was unknowable from outside the board.
+`console_start()` now waits for `usb_serial_jtag_is_connected()` in a task that blocks on
+`vTaskDelay` before creating the REPL. Verified live: mains-only cold boot, temperatures
+flowing continuously past the 40 s mark and `mode` back to `cooling` — the plant
+regulating again for the first time since 2026-08-10.
 
-This release only measures. Per-endpoint ok/fail counts, the failing status code and the
-value attempted are tallied in `RTC_NOINIT` (surviving the reset that opening the USB
-console causes), printed at boot, and readable with the new `zbtemp` console command.
+### What was innocent
 
-One candidate is already visible in the code and will be confirmed or excluded by that
-tally: `add_temp_ep()` declares `min_value = -4000`, and the ZCL invalid sentinel
-0x8000 (−32768) lies outside it. The seed bypasses the range check, but every runtime
-write of the sentinel would be rejected — meaning a genuinely dead probe cannot publish
-as invalid and holds its last good value instead, which is exactly the lie `temp_centi()`
-was written to prevent. That is the opposite direction from the fault under
-investigation, so it is a separate defect, not yet the answer.
+Worth recording, because each was suspected in turn and none was at fault: the DS18B20
+probes and the 1-Wire bus (zero read failures in every tally, ever), the temperature
+attribute writes (`ok`, `mism=0`, table reading back real values), the Zigbee reporting
+path, the power supply, and 1.6.1's feedforward change — which altered only mixing-law
+maths and was blamed purely because the outage began at its OTA reboot. The OTA reboot
+was the trigger only in the sense that it was the first boot with no USB attached.
+
+### The observability trap, which cost more than the bug
+
+Reaching this board's console takes two resets: plugging the cable in is one, opening the
+port is another. Worse, attaching USB is *also* the intervention that stops the fault. So
+a one-deep "previous run" record always describes the run your own reset ended, never the
+run the fault ended — the measurement consumes its own evidence.
+
+That trap was hit three times in one investigation: it destroyed the 1-Wire tally for the
+13 h outage, then the first attribute-write tally, then the first heartbeat record. Every
+RTC diagnostic now keeps **4 runs**, tagged with a boot sequence number, and where it
+matters labelled with how each run ended (`boot=TASK_WDT`). Two resets can no longer reach
+the run under investigation.
+
+### Diagnostics added
+
+- `stats` — 1-Wire failure tallies per reason (`rmt`/`reset`/`write`/`read`/`crc`/`por85`), 4 runs deep.
+- `zbtemp` — per-endpoint attribute-write ok/fail/status, plus a read-back of what the ZCL
+  table actually holds, with ticks/sweeps/faults and the reset reason per run.
+- `hb` — per-task heartbeat ages, each run labelled by how it died. This is what named the
+  culprit: every app task fed on schedule right up to the reset, leaving the idle task as
+  the only possible starved subscriber.
+
+Host suite 17/17.
 
 ## 1.6.2 — a dead sensor sweep can no longer hide as five dead probes
 
@@ -47,16 +71,25 @@ The 1-Wire bus was never the problem. `stats` after the reset showed **zero read
 failures of any kind** — no `rmt`, no `reset`, no `crc`, on any probe — and every
 probe returned a plausible temperature immediately.
 
-**The root cause of that specific outage was not identified**, and the evidence that
-would have named it is gone: the per-reason failure tally lives in RTC RAM and holds
-only one previous run, so plugging in the console cable to read it overwrote the very
-run under investigation. Two mechanisms remain consistent with everything observed,
-and this release does not distinguish them — it makes the next occurrence
-self-identifying instead:
+**Superseded by 1.6.4: neither hypothesis below was right.** The outage was a
+`TASK_WDT` reboot loop every ~40 s caused by the console REPL starving the idle task
+whenever no USB host was attached; the probes never failed at all. The two candidates
+recorded here are kept because the reasoning that produced them is instructive, not
+because either was correct.
+
+At the time the root cause was not identified, and the evidence that would have named it
+was gone: the per-reason failure tally lived in RTC RAM and held only one previous run,
+so plugging in the console cable to read it overwrote the very run under investigation.
+Two mechanisms then looked consistent with everything observed:
 
 - the 1-Wire/RMT driver wedged, failing every read (would have logged a `sweep N
   failed: …=rmt` line every 10 s);
 - the sweep task never ran at all (would have logged nothing whatsoever).
+
+Both were excluded once the reboot loop was found: every tally showed zero read failures
+and normal sweep counts. The changes in 1.6.2 remain worth keeping on their own merits —
+they close a real gap in which a dead sweep is indistinguishable from five dead probes —
+but they did not fix this outage.
 
 What made a 13 h silent outage possible is a gap that IS identified, and is fixed here.
 `sensors_start()` seeds every probe latched-faulted on purpose, so a sweep task that
