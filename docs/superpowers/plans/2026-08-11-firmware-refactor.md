@@ -1683,66 +1683,76 @@ git commit -m "refactor(fw): delegate config clamping to ctrl_core's single sour
 | `action_handler` :530, `zb_task` :543 | | |
 | `zigbee_start` :571, `zigbee_steer` :584, `zigbee_leave` :591, `zigbee_joined` :599 | | |
 
-**Known cross-bucket symbols** — these are why `zigbee_internal.h` exists:
+**Cross-bucket symbols — verified by full cross-reference of the file, not estimated:**
 
-- `now_ms()` :47 — used by CORE and TELEM.
-- `s_joined` :25 — written by CORE (`mark_joined`/`mark_unjoined`), read by TELEM (`push_running_mode_report`) and by the public `zigbee_joined`.
-- `s_last_pushed_running_mode` / `RUNNING_MODE_UNSET` :38-39 — reset by CORE (`mark_joined`), consumed by TELEM (`push_running_mode_report`).
-- `s_attr_travel_since` :87 — the custom cluster's attribute storage, declared for CORE's `build_custom_cluster` and updated by TELEM's `zigbee_push_status`.
-- `configure_reporting_*` :903-985 — declared in CORE (`configure_reporting_on_join` :51 calls all four), defined in TELEM.
-- `action_handler` :530 (CORE) dispatches to `attr_cb` (ATTRS).
+Genuinely need `zigbee_internal.h`:
+
+- `s_last_pushed_running_mode` / `RUNNING_MODE_UNSET` :38-39 — reset by CORE (`mark_joined` :325), read and written by TELEM (`push_running_mode_report` :812, :831). No existing accessor. Either expose it, or keep it static in TELEM and give CORE a one-line non-static reset function to call — the latter is cleaner.
+- `configure_reporting_*` :903-984 — all four defined in TELEM, all four called by `configure_reporting_on_join` :51-63, which is itself called only from CORE's `mark_joined`. **Cleanest fix: move `configure_reporting_on_join` into TELEM and have CORE call that single entry point**, leaving all four `configure_reporting_*` static.
+- `attr_cb` :373-528 — must become non-static so CORE's `action_handler` :530 can dispatch to it. (Moving `action_handler` into ATTRS instead would separate it from `zb_task`, where it is registered with the SDK — don't.)
+- `telemetry_task` :891-900 — spawned by CORE's `zb_task` via `xTaskCreate` at :563, so it must become non-static.
+- `zb_temp_stats_init` — already handled in Task 4, where it becomes the public `zbdiag_boot_init()`.
+
+Do **not** need sharing, despite looking like they might:
+
+- `s_joined` :25 — read by TELEM, but the public `zigbee_joined()` already exposes it. Have TELEM call that.
+- **The 19 `s_attr_*` custom-cluster backing variables** :74-92 — referenced by name *only* inside `build_custom_cluster`. The Zigbee stack mutates them through registered pointers, keyed by attribute id, which is not a C-level reference. They stay static in CORE. This includes `s_attr_travel_since`.
+- `now_ms()` :47, `s_retry_ms` :33, `MFR`/`MODEL` :68-69, `SW_BUILD_ID`/`DATE_CODE` :196-197 — all CORE only.
+- `s_attr_running_mode` :250 — function-scoped static inside `build_endpoints`, not file-scope.
+- `TAG` :22 — used by all buckets, but this is not a sharing problem: give each new file its own `static const char *TAG`. Using a distinct tag per file (`"zigbee_attrs"`, `"zigbee_telem"`) makes the logs more useful, not less.
+- `TEMP_EP_NAME` and `s_zb` — already resolved by Task 4, which moved both into `zigbee_diag.c` behind the `zbdiag_note_*` accessors.
+
+`esp_zb_app_signal_handler` :337 is an **SDK-required symbol name** with implicit external linkage — it is declared in no header in this repo. Whichever file keeps it must leave it non-static.
 
 **Lock discipline must not change.** `esp_zb_lock_acquire`/`release` pairs currently sit at :586/:588 (`zigbee_steer`), :593/:595 (`zigbee_leave`), :677/:709 (`zigbee_report_temps`), :837/:874 (`zigbee_push_status`), :879/:883 (`set_local_temperature`). `push_running_mode_report` is called with the lock **already held** by `zigbee_push_status` and must not take it itself. Moving a function between files must not move an acquire or release relative to its callees.
 
-- [ ] **Step 1: Inventory every file-scope static, compiler-verified**
+- [ ] **Step 1: Confirm the cross-reference above still holds**
 
-Do not do this by eye. List the candidates first:
+The list above was produced by cross-referencing every file-scope symbol in `zigbee.c` against every use. Tasks 4 and 6 have since edited the file, so re-confirm rather than assume:
 
 ```bash
 cd /Users/kleist/Sites/ValveController/firmware/main
 grep -n '^static [^(]*;$\|^static const [^(]*;$\|^static .*\[\].*=' zigbee.c
+grep -c 's_attr_travel_since' zigbee.c    # expect 2: declaration + build_custom_cluster
 ```
 
-Record each name and note which of the three buckets read it and which write it:
-
-```bash
-for s in $(grep -o '^static [a-z_ ]*\**\([a-z_][a-z0-9_]*\)\s*[;=[]' zigbee.c | grep -o '[a-z_][a-z0-9_]*\s*[;=[]$' | tr -d ' ;=['); do
-  echo "== $s"; grep -n "\b$s\b" zigbee.c | head -20
-done
-```
-
-Anything read or written by more than one bucket becomes a non-`static` definition in the owning `.c` plus an `extern` declaration in `zigbee_internal.h`. Anything used by exactly one bucket stays `static` in that bucket's file. The known ones are listed above, but treat that list as a starting point, not as complete — this step is the authority.
+If a symbol appears that is not accounted for above, cross-reference it (`grep -n "\bNAME\b" zigbee.c`) and place it in the bucket that uses it before proceeding. Anything used by exactly one bucket stays `static` in that bucket's file.
 
 - [ ] **Step 2: Create `zigbee_internal.h`**
 
 ```c
 #pragma once
 /* Shared between zigbee.c, zigbee_attrs.c and zigbee_telem.c only. NOT public API --
- * everything callers outside main/ need is in zigbee.h. */
+ * everything callers outside main/ need is in zigbee.h.
+ *
+ * Deliberately small: the 19 s_attr_* custom-cluster backing variables stay static in
+ * zigbee.c because the stack mutates them through registered pointers keyed by attribute
+ * id, never by C-level name; and TELEM reads join state through the public
+ * zigbee_joined() rather than reaching for s_joined. */
 #include <stdbool.h>
 #include <stdint.h>
+#include "esp_err.h"
 #include "esp_zigbee_core.h"
 
-#define RUNNING_MODE_UNSET 0xFFu
+/* Defined in zigbee_telem.c. Arms the ZCL reporting engine for every attribute that
+ * needs it; called from zigbee.c's mark_joined(). Keeping the four individual
+ * configure_reporting_* functions static behind this one entry point is why they do not
+ * appear here. */
+void zigbee_configure_reporting_on_join(void);
 
-extern const char *const ZB_TAG;          /* shared ESP_LOG tag */
-extern bool     g_zb_joined;              /* written by zigbee.c, read by zigbee_telem.c */
-extern uint8_t  g_zb_last_pushed_running_mode;
-extern float    g_zb_attr_travel_since;   /* custom cluster attribute storage */
+/* Defined in zigbee_telem.c, spawned by zigbee.c's zb_task(). */
+void telemetry_task(void *arg);
 
-uint32_t zb_now_ms(void);
-
-/* Defined in zigbee_telem.c, called from zigbee.c's configure_reporting_on_join(). */
-void configure_reporting_temp(uint8_t ep);
-void configure_reporting_position(void);
-void configure_reporting_bitmap(uint16_t attr_id);
-void configure_reporting_running_mode(void);
+/* Defined in zigbee_telem.c. Forces the next push to report even if the computed mode is
+ * unchanged, so each join gives Z2M an authoritative read; called from mark_joined().
+ * This exists so s_last_pushed_running_mode can stay static in zigbee_telem.c. */
+void zigbee_reset_running_mode_push(void);
 
 /* Defined in zigbee_attrs.c, called from zigbee.c's action_handler(). */
 esp_err_t zb_attr_write_cb(const esp_zb_zcl_set_attr_value_message_t *m);
 ```
 
-Add any further shared statics Step 1 found. Rename each moved static from `s_x` to `g_zb_x` as above — the `s_` prefix means "file-static" in this codebase and would be a lie once the symbol is extern.
+Each new `.c` file gets its own `static const char *TAG` — use `"zigbee_attrs"` and `"zigbee_telem"` so the logs say which half spoke.
 
 - [ ] **Step 3: Move ATTRS first, build, then move TELEM, build again**
 
