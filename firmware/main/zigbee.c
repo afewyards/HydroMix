@@ -4,6 +4,7 @@
 #include "valve_hw.h"
 #include "config.h"
 #include "ota.h"
+#include "taskhb.h"
 #include <math.h>
 #include <stdlib.h>
 #include <string.h>
@@ -891,6 +892,7 @@ static void telemetry_task(void *arg)
 {
     for (;;) {
         vTaskDelay(pdMS_TO_TICKS(TELEMETRY_PERIOD_MS));
+        hb_note(HB_TELEM);
         zigbee_report_temps();
         zigbee_push_status();
         set_local_temperature();

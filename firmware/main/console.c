@@ -11,6 +11,7 @@ __attribute__((weak)) void console_hook_mode(char *o, size_t n){ snprintf(o,n,"I
 __attribute__((weak)) void console_hook_factory_reset(void){}
 __attribute__((weak)) void console_hook_stats(char *o, size_t n){ snprintf(o,n,"no stats\n"); }
 __attribute__((weak)) void console_hook_zbtemp(char *o, size_t n){ snprintf(o,n,"no zbtemp\n"); }
+__attribute__((weak)) void console_hook_hb(char *o, size_t n){ snprintf(o,n,"no hb\n"); }
 
 static int cmd_status(int c, char **v){ char b[256]; console_hook_status(b,sizeof b); printf("%s",b); return 0; }
 static int cmd_valve(int c, char **v){ if(c<2){printf("usage: valve <0-100>\n");return 1;} console_hook_valve(atoi(v[1])); return 0; }
@@ -21,6 +22,7 @@ static int cmd_freset(int c, char **v){ console_hook_factory_reset(); printf("fa
 static int cmd_stats(int c, char **v){ char b[1280]; console_hook_stats(b,sizeof b); printf("%s",b); return 0; }
 /* Two runs x 5 endpoints x one line each. */
 static int cmd_zbtemp(int c, char **v){ char b[768]; console_hook_zbtemp(b,sizeof b); printf("%s",b); return 0; }
+static int cmd_hb(int c, char **v){ char b[512]; console_hook_hb(b,sizeof b); printf("%s",b); return 0; }
 
 void console_start(void)
 {
@@ -38,6 +40,7 @@ void console_start(void)
         {"factory-reset","zigbee leave + NVS wipe",NULL,cmd_freset,NULL},
         {"stats","1-Wire failure tallies (this run + previous)",NULL,cmd_stats,NULL},
         {"zbtemp","temperature attribute-write tallies (this run + previous)",NULL,cmd_zbtemp,NULL},
+        {"hb","per-task heartbeat ages (this run + previous)",NULL,cmd_hb,NULL},
     };
     for (size_t i=0;i<sizeof(cmds)/sizeof(cmds[0]);++i) ESP_ERROR_CHECK(esp_console_cmd_register(&cmds[i]));
     ESP_ERROR_CHECK(esp_console_start_repl(repl));

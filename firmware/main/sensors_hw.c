@@ -12,6 +12,7 @@
 #include "onewire_bus.h"
 #include "onewire_crc.h"
 #include "ctrl_core/sensor_policy.h"
+#include "taskhb.h"
 
 static const char *TAG = "sensors";
 
@@ -161,6 +162,7 @@ static void sweep_task(void *arg)
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     for (;;) {
         esp_task_wdt_reset();
+        hb_note(HB_SENSORS);
         /* Phase 1: kick a conversion on each GPIO in turn (line released between). */
         for (int i = 0; i < SENS_COUNT; ++i)
             if (onewire_convert(PIN[i]) != OW_OK) s_stats.convert_fail[i]++;

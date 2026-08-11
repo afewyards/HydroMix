@@ -10,6 +10,7 @@
 #include "zigbee.h"
 #include "ui.h"
 #include "ota.h"
+#include "taskhb.h"
 #include <stdio.h>
 
 #define PIN_SSR_OPEN   GPIO_NUM_2
@@ -36,6 +37,7 @@ static void triacs_safe_low(void)
 void app_main(void)
 {
     triacs_safe_low();                 /* MUST be first */
+    hb_boot_report();                  /* before anything can overwrite the heartbeats */
     ESP_LOGI(TAG, "ValveController boot: triacs forced low");
     config_load();
     ota_init();
@@ -69,6 +71,8 @@ void zigbee_on_join(void){ ota_note_joined(); }
 void console_hook_stats(char *o, size_t n){ sensors_format_stats(o, n); }
 
 void console_hook_zbtemp(char *o, size_t n){ zigbee_format_temp_stats(o, n); }
+
+void console_hook_hb(char *o, size_t n){ hb_format(o, n); }
 
 void console_hook_mode(char *o, size_t n){
     const char *m = control_task_mode()==MODE_HEATING?"HEATING":

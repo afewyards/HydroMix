@@ -11,6 +11,7 @@
 #include "ctrl_core/interlock.h"
 #include "ctrl_core/pos_estimator.h"
 #include "ctrl_core/resync_policy.h"
+#include "taskhb.h"
 
 static const char *TAG = "valve";
 
@@ -69,6 +70,7 @@ static void valve_task(void *arg){
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
     for (;;) {
         esp_task_wdt_reset();
+        hb_note(HB_VALVE);
         uint32_t t = now_ms();
         xSemaphoreTake(s_lock, portMAX_DELAY);
 

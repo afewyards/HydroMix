@@ -13,6 +13,7 @@
 #include "ctrl_core/control.h"
 #include "ota.h"
 #include "ctrl_core/ota_gate.h"
+#include "taskhb.h"
 
 #define CYCLE_MS 10000
 
@@ -111,6 +112,7 @@ static void control_loop(void *arg){
     control_init(&s_ctrl);
     for (;;) {
         esp_task_wdt_reset();
+        hb_note(HB_CONTROL);
 
         control_in_t in = {0};
         in.t_source_f = sensors_get(SENS_SOURCE).value_filt_c;
