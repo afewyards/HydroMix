@@ -1,33 +1,34 @@
 #pragma once
 #include <stdint.h>
 #include <stdbool.h>
+#include <stddef.h>
 #include "esp_err.h"
+#include "ctrl_core/config_map.h"
 
 #define CONFIG_VERSION 3
 
+/* The tunables live in ctrl_core so their clamp ranges and defaults have exactly one
+ * definition (config_map.c's SPEC table). config_t is that struct plus the persistence
+ * tag -- deliberately NOT a second copy of the fields.
+ *
+ * The layout is load-bearing: config_load() discriminates NVS blob versions by size, so
+ * sizeof(config_t) must stay 76 with every field at its historical offset or every
+ * deployed device silently reverts to defaults. The asserts below enforce that. */
 typedef struct {
-    float    heat_threshold;   /* 28  */
-    float    cool_threshold;   /* 16  */
-    float    hysteresis;       /* 2   */
-    float    heat_setpoint;    /* 35  */
-    float    cool_setpoint;    /* 18  */
-    float    park_pos;         /* 50  */
-    uint32_t travel_time_s;    /* 120 */
-    bool     direction_swap;   /* false */
-    float    kp;               /* 2.8 */
-    float    ki;               /* 0.9 */
-    float    gov_high;         /* 36  */
-    float    gov_low;          /* 16  */
-    uint32_t alarm_dwell_ms;   /* 300000 */
-    uint32_t enter_dwell_ms;   /* 60000  */
-    uint32_t leave_dwell_ms;   /* 420000 */
-    /* NEW FIELDS GO LAST (still before cfg_version) — older-sized NVS blobs are migrated
-     * by field-by-field copy (or, for v1, a same-layout prefix memcpy) in config_load(). */
-    float    deadtime_s;         /* 30  */
-    float    pi_deadband_k;      /* 0.25 */
-    float    valve_deadband_pct; /* 1.0 — valve_hw.c motor stop deadband, % of travel */
-    uint32_t cfg_version;
+    tunable_cfg_t t;
+    uint32_t      cfg_version;
 } config_t;
+
+_Static_assert(sizeof(config_t) == 76, "config_t grew or shrank -- the v3 NVS blob is size-discriminated");
+_Static_assert(offsetof(config_t, t) == 0, "tunables must stay at offset 0 (v1 migration memcpys a prefix)");
+_Static_assert(offsetof(config_t, cfg_version) == 72, "cfg_version moved");
+_Static_assert(offsetof(config_t, t.heat_threshold) == 0,  "field moved");
+_Static_assert(offsetof(config_t, t.travel_time_s) == 24,  "field moved");
+_Static_assert(offsetof(config_t, t.direction_swap) == 28, "field moved");
+_Static_assert(offsetof(config_t, t.kp) == 32,             "field moved");
+_Static_assert(offsetof(config_t, t.alarm_dwell_ms) == 48, "field moved");
+_Static_assert(offsetof(config_t, t.deadtime_s) == 60,     "field moved");
+_Static_assert(offsetof(config_t, t.valve_deadband_pct) == 68, "field moved");
 
 extern config_t g_config;
 

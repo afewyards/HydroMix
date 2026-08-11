@@ -60,3 +60,8 @@ uint32_t tunable_clamp_u32(uint32_t v, uint32_t lo, uint32_t hi);
  * interlock's minimum pulse; at the shipped default travel_time_s=120 this evaluates to
  * exactly 1.0 %, i.e. the shipped valve_deadband_pct sits right at the floor. */
 float valve_deadband_floor_pct(uint32_t travel_time_s);
+
+/* Zigbee custom-cluster attribute id -> tunable id. Numeric because ctrl_core cannot see
+ * main/zigbee.h; main/config.c static-asserts that ATTR_* still match these values.
+ * Returns false for read-only or unknown attributes (resync, the bitmaps, travel-since). */
+bool tunable_from_attr(uint16_t attr_id, tunable_id_t *out);

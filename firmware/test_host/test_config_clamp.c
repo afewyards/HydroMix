@@ -110,6 +110,56 @@ void test_out_of_range_id_is_ignored(void){
     TEST_ASSERT_NULL(tunable_spec((tunable_id_t)TUNABLE_COUNT));
 }
 
+/* The whole point of Task 6: a write arriving over Zigbee and a write arriving through
+ * the tunable id must produce byte-identical config. Before 1.7.0 these were two
+ * hand-maintained switch statements with independently written bounds. */
+void test_attr_path_and_tunable_path_agree(void){
+    struct { uint16_t attr; tunable_id_t id; } m[] = {
+        {0x0000, TUNABLE_HEAT_THRESHOLD}, {0x0001, TUNABLE_COOL_THRESHOLD},
+        {0x0002, TUNABLE_TRAVEL_TIME_S},  {0x0003, TUNABLE_PARK_POS},
+        {0x0004, TUNABLE_DIRECTION_SWAP}, {0x0005, TUNABLE_KP},
+        {0x0006, TUNABLE_KI},             {0x0007, TUNABLE_GOV_HIGH},
+        {0x0008, TUNABLE_GOV_LOW},        {0x0009, TUNABLE_ALARM_DWELL_MS},
+        {0x000E, TUNABLE_DEADTIME_S},     {0x000F, TUNABLE_PI_DEADBAND},
+        {0x0010, TUNABLE_HEAT_SETPOINT},  {0x0011, TUNABLE_COOL_SETPOINT},
+        {0x0012, TUNABLE_VALVE_DEADBAND},
+    };
+    /* Values chosen to sit outside every declared range in both directions, so each
+     * write exercises a clamp rather than passing through. */
+    const float    fhi = 1.0e6f, flo = -1.0e6f;
+    const uint32_t uhi = 4000000000u, ulo = 0u;
+    const bool     bt  = true;
+
+    for (size_t i = 0; i < sizeof m / sizeof m[0]; ++i) {
+        const tunable_spec_t *s = tunable_spec(m[i].id);
+        TEST_ASSERT_NOT_NULL(s);
+        tunable_id_t got;
+        TEST_ASSERT_TRUE(tunable_from_attr(m[i].attr, &got));
+        TEST_ASSERT_EQUAL_INT(m[i].id, got);
+
+        for (int pass = 0; pass < 2; ++pass) {
+            tunable_cfg_t a, b;
+            fresh(&a); fresh(&b);
+            const void *v = (s->kind == TK_F32)  ? (const void *)(pass ? &flo : &fhi)
+                          : (s->kind == TK_U32)  ? (const void *)(pass ? &ulo : &uhi)
+                                                 : (const void *)&bt;
+            tunable_apply(&a, m[i].id, v);
+            tunable_apply(&b, got, v);
+            TEST_ASSERT_EQUAL_MEMORY(&a, &b, sizeof a);
+        }
+    }
+}
+
+void test_read_only_attrs_map_to_nothing(void){
+    tunable_id_t id;
+    TEST_ASSERT_FALSE(tunable_from_attr(0x000A, &id));   /* resync */
+    TEST_ASSERT_FALSE(tunable_from_attr(0x000B, &id));   /* alarm bitmap */
+    TEST_ASSERT_FALSE(tunable_from_attr(0x000C, &id));   /* fault bitmap */
+    TEST_ASSERT_FALSE(tunable_from_attr(0x000D, &id));   /* travel since */
+    TEST_ASSERT_FALSE(tunable_from_attr(0xFFFF, &id));   /* unknown */
+    TEST_ASSERT_FALSE(tunable_from_attr(0x0013, &id));   /* one past the last real attr */
+}
+
 int main(void){
     UNITY_BEGIN();
     RUN_TEST(test_every_spec_entry_clamps_into_its_own_range);
@@ -120,5 +170,7 @@ int main(void){
     RUN_TEST(test_shortening_travel_lifts_a_stranded_deadband);
     RUN_TEST(test_valve_deadband_is_writable_as_a_tunable);
     RUN_TEST(test_out_of_range_id_is_ignored);
+    RUN_TEST(test_attr_path_and_tunable_path_agree);
+    RUN_TEST(test_read_only_attrs_map_to_nothing);
     return UNITY_END();
 }

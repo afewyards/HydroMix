@@ -138,3 +138,30 @@ void tunable_clamp_all(tunable_cfg_t *c)
     c->valve_deadband_pct = tunable_sane_f(ctrl_clampf(d.valve_deadband_pct, lo, 5.0f),
                                            c->valve_deadband_pct, lo, 5.0f);
 }
+
+bool tunable_from_attr(uint16_t attr_id, tunable_id_t *out)
+{
+    tunable_id_t id;
+    switch (attr_id) {
+    case 0x0000: id = TUNABLE_HEAT_THRESHOLD; break;
+    case 0x0001: id = TUNABLE_COOL_THRESHOLD; break;
+    case 0x0002: id = TUNABLE_TRAVEL_TIME_S;  break;
+    case 0x0003: id = TUNABLE_PARK_POS;       break;
+    case 0x0004: id = TUNABLE_DIRECTION_SWAP; break;
+    case 0x0005: id = TUNABLE_KP;             break;
+    case 0x0006: id = TUNABLE_KI;             break;
+    case 0x0007: id = TUNABLE_GOV_HIGH;       break;
+    case 0x0008: id = TUNABLE_GOV_LOW;        break;
+    case 0x0009: id = TUNABLE_ALARM_DWELL_MS; break;
+    case 0x000E: id = TUNABLE_DEADTIME_S;     break;
+    case 0x000F: id = TUNABLE_PI_DEADBAND;    break;
+    case 0x0010: id = TUNABLE_HEAT_SETPOINT;  break;
+    case 0x0011: id = TUNABLE_COOL_SETPOINT;  break;
+    case 0x0012: id = TUNABLE_VALVE_DEADBAND; break;
+    /* 0x000A resync, 0x000B alarm bitmap, 0x000C fault bitmap, 0x000D travel-since:
+     * read-only or command-like, never a stored tunable. */
+    default: return false;
+    }
+    if (out) *out = id;
+    return true;
+}

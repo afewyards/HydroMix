@@ -124,9 +124,9 @@ static void valve_task(void *arg){
          * frozen -- a travel_time_s write mid-stroke would otherwise rescale the
          * position estimator's %-per-tick under it. */
         if (applied == VALVE_STOP && s_rs == RS_IDLE) {
-            s_swap_latched     = g_config.direction_swap;
-            s_travel_latched_s = g_config.travel_time_s;
-            s_deadband_latched = g_config.valve_deadband_pct;
+            s_swap_latched     = g_config.t.direction_swap;
+            s_travel_latched_s = g_config.t.travel_time_s;
+            s_deadband_latched = g_config.t.valve_deadband_pct;
         }
 
         pos_est_update(&s_pos, travel_sign_of(applied), TICK_MS, (float)s_travel_latched_s);
@@ -141,9 +141,9 @@ void valve_start(void){
     interlock_init(&s_ilk);
     pos_est_init(&s_pos);
     resync_policy_init(&s_rspol);
-    s_swap_latched     = g_config.direction_swap;          /* initial latch at boot */
-    s_travel_latched_s = g_config.travel_time_s;
-    s_deadband_latched = g_config.valve_deadband_pct;
+    s_swap_latched     = g_config.t.direction_swap;          /* initial latch at boot */
+    s_travel_latched_s = g_config.t.travel_time_s;
+    s_deadband_latched = g_config.t.valve_deadband_pct;
     s_resync_req = true;                                   /* boot resync */
     /* No valve task means the triacs never move again: targets are accepted and silently
      * discarded, which reads as a working controller driving a stuck valve. Abort. */

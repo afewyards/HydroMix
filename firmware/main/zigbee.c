@@ -93,25 +93,25 @@ static float    s_attr_valve_deadband;
 
 static esp_zb_attribute_list_t *build_custom_cluster(void)
 {
-    s_attr_heat_threshold = g_config.heat_threshold;
-    s_attr_cool_threshold = g_config.cool_threshold;
-    s_attr_travel_time_s  = g_config.travel_time_s;
-    s_attr_park_pos       = g_config.park_pos;
-    s_attr_direction_swap = g_config.direction_swap;
-    s_attr_kp             = g_config.kp;
-    s_attr_ki             = g_config.ki;
-    s_attr_gov_high       = g_config.gov_high;
-    s_attr_gov_low        = g_config.gov_low;
-    s_attr_alarm_dwell    = g_config.alarm_dwell_ms;
+    s_attr_heat_threshold = g_config.t.heat_threshold;
+    s_attr_cool_threshold = g_config.t.cool_threshold;
+    s_attr_travel_time_s  = g_config.t.travel_time_s;
+    s_attr_park_pos       = g_config.t.park_pos;
+    s_attr_direction_swap = g_config.t.direction_swap;
+    s_attr_kp             = g_config.t.kp;
+    s_attr_ki             = g_config.t.ki;
+    s_attr_gov_high       = g_config.t.gov_high;
+    s_attr_gov_low        = g_config.t.gov_low;
+    s_attr_alarm_dwell    = g_config.t.alarm_dwell_ms;
     s_attr_resync         = false;
     s_attr_alarm_bitmap   = 0;
     s_attr_fault_bitmap   = 0;
     s_attr_travel_since   = 0.0f;
-    s_attr_deadtime_s     = g_config.deadtime_s;
-    s_attr_pi_deadband    = g_config.pi_deadband_k;
-    s_attr_heat_setpoint  = g_config.heat_setpoint;
-    s_attr_cool_setpoint  = g_config.cool_setpoint;
-    s_attr_valve_deadband = g_config.valve_deadband_pct;
+    s_attr_deadtime_s     = g_config.t.deadtime_s;
+    s_attr_pi_deadband    = g_config.t.pi_deadband_k;
+    s_attr_heat_setpoint  = g_config.t.heat_setpoint;
+    s_attr_cool_setpoint  = g_config.t.cool_setpoint;
+    s_attr_valve_deadband = g_config.t.valve_deadband_pct;
 
     esp_zb_attribute_list_t *custom = esp_zb_zcl_attr_list_create(VALVECTL_CUSTOM_CLUSTER_ID);
     /* Plain (non-manufacturer-specific) attributes. 0xFC00 is already in the
@@ -402,7 +402,7 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
          *    erase/write NVS from the stack task on every message. */
         if (m->attribute.id == ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_HEATING_SETPOINT_ID) {
             float c = ctrl_clampf(*(int16_t*)m->attribute.data.value / 100.0f, 17.0f, 35.0f);
-            if (c != g_config.heat_setpoint) { g_config.heat_setpoint = c; config_save(); }
+            if (c != g_config.t.heat_setpoint) { g_config.t.heat_setpoint = c; config_save(); }
             int16_t echo = (int16_t)(c * 100.0f + 0.5f);   /* c >= 17, so +0.5 rounds */
             esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -410,7 +410,7 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
         }
         if (m->attribute.id == ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_COOLING_SETPOINT_ID) {
             float c = ctrl_clampf(*(int16_t*)m->attribute.data.value / 100.0f, 17.0f, 35.0f);
-            if (c != g_config.cool_setpoint) { g_config.cool_setpoint = c; config_save(); }
+            if (c != g_config.t.cool_setpoint) { g_config.t.cool_setpoint = c; config_save(); }
             int16_t echo = (int16_t)(c * 100.0f + 0.5f);
             esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE,
@@ -449,76 +449,76 @@ static esp_err_t attr_cb(const esp_zb_zcl_set_attr_value_message_t *m)
         switch (m->attribute.id) {
         case ATTR_HEAT_THRESHOLD:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_HEAT_THRESHOLD, &g_config.heat_threshold, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_HEAT_THRESHOLD, &g_config.t.heat_threshold, false);
             break;
         case ATTR_COOL_THRESHOLD:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_COOL_THRESHOLD, &g_config.cool_threshold, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_COOL_THRESHOLD, &g_config.t.cool_threshold, false);
             break;
         case ATTR_TRAVEL_TIME_S:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_TRAVEL_TIME_S, &g_config.travel_time_s, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_TRAVEL_TIME_S, &g_config.t.travel_time_s, false);
             /* config_apply_custom() may have just re-clamped valve_deadband_pct upward as a
              * side effect (shortening travel raises its stability floor) -- mirror that into
              * the attribute store too, same as every other clamped-tunable echo here. */
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.valve_deadband_pct, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.t.valve_deadband_pct, false);
             break;
         case ATTR_PARK_POS:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PARK_POS, &g_config.park_pos, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PARK_POS, &g_config.t.park_pos, false);
             break;
         case ATTR_KP:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KP, &g_config.kp, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KP, &g_config.t.kp, false);
             break;
         case ATTR_KI:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KI, &g_config.ki, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_KI, &g_config.t.ki, false);
             break;
         case ATTR_GOV_HIGH:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_HIGH, &g_config.gov_high, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_HIGH, &g_config.t.gov_high, false);
             break;
         case ATTR_GOV_LOW:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_LOW, &g_config.gov_low, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_GOV_LOW, &g_config.t.gov_low, false);
             break;
         case ATTR_ALARM_DWELL:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_ALARM_DWELL, &g_config.alarm_dwell_ms, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_ALARM_DWELL, &g_config.t.alarm_dwell_ms, false);
             break;
         case ATTR_DEADTIME_S:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_DEADTIME_S, &g_config.deadtime_s, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_DEADTIME_S, &g_config.t.deadtime_s, false);
             break;
         case ATTR_PI_DEADBAND:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PI_DEADBAND, &g_config.pi_deadband_k, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_PI_DEADBAND, &g_config.t.pi_deadband_k, false);
             break;
         case ATTR_HEAT_SETPOINT: {
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_HEAT_SETPOINT, &g_config.heat_setpoint, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_HEAT_SETPOINT, &g_config.t.heat_setpoint, false);
             /* Mirror into the standard thermostat cluster's attribute store so a coordinator
              * reading OccupiedHeatingSetpoint sees the value this device actually regulates
              * from — the thermostat-branch write path above is unreachable, so without this
              * the standard cluster's stored value would silently go stale. */
-            int16_t echo = (int16_t)(g_config.heat_setpoint * 100.0f + 0.5f);
+            int16_t echo = (int16_t)(g_config.t.heat_setpoint * 100.0f + 0.5f);
             esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_HEATING_SETPOINT_ID, &echo, false);
             break;
         }
         case ATTR_COOL_SETPOINT: {
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_COOL_SETPOINT, &g_config.cool_setpoint, false);
-            int16_t echo = (int16_t)(g_config.cool_setpoint * 100.0f + 0.5f);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_COOL_SETPOINT, &g_config.t.cool_setpoint, false);
+            int16_t echo = (int16_t)(g_config.t.cool_setpoint * 100.0f + 0.5f);
             esp_zb_zcl_set_attribute_val(EP_MAIN, ESP_ZB_ZCL_CLUSTER_ID_THERMOSTAT,
                 ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_THERMOSTAT_OCCUPIED_COOLING_SETPOINT_ID, &echo, false);
             break;
         }
         case ATTR_VALVE_DEADBAND:
             esp_zb_zcl_set_attribute_val(EP_MAIN, VALVECTL_CUSTOM_CLUSTER_ID,
-                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.valve_deadband_pct, false);
+                ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ATTR_VALVE_DEADBAND, &g_config.t.valve_deadband_pct, false);
             break;
         default: break;   /* ATTR_DIRECTION_SWAP (unclamped) or read-only attrs — already match what the stack latched */
         }

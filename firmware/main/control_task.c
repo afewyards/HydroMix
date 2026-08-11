@@ -131,16 +131,16 @@ static void control_loop(void *arg){
         in.link_up = s_link_up; in.link_last_seen_ms = s_link_seen;
 
         control_cfg_t cfg = {
-            .heat_setpoint = ctrl_clampf(g_config.heat_setpoint, 17.0f, 35.0f),
-            .cool_setpoint = ctrl_clampf(g_config.cool_setpoint, 17.0f, 35.0f),
-            .park_pos = g_config.park_pos,
-            .mode_cfg = { g_config.heat_threshold, g_config.cool_threshold, g_config.hysteresis,
-                          g_config.enter_dwell_ms, g_config.leave_dwell_ms },
-            .pi_cfg = { g_config.kp, g_config.ki, 0.0f, 100.0f, g_config.pi_deadband_k,
+            .heat_setpoint = ctrl_clampf(g_config.t.heat_setpoint, 17.0f, 35.0f),
+            .cool_setpoint = ctrl_clampf(g_config.t.cool_setpoint, 17.0f, 35.0f),
+            .park_pos = g_config.t.park_pos,
+            .mode_cfg = { g_config.t.heat_threshold, g_config.t.cool_threshold, g_config.t.hysteresis,
+                          g_config.t.enter_dwell_ms, g_config.t.leave_dwell_ms },
+            .pi_cfg = { g_config.t.kp, g_config.t.ki, 0.0f, 100.0f, g_config.t.pi_deadband_k,
                         0.0f /* trim_max: 0 = PI_TRIM_CLAMP_PCT; overridden per strategy in control.c */ },
-            .gov_cfg = { g_config.gov_high, g_config.gov_low, 35.0f, 17.0f },
-            .alarm_dwell_ms = g_config.alarm_dwell_ms,
-            .deadtime_s = g_config.deadtime_s,
+            .gov_cfg = { g_config.t.gov_high, g_config.t.gov_low, 35.0f, 17.0f },
+            .alarm_dwell_ms = g_config.t.alarm_dwell_ms,
+            .deadtime_s = g_config.t.deadtime_s,
         };
         /* Not Zigbee tunables (yet) — compile-time defaults, set here rather than in the
          * initializer above so adding a field can't silently zero the whole struct. */
@@ -156,7 +156,7 @@ static void control_loop(void *arg){
             /* water_running OFF and no manual override since the ON->OFF edge:
                actually park (a manual AnalogOutput write, applied directly by zigbee's
                attr_cb, supersedes this until water_running goes ON again or reboot). */
-            valve_set_target(g_config.park_pos);
+            valve_set_target(g_config.t.park_pos);
         }
 
         /* OTA validation fast path: don't let a missing/faulted probe delay validation
