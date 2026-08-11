@@ -1,5 +1,6 @@
 #include "sensors_hw.h"
 #include <stdio.h>
+#include <stdlib.h>
 #include <string.h>
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
@@ -83,6 +84,7 @@ static bool           s_prev_valid;
 
 static sensor_reading_t     g_read[SENS_COUNT];
 static sensor_fault_state_t g_fault_state[SENS_COUNT];
+static sensor_sweep_state_t g_sweep;      /* guarded by g_lock, like g_read */
 static SemaphoreHandle_t    g_lock;
 
 static ow_reason_t onewire_convert(int gpio)
@@ -194,6 +196,12 @@ static void sweep_task(void *arg)
             }
         }
         s_stats.sweeps++;
+        /* Liveness is recorded per ITERATION, not per successful read: a sweep that runs
+         * and fails everything is a plant problem, one that stops running is a board
+         * problem, and only this counter can tell them apart downstream. */
+        xSemaphoreTake(g_lock, portMAX_DELAY);
+        sensor_sweep_note(&g_sweep, (uint32_t)(esp_timer_get_time() / 1000));
+        xSemaphoreGive(g_lock);
         if (why[0])
             ESP_LOGW(TAG, "sweep %lu failed: %s", (unsigned long)s_stats.sweeps, why);
         vTaskDelay(pdMS_TO_TICKS(SWEEP_PERIOD_MS - CONVERT_MS));
@@ -240,7 +248,25 @@ void sensors_start(void)
         g_fault_state[i] = (sensor_fault_state_t){
             .fail_streak = SENSOR_FAULT_AFTER, .good_streak = 0, .faulted = true };
     }
-    xTaskCreate(sweep_task, "sensors", 4096, NULL, 5, NULL);
+    /* Unchecked, this returns pdFAIL and app_main sails on into a controller whose probes
+     * are all latched-faulted forever -- and because the task never ran, it never
+     * subscribed to the task WDT, so nothing resets either. Abort instead: the panic
+     * handler resets, and on the first boot after an OTA the image never validates, so
+     * the bootloader rolls back to the last good one. Silence is the one option that
+     * cannot be allowed here. */
+    if (xTaskCreate(sweep_task, "sensors", 4096, NULL, 5, NULL) != pdPASS) {
+        ESP_LOGE(TAG, "xTaskCreate(sensors) failed -- no sweep task, aborting for reset+rollback");
+        abort();
+    }
+}
+
+bool sensors_sweep_dead(void)
+{
+    uint32_t now = (uint32_t)(esp_timer_get_time() / 1000);
+    xSemaphoreTake(g_lock, portMAX_DELAY);
+    bool dead = sensor_sweep_is_dead(&g_sweep, now);
+    xSemaphoreGive(g_lock);
+    return dead;
 }
 
 sensor_reading_t sensors_get(sensor_id_t id)

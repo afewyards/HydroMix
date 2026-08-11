@@ -4,6 +4,10 @@
 #include "valve_hw.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
+#include <stdlib.h>
+#include "esp_attr.h"
+#include "esp_log.h"
+#include "esp_system.h"
 #include "esp_timer.h"
 #include "esp_task_wdt.h"
 #include "ctrl_core/control.h"
@@ -39,7 +43,68 @@ static volatile bool s_override_active = false;
 #define OTA_GATE_CYCLES 12
 static uint32_t s_cycles_completed = 0;
 
+static const char *TAG = "control";
+
+/* ---- Sweep self-heal -----------------------------------------------------
+ * A sweep task that stops iterating leaves the plant parked and silent: the probe
+ * latches never clear, so it presents as five dead probes, and the task WDT has nothing
+ * to bite on because a task that isn't running isn't late. On 2026-08-10 that state
+ * held for 13 h across an otherwise healthy device -- Zigbee up, valve commandable,
+ * 1-Wire bus provably fine -- and ended only when a reset was forced by hand. A reset
+ * is the known cure, so take it automatically.
+ *
+ * Bounded, because the failure mode of an unbounded self-heal is a live household
+ * controller reboot-looping forever. After SELF_HEAL_MAX consecutive failed attempts,
+ * stop and stay parked with FAULT_BIT_SWEEP raised -- visible, which is the thing that
+ * was actually missing. The budget is returned once a sweep has been healthy for
+ * SELF_HEAL_FORGIVE_MS, so an isolated recurrence months later still gets its retries.
+ *
+ * RTC_NOINIT survives the warm reset it triggers (a true power-on leaves it
+ * uninitialised, which the magic detects) -- the counter has to outlive the reset it
+ * is counting, or it can never bound anything. */
+#define SELF_HEAL_MAGIC        0x5A4C4831u
+#define SELF_HEAL_MAX          3u
+#define SWEEP_SELF_HEAL_MS     120000u   /* dead this long before resetting: ~12 cycles */
+#define SELF_HEAL_FORGIVE_MS   600000u   /* healthy this long -> restore the retry budget */
+
+typedef struct { uint32_t magic; uint32_t resets; } self_heal_t;
+static RTC_NOINIT_ATTR self_heal_t s_heal;
+
 static uint32_t now_ms(void){ return (uint32_t)(esp_timer_get_time() / 1000); }
+
+/* Returns true when the caller should reset the board. */
+static bool sweep_self_heal_step(bool sweep_dead, uint32_t now)
+{
+    static uint32_t dead_since = 0, alive_since = 0;
+
+    if (sweep_dead) {
+        alive_since = 0;
+        if (dead_since == 0) {
+            dead_since = now;
+            ESP_LOGE(TAG, "sensor sweep stopped iterating -- plant parks; self-heal reset in %lu s "
+                          "(attempt %lu/%lu)", (unsigned long)(SWEEP_SELF_HEAL_MS / 1000),
+                     (unsigned long)(s_heal.resets + 1), (unsigned long)SELF_HEAL_MAX);
+            return false;
+        }
+        if ((uint32_t)(now - dead_since) < SWEEP_SELF_HEAL_MS) return false;
+        if (s_heal.resets >= SELF_HEAL_MAX) {
+            /* Latch quiet: already tried and it did not take. Staying up parked beats
+             * thrashing the Zigbee network, and FAULT_BIT_SWEEP keeps it visible. */
+            return false;
+        }
+        s_heal.resets++;
+        return true;
+    }
+
+    dead_since = 0;
+    if (alive_since == 0) alive_since = now;
+    else if (s_heal.resets && (uint32_t)(now - alive_since) >= SELF_HEAL_FORGIVE_MS) {
+        ESP_LOGI(TAG, "sweep healthy for %lu s -- self-heal budget restored",
+                 (unsigned long)(SELF_HEAL_FORGIVE_MS / 1000));
+        s_heal.resets = 0;
+    }
+    return false;
+}
 
 static void control_loop(void *arg){
     ESP_ERROR_CHECK(esp_task_wdt_add(NULL));
@@ -54,6 +119,7 @@ static void control_loop(void *arg){
         in.hx_a       = sensors_get(SENS_HX_A).value_c;
         in.valve_pos  = valve_get_position();
         sensors_fill_faults(&in.faults);
+        in.sweep_dead = sensors_sweep_dead();
         /* HX-B is monitoring-only (spec: fault -> alarm only, never blocks control) —
          * excluded from the OTA good-sweep gate so it can't cause a rollback loop. */
         if (!in.faults.supply && !in.faults.ret && !in.faults.source && !in.faults.hx_a)
@@ -95,11 +161,35 @@ static void control_loop(void *arg){
          * all the way out to the 10-minute fallback timer in ota.c. */
         if (ota_gate_step(&s_cycles_completed, OTA_GATE_CYCLES)) ota_note_good_sweep();
 
+        /* Last thing in the cycle: the valve has already been parked by the branches
+         * above before we take the board down. */
+        if (sweep_self_heal_step(in.sweep_dead, now_ms())) {
+            ESP_LOGE(TAG, "sensor sweep dead %lu s -- self-heal reset now (%lu/%lu used)",
+                     (unsigned long)(SWEEP_SELF_HEAL_MS / 1000),
+                     (unsigned long)s_heal.resets, (unsigned long)SELF_HEAL_MAX);
+            esp_restart();
+        }
+
         vTaskDelay(pdMS_TO_TICKS(CYCLE_MS));
     }
 }
 
-void control_task_start(void){ xTaskCreate(control_loop, "control", 4096, NULL, 5, NULL); }
+void control_task_start(void){
+    /* A true power-on leaves RTC RAM uninitialised; the magic tells that apart from the
+     * warm reset a self-heal causes, which must carry the count forward. */
+    if (s_heal.magic != SELF_HEAL_MAGIC) {
+        s_heal.magic  = SELF_HEAL_MAGIC;
+        s_heal.resets = 0;
+    } else if (s_heal.resets) {
+        ESP_LOGW(TAG, "booted after %lu self-heal reset(s)", (unsigned long)s_heal.resets);
+    }
+    /* Same reasoning as the sweep task (sensors_hw.c): unchecked, a failed create leaves
+     * mode/faults frozen at their initialisers and the valve unregulated, silently. */
+    if (xTaskCreate(control_loop, "control", 4096, NULL, 5, NULL) != pdPASS) {
+        ESP_LOGE(TAG, "xTaskCreate(control) failed -- aborting for reset+rollback");
+        abort();
+    }
+}
 ctrl_mode_t control_task_mode(void){ return s_mode; }
 bool control_task_alarm(void){ return s_alarm; }
 uint16_t control_task_faults(void){ return s_faults; }

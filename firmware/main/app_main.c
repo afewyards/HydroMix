@@ -68,6 +68,8 @@ void zigbee_on_join(void){ ota_note_joined(); }
 
 void console_hook_stats(char *o, size_t n){ sensors_format_stats(o, n); }
 
+void console_hook_zbtemp(char *o, size_t n){ zigbee_format_temp_stats(o, n); }
+
 void console_hook_mode(char *o, size_t n){
     const char *m = control_task_mode()==MODE_HEATING?"HEATING":
                     control_task_mode()==MODE_COOLING?"COOLING":"IDLE";

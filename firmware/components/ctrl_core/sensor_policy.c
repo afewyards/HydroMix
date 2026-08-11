@@ -37,3 +37,18 @@ bool sensor_fault_update(sensor_fault_state_t *s, bool read_ok){
 float sensor_ema_step(float prev, float sample, float alpha, bool reseed){
     return reseed ? sample : prev + alpha * (sample - prev);
 }
+
+void sensor_sweep_note(sensor_sweep_state_t *s, uint32_t now_ms){
+    s->last_sweep_ms = now_ms;
+    s->any_sweep     = true;
+}
+
+bool sensor_sweep_is_dead(const sensor_sweep_state_t *s, uint32_t now_ms){
+    /* No sweep has ever completed: there is no age to measure, so uptime is the age.
+     * This is the branch that catches a sweep task which never started -- the failure
+     * every other guard in the system is blind to. */
+    if (!s->any_sweep) return now_ms >= SENSOR_SWEEP_GRACE_MS;
+    /* Unsigned wraparound is exactly right here: the difference stays correct across the
+     * ~49.7-day rollover of the millisecond uptime. */
+    return (uint32_t)(now_ms - s->last_sweep_ms) > SENSOR_SWEEP_DEAD_MS;
+}

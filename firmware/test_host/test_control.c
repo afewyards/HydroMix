@@ -303,8 +303,33 @@ void test_resync_gate_published(void){
     TEST_ASSERT_TRUE(o.resync_src_hard_fail);
 }
 
+/* A dead sweep and five dead probes are the same picture from the outside -- 0x1f either
+ * way -- and they need opposite responses. Bit 5 is what separates them. */
+void test_sweep_dead_sets_its_own_fault_bit(void){
+    in.sweep_dead = true;
+    control_out_t o = control_step(&st, &in, &cfg, 0);
+    TEST_ASSERT_TRUE(o.fault_bits & FAULT_BIT_SWEEP);
+}
+
+void test_sweep_alive_leaves_bit_clear(void){
+    control_out_t o = control_step(&st, &in, &cfg, 0);
+    TEST_ASSERT_FALSE(o.fault_bits & FAULT_BIT_SWEEP);
+}
+
+/* Additive only: the probe bits must read exactly as they did before. */
+void test_sweep_dead_bit_does_not_disturb_probe_bits(void){
+    in.faults.supply = true; in.faults.source = true;
+    in.sweep_dead = true;
+    control_out_t o = control_step(&st, &in, &cfg, 0);
+    TEST_ASSERT_EQUAL_UINT16(FAULT_BIT_SUPPLY | FAULT_BIT_SOURCE | FAULT_BIT_SWEEP,
+                             o.fault_bits);
+}
+
 int main(void){
     UNITY_BEGIN();
+    RUN_TEST(test_sweep_dead_sets_its_own_fault_bit);
+    RUN_TEST(test_sweep_alive_leaves_bit_clear);
+    RUN_TEST(test_sweep_dead_bit_does_not_disturb_probe_bits);
     RUN_TEST(test_water_off_parks);
     RUN_TEST(test_idle_parks);
     RUN_TEST(test_heating_ff);

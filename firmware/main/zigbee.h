@@ -1,5 +1,6 @@
 #pragma once
 #include <stdbool.h>
+#include <stddef.h>
 
 #define VALVECTL_MFR_CODE 0x1234   /* private/test manufacturer code (Unresolved Q1) */
 #define EP_MAIN     1
@@ -10,6 +11,11 @@
 #define EP_T_HXB    6
 
 #define VALVECTL_CUSTOM_CLUSTER_ID 0xFC00
+
+/* Per-endpoint tally of temperature attribute writes, this run and the previous one.
+   A non-zero fail count here means the ZCL attribute table never received the value,
+   which is what makes a healthy probe publish as "invalid" to the coordinator. */
+void zigbee_format_temp_stats(char *out, size_t n);
 /* custom attribute ids (manufacturer-specific) */
 #define ATTR_HEAT_THRESHOLD  0x0000
 #define ATTR_COOL_THRESHOLD  0x0001

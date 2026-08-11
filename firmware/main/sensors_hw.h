@@ -14,6 +14,9 @@ typedef struct {
 } sensor_reading_t;
 
 void            sensors_start(void);
+/* True when the sweep task has stopped completing iterations -- or never started one.
+   Distinct from every sensor being faulted: that is what a dead sweep LOOKS like. */
+bool            sensors_sweep_dead(void);
 sensor_reading_t sensors_get(sensor_id_t id);
 void            sensors_fill_faults(sensor_faults_t *out);
 /* Per-reason 1-Wire failure tallies for this run and the previous one. */

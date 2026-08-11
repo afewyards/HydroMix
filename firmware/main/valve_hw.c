@@ -1,5 +1,7 @@
 #include "valve_hw.h"
 #include "config.h"
+#include <stdlib.h>
+#include "esp_log.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "freertos/semphr.h"
@@ -9,6 +11,8 @@
 #include "ctrl_core/interlock.h"
 #include "ctrl_core/pos_estimator.h"
 #include "ctrl_core/resync_policy.h"
+
+static const char *TAG = "valve";
 
 #define PIN_OPEN  GPIO_NUM_2
 #define PIN_CLOSE GPIO_NUM_3
@@ -139,7 +143,12 @@ void valve_start(void){
     s_travel_latched_s = g_config.travel_time_s;
     s_deadband_latched = g_config.valve_deadband_pct;
     s_resync_req = true;                                   /* boot resync */
-    xTaskCreate(valve_task, "valve", 4096, NULL, 6, NULL);
+    /* No valve task means the triacs never move again: targets are accepted and silently
+     * discarded, which reads as a working controller driving a stuck valve. Abort. */
+    if (xTaskCreate(valve_task, "valve", 4096, NULL, 6, NULL) != pdPASS) {
+        ESP_LOGE(TAG, "xTaskCreate(valve) failed -- aborting for reset+rollback");
+        abort();
+    }
 }
 
 void valve_set_target(float pct){

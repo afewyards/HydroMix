@@ -180,6 +180,62 @@ void test_state_restarts_cleanly_after_clear(void){
     TEST_ASSERT_TRUE(s.faulted);
 }
 
+/* ---- Sweep liveness ---------------------------------------------------- */
+
+/* The case that cost 13 h: the sweep never ran at all. Before the first sweep there is
+ * no last_sweep_ms to age, so liveness has to fall back on uptime -- otherwise a task
+ * that never started reads as permanently healthy and nothing ever escalates. */
+void test_sweep_never_started_is_dead_once_grace_expires(void){
+    sensor_sweep_state_t s = {0};
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 0));
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, SENSOR_SWEEP_GRACE_MS - 1));
+    TEST_ASSERT_TRUE(sensor_sweep_is_dead(&s, SENSOR_SWEEP_GRACE_MS));
+    TEST_ASSERT_TRUE(sensor_sweep_is_dead(&s, SENSOR_SWEEP_GRACE_MS * 100));
+}
+
+/* A booting board must not trip the alarm during the first convert window. */
+void test_sweep_within_boot_grace_is_alive(void){
+    sensor_sweep_state_t s = {0};
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 750));
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 10000));
+}
+
+void test_sweep_alive_while_ticking(void){
+    sensor_sweep_state_t s = {0};
+    for (uint32_t t = 1000; t < 300000; t += 10000) {
+        sensor_sweep_note(&s, t);
+        TEST_ASSERT_TRUE(s.any_sweep);
+        TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, t));
+        TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, t + 9999));
+    }
+}
+
+/* A sweep that stops after running for a while: aged out on last_sweep_ms, not uptime. */
+void test_sweep_dead_after_silence(void){
+    sensor_sweep_state_t s = {0};
+    sensor_sweep_note(&s, 100000);
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 100000 + SENSOR_SWEEP_DEAD_MS));
+    TEST_ASSERT_TRUE(sensor_sweep_is_dead(&s, 100000 + SENSOR_SWEEP_DEAD_MS + 1));
+}
+
+void test_sweep_note_revives_a_dead_sweep(void){
+    sensor_sweep_state_t s = {0};
+    sensor_sweep_note(&s, 50000);
+    TEST_ASSERT_TRUE(sensor_sweep_is_dead(&s, 200000));
+    sensor_sweep_note(&s, 200000);
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 200000));
+}
+
+/* esp_timer uptime in ms wraps every ~49.7 days. Unsigned subtraction has to carry the
+ * age across the wrap, or a live sweep reads as dead for the 35 s after every wrap. */
+void test_sweep_liveness_survives_ms_wraparound(void){
+    sensor_sweep_state_t s = {0};
+    sensor_sweep_note(&s, 0xFFFFFFF0u);
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 0x0000000Fu));   /* 31 ms later, wrapped */
+    TEST_ASSERT_FALSE(sensor_sweep_is_dead(&s, 0xFFFFFFF0u + SENSOR_SWEEP_DEAD_MS));
+    TEST_ASSERT_TRUE(sensor_sweep_is_dead(&s, 0xFFFFFFF0u + SENSOR_SWEEP_DEAD_MS + 1));
+}
+
 void test_ema_reseed_bypasses_filter(void){
     TEST_ASSERT_EQUAL_FLOAT(85.0f, sensor_ema_step(20.0f, 85.0f, 0.2f, true));
 }
@@ -202,6 +258,12 @@ int main(void){
     RUN_TEST(test_three_consecutive_fails_still_latches);
     RUN_TEST(test_repeating_fail_fail_good_latches_within_a_few_cycles);
     RUN_TEST(test_state_restarts_cleanly_after_clear);
+    RUN_TEST(test_sweep_never_started_is_dead_once_grace_expires);
+    RUN_TEST(test_sweep_within_boot_grace_is_alive);
+    RUN_TEST(test_sweep_alive_while_ticking);
+    RUN_TEST(test_sweep_dead_after_silence);
+    RUN_TEST(test_sweep_note_revives_a_dead_sweep);
+    RUN_TEST(test_sweep_liveness_survives_ms_wraparound);
     RUN_TEST(test_ema_reseed_bypasses_filter);
     RUN_TEST(test_ema_normal_step_uses_alpha);
     return UNITY_END();

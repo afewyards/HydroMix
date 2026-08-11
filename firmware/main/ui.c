@@ -1,10 +1,13 @@
 #include "ui.h"
+#include "esp_log.h"
 #include "zigbee.h"
 #include "control_task.h"
 #include "config.h"
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h"
 #include "driver/gpio.h"
+
+static const char *TAG = "ui";
 
 #define PIN_BTN GPIO_NUM_9
 #define PIN_LED GPIO_NUM_15   /* active-low */
@@ -48,6 +51,11 @@ static void btn_task(void *arg){
 }
 
 void ui_start(void){
-    xTaskCreate(led_task, "led", 2048, NULL, 3, NULL);
-    xTaskCreate(btn_task, "btn", 2048, NULL, 3, NULL);
+    /* Log, don't abort: unlike the sensor/valve/zigbee tasks, losing the LED or the
+     * button degrades only local UX. Taking a working plant down over it would be the
+     * larger fault. */
+    if (xTaskCreate(led_task, "led", 2048, NULL, 3, NULL) != pdPASS)
+        ESP_LOGE(TAG, "xTaskCreate(led) failed -- status LED inoperative");
+    if (xTaskCreate(btn_task, "btn", 2048, NULL, 3, NULL) != pdPASS)
+        ESP_LOGE(TAG, "xTaskCreate(btn) failed -- front button inoperative");
 }

@@ -35,6 +35,8 @@ typedef struct {
     float hx_a;
     float valve_pos;                /* actual estimated valve position, % */
     sensor_faults_t faults;
+    bool  sweep_dead;               /* sensor sweep stopped iterating; reported, not acted on --
+                                       the probe latches/staleness already force PARK */
     bool  water_running;
     bool  resync_active;
     bool  link_up;                  /* ZDO-observed join state; STATUS ONLY -- the cooling

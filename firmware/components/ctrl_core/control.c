@@ -117,6 +117,11 @@ control_out_t control_step(control_state_t *s, const control_in_t *in,
     }
     degradation_out_t deg = degradation_eval(&in->faults, mode, cfg->park_pos);
     o.fault_bits = deg.alarm_bits;
+    /* Purely additive to the telemetry word: a dead sweep already reaches degradation as
+     * five faulted probes (latched from boot, or aged out by the staleness guard), so the
+     * strategy is PARK either way. This bit is what tells the operator WHICH failure it
+     * was instead of leaving the two indistinguishable. */
+    if (in->sweep_dead) o.fault_bits |= FAULT_BIT_SWEEP;
     o.strategy   = deg.strategy;
 
     /* water_running OFF: park, clear integrator, not regulating. */

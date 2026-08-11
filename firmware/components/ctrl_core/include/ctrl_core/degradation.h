@@ -6,6 +6,10 @@
 #define FAULT_BIT_SOURCE (1u<<2)
 #define FAULT_BIT_HX_A   (1u<<3)
 #define FAULT_BIT_HX_B   (1u<<4)
+/* Not a probe: the sweep task itself stopped producing iterations. Distinct from the five
+ * probe bits because the operator response is opposite -- 0x1f alone means go look at the
+ * wiring, 0x3f means the board is at fault and the probes are probably fine. */
+#define FAULT_BIT_SWEEP  (1u<<5)
 
 #define COOLING_BLIND_PARK_PCT 10.0f
 #define COOLING_FF_BIAS_PCT    10.0f   /* subtract in cooling FF-only (toward recirc) */

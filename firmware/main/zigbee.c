@@ -5,7 +5,9 @@
 #include "config.h"
 #include "ota.h"
 #include <math.h>
+#include <stdlib.h>
 #include <string.h>
+#include "esp_attr.h"
 #include "esp_log.h"
 #include "esp_timer.h"
 #include "esp_app_desc.h"
@@ -16,6 +18,8 @@
 #include "zcl/esp_zigbee_zcl_thermostat.h"
 
 static const char *TAG = "zigbee";
+
+static void zb_temp_stats_init(void);   /* defined with the tally, below */
 static bool s_joined = false;
 
 /* Steering never gives up: while unjoined we re-attempt on a backoff, so a
@@ -552,12 +556,27 @@ static void zb_task(void *arg)
      * Runs in its own task rather than an esp_timer callback: every call below
      * blocks on the Zigbee stack lock, and esp_timer callbacks share one task, so
      * blocking there stalls every other timer in the system. */
-    xTaskCreate(telemetry_task, "zb_telem", 4096, NULL, 4, NULL);
+    /* Without this task nothing pushes temps or status at all: the device stays joined and
+     * answers reads, so it looks alive while every value in HA silently freezes. */
+    if (xTaskCreate(telemetry_task, "zb_telem", 4096, NULL, 4, NULL) != pdPASS) {
+        ESP_LOGE(TAG, "xTaskCreate(zb_telem) failed -- aborting for reset+rollback");
+        abort();
+    }
 
     esp_zb_stack_main_loop();
 }
 
-void zigbee_start(void){ xTaskCreate(zb_task, "zigbee", 8192, NULL, 5, NULL); }
+void zigbee_start(void){
+    /* Before the stack, so the previous run's attribute-write tally is reported even if
+     * anything below fails. */
+    zb_temp_stats_init();
+    /* No Zigbee task means no coordinator link ever forms -- the plant runs on its last
+     * stored settings with nobody able to see or command it. */
+    if (xTaskCreate(zb_task, "zigbee", 8192, NULL, 5, NULL) != pdPASS) {
+        ESP_LOGE(TAG, "xTaskCreate(zigbee) failed -- aborting for reset+rollback");
+        abort();
+    }
+}
 /* Called from the button/console tasks, i.e. outside the Zigbee stack task —
  * esp_zb_* APIs need the stack lock held, same as the reporting paths below. */
 void zigbee_steer(void)
@@ -594,6 +613,34 @@ static int16_t temp_centi(sensor_id_t id)
     return (int16_t)(r.value_c * 100.0f);
 }
 
+/* ---- Temperature attribute write tally -----------------------------------
+ * The five measurement endpoints published the ZCL invalid sentinel for 13 h on
+ * 2026-08-10 while the thermostat LocalTemperature on EP1 -- fed by temp_centi() from
+ * the SAME sensor, in the same telemetry iteration, microseconds apart -- carried a
+ * live, rising value. The reporting engine transmits straight from the ZCL attribute
+ * table, so a report of 0x8000 means the table still holds the add_temp_ep() seed:
+ * the write is not landing. esp_zb_zcl_set_attribute_val()'s return was discarded, so
+ * which of the five failed, and with what status, was unknowable from outside.
+ *
+ * RTC_NOINIT for the same reason as the 1-Wire tally in sensors_hw.c: opening the USB
+ * console resets this board, so the only way to inspect a misbehaving run is to have it
+ * survive the reset that inspecting it causes. */
+#define ZB_TEMP_STATS_MAGIC 0x2B7E1509u
+
+typedef struct {
+    uint32_t magic;
+    uint32_t ok[5];
+    uint32_t fail[5];
+    int32_t  last_err[5];      /* esp_err_t of the most recent failure */
+    int16_t  last_val[5];      /* value that write attempted */
+} zb_temp_stats_t;
+
+static RTC_NOINIT_ATTR zb_temp_stats_t s_zb_temp;
+static zb_temp_stats_t s_zb_temp_prev;
+static bool            s_zb_temp_prev_valid;
+
+static const char *const TEMP_EP_NAME[5] = { "supply", "return", "source", "hx_a", "hx_b" };
+
 void zigbee_report_temps(void)
 {
     struct { uint8_t ep; sensor_id_t id; } map[] = {
@@ -603,10 +650,72 @@ void zigbee_report_temps(void)
     esp_zb_lock_acquire(portMAX_DELAY);
     for (size_t i = 0; i < 5; ++i) {
         int16_t v = temp_centi(map[i].id);
-        esp_zb_zcl_set_attribute_val(map[i].ep, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
+        esp_zb_zcl_status_t st = esp_zb_zcl_set_attribute_val(
+            map[i].ep, ESP_ZB_ZCL_CLUSTER_ID_TEMP_MEASUREMENT,
             ESP_ZB_ZCL_CLUSTER_SERVER_ROLE, ESP_ZB_ZCL_ATTR_TEMP_MEASUREMENT_VALUE_ID, &v, false);
+        if (st == ESP_ZB_ZCL_STATUS_SUCCESS) {
+            s_zb_temp.ok[i]++;
+        } else {
+            s_zb_temp.fail[i]++;
+            s_zb_temp.last_err[i] = (int32_t)st;
+            s_zb_temp.last_val[i] = v;
+            /* First failure per endpoint is loud; after that the tally carries it, so a
+             * persistent fault cannot bury the rest of the log at 6 lines per minute. */
+            if (s_zb_temp.fail[i] == 1)
+                ESP_LOGE(TAG, "set_attribute_val(ep%u %s) failed: status=0x%02x value=%d",
+                         (unsigned)map[i].ep, TEMP_EP_NAME[i], (unsigned)st, (int)v);
+        }
     }
     esp_zb_lock_release();
+}
+
+/* Console `zbtemp`: this run plus the previous one, including the run that opening the
+ * console just ended. */
+void zigbee_format_temp_stats(char *o, size_t n)
+{
+    if (!o || n == 0) return;
+    size_t u = 0;
+    int k = snprintf(o, n, "run:\n");
+    if (k > 0) u += (size_t)k;
+    for (int i = 0; i < 5 && u < n - 1; ++i) {
+        k = snprintf(o + u, n - u, "  %-6s ok=%lu fail=%lu last_err=0x%02lx last_val=%d\n",
+                     TEMP_EP_NAME[i], (unsigned long)s_zb_temp.ok[i],
+                     (unsigned long)s_zb_temp.fail[i],
+                     (unsigned long)(uint32_t)s_zb_temp.last_err[i], (int)s_zb_temp.last_val[i]);
+        if (k > 0) u += (size_t)k;
+    }
+    if (!s_zb_temp_prev_valid) {
+        if (u < n - 1) snprintf(o + u, n - u, "prev: none (cold power-on)\n");
+        return;
+    }
+    k = snprintf(o + u, n - u, "prev:\n");
+    if (k > 0) u += (size_t)k;
+    for (int i = 0; i < 5 && u < n - 1; ++i) {
+        k = snprintf(o + u, n - u, "  %-6s ok=%lu fail=%lu last_err=0x%02lx last_val=%d\n",
+                     TEMP_EP_NAME[i], (unsigned long)s_zb_temp_prev.ok[i],
+                     (unsigned long)s_zb_temp_prev.fail[i],
+                     (unsigned long)(uint32_t)s_zb_temp_prev.last_err[i],
+                     (int)s_zb_temp_prev.last_val[i]);
+        if (k > 0) u += (size_t)k;
+    }
+}
+
+static void zb_temp_stats_init(void)
+{
+    if (s_zb_temp.magic == ZB_TEMP_STATS_MAGIC) {
+        s_zb_temp_prev = s_zb_temp;
+        s_zb_temp_prev_valid = true;
+        for (int i = 0; i < 5; ++i) {
+            if (!s_zb_temp_prev.fail[i]) continue;
+            ESP_LOGW(TAG, "previous run: ep%d %s attr-write ok=%lu fail=%lu last_err=0x%02lx last_val=%d",
+                     i + 2, TEMP_EP_NAME[i], (unsigned long)s_zb_temp_prev.ok[i],
+                     (unsigned long)s_zb_temp_prev.fail[i],
+                     (unsigned long)(uint32_t)s_zb_temp_prev.last_err[i],
+                     (int)s_zb_temp_prev.last_val[i]);
+        }
+    }
+    memset(&s_zb_temp, 0, sizeof s_zb_temp);
+    s_zb_temp.magic = ZB_TEMP_STATS_MAGIC;
 }
 
 /* configure_reporting_running_mode() below only arms the ZCL reporting engine's

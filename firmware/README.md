@@ -4,6 +4,84 @@ ESP-IDF firmware for the ValveController PCB (ESP32-C6) — a hydronic 3-way mix
 valve controller regulating supply temperature, exposed over Zigbee (Router role)
 with OTA, autonomous when the Zigbee link is down.
 
+## 1.6.3 — instrument the temperature attribute writes
+
+1.6.2 addressed a real robustness gap but not the fault actually in front of us, because
+the fault is not in the sensors at all. Measured live on 2026-08-11 with the board on
+mains only:
+
+- `local_temperature_1` climbs smoothly — 20.56 → 20.68 → 20.75 over 70 s — so
+  `temp_centi(SENS_SUPPLY)` is returning real values and supply is **not** faulted;
+- `temperature_2`, the same sensor through the same function in the same telemetry
+  iteration, publishes `null` (the 0x8000 sentinel) continuously;
+- no `deviceAnnounce` in 75 s of broker traffic, so the board is not rebooting either.
+
+The ZCL reporting engine transmits straight from the attribute table, so a report of
+0x8000 means the table still holds the `add_temp_ep()` seed — the write is not landing
+on endpoints 2–6 while the identical call against the thermostat cluster on endpoint 1
+succeeds. `esp_zb_zcl_set_attribute_val()` returns a status, and every call site
+discarded it, so which endpoint failed and why was unknowable from outside the board.
+
+This release only measures. Per-endpoint ok/fail counts, the failing status code and the
+value attempted are tallied in `RTC_NOINIT` (surviving the reset that opening the USB
+console causes), printed at boot, and readable with the new `zbtemp` console command.
+
+One candidate is already visible in the code and will be confirmed or excluded by that
+tally: `add_temp_ep()` declares `min_value = -4000`, and the ZCL invalid sentinel
+0x8000 (−32768) lies outside it. The seed bypasses the range check, but every runtime
+write of the sentinel would be rejected — meaning a genuinely dead probe cannot publish
+as invalid and holds its last good value instead, which is exactly the lie `temp_centi()`
+was written to prevent. That is the opposite direction from the fault under
+investigation, so it is a separate defect, not yet the answer.
+
+## 1.6.2 — a dead sensor sweep can no longer hide as five dead probes
+
+On 2026-08-10 the plant sat parked for 13 h after an OTA to 1.6.1. All five probe
+endpoints published the ZCL invalid sentinel (0x8000) continuously from 19:11:32Z —
+the moment of the post-OTA reboot — until a reset was forced by hand the next
+morning. Everything else looked healthy: the device stayed joined, answered reads,
+accepted valve commands, and the temperatures had been reporting normally right up
+to 19:10:53Z with the plant actively cooling.
+
+The 1-Wire bus was never the problem. `stats` after the reset showed **zero read
+failures of any kind** — no `rmt`, no `reset`, no `crc`, on any probe — and every
+probe returned a plausible temperature immediately.
+
+**The root cause of that specific outage was not identified**, and the evidence that
+would have named it is gone: the per-reason failure tally lives in RTC RAM and holds
+only one previous run, so plugging in the console cable to read it overwrote the very
+run under investigation. Two mechanisms remain consistent with everything observed,
+and this release does not distinguish them — it makes the next occurrence
+self-identifying instead:
+
+- the 1-Wire/RMT driver wedged, failing every read (would have logged a `sweep N
+  failed: …=rmt` line every 10 s);
+- the sweep task never ran at all (would have logged nothing whatsoever).
+
+What made a 13 h silent outage possible is a gap that IS identified, and is fixed here.
+`sensors_start()` seeds every probe latched-faulted on purpose, so a sweep task that
+dies — or never starts — is indistinguishable from five simultaneously dead probes,
+permanently. Nothing else caught it either: the staleness guard in
+`sensors_fill_faults()` is skipped while `last_ok_ms == 0`, and a task that never ran
+never subscribed to the task WDT, so the watchdog had nothing to time out on. The
+plant parked, which is correct, and said nothing, which is not.
+
+- **Sweep liveness is now tracked per iteration**, not per successful read — a sweep
+  that runs and fails everything is a plant problem, one that stops running is a board
+  problem, and only this separates them. Surfaced as `FAULT_BIT_SWEEP` (bit 5), so
+  `fault_bitmap` reads 0x3f for a dead sweep against 0x1f for five dead probes.
+- **Bounded self-heal.** 120 s of dead sweep triggers a reset, up to 3 consecutive
+  attempts, after which the board stays up and parked with the bit raised rather than
+  reboot-looping a live household plant. The budget is restored after 10 min of healthy
+  sweeping. The counter lives in RTC RAM so it outlives the reset it is counting.
+- **Every `xTaskCreate` return is now checked.** All of them were unchecked, so a
+  failed create was silent and permanent — a failure mode that produces exactly the
+  observed signature. The sensor, valve, control, Zigbee and telemetry tasks abort
+  (panic → reset → rollback on an unvalidated image); the LED and button tasks only
+  log, since taking a working plant down over a dead status LED is the larger fault.
+
+Host suite 17/17.
+
 ## 1.6.1 — the feedforward no longer picks a rail on probe noise
 
 Diagnosed from live GF-HydroMix history over 2026-08-07..10. The cooling plant lost
