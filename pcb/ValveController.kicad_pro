@@ -52,7 +52,7 @@
         "zones": {
           "border_display_style": 2,
           "border_hatch_pitch": 0.5,
-          "corner_radius": 0.5,
+          "corner_radius": 2.0,
           "corner_smoothing": 2,
           "fill_mode": 0,
           "hatch_gap": 1.5,
@@ -64,7 +64,7 @@
           "min_island_area": 10.0,
           "min_thickness": 0.1,
           "pad_connection": 2,
-          "remove_islands": 1,
+          "remove_islands": 0,
           "thermal_relief_gap": 0.0,
           "thermal_relief_spoke_width": 0.1
         }
@@ -76,7 +76,56 @@
           "width": 0.0
         }
       ],
-      "drc_exclusions": [],
+      "drc_exclusions": [
+        [
+          "lib_footprint_issues|131085000|63272500|fa214a08-8919-4c27-a045-cb1f5df605f2|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_issues|140545000|63331800|11ed43e4-0c83-4a14-8666-a8a86f5e9f10|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_issues|97100000|114200000|484d2577-7ea1-4e60-b5bf-f242e13f6214|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|110385000|36900000|35ac34b4-d787-4046-8d31-7a92b2767088|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|135585000|36900000|8ab41427-4659-4f6d-94fb-1ef85f91c485|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|71373850|69307050|50f4fe99-f1fb-47b9-bb99-cb8596e6baa7|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|71380000|89230000|3419c5dc-5fdb-4389-b652-2bb21b9922c1|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|86200000|62347500|5479957d-be49-449f-845d-195cc6b8c5e0|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "lib_footprint_mismatch|99436300|75576800|d37dbe06-79bd-4827-b841-49bb6e1a06b4|00000000-0000-0000-0000-000000000000",
+          ""
+        ],
+        [
+          "silk_overlap|125751895|67966751|5689e6bb-3ac1-4ba7-afb3-a4c49004ba9a|6b2cb667-58e1-43ab-b13a-907d0c108be4",
+          ""
+        ],
+        [
+          "unconnected_items|108200000|100125000|F.Cu|4|5c1b70a3-738a-469d-a91e-6b7a5499e6db|694f6109-8050-4583-9f73-d08308a3a2f8",
+          ""
+        ],
+        [
+          "unconnected_items|110100000|102400000|F.Cu|4|6c21b224-0a31-4ae8-b87f-50409ace9916|dc8e5388-4064-4ded-a5b2-c1a40468f6a8",
+          ""
+        ]
+      ],
       "meta": {
         "version": 2
       },
@@ -252,6 +301,10 @@
         {
           "diameter": 0.45,
           "drill": 0.2
+        },
+        {
+          "diameter": 0.5,
+          "drill": 0.3
         },
         {
           "diameter": 0.8,
@@ -721,7 +774,7 @@
       "method": 0,
       "sort_order": 0
     },
-    "bom_export_filename": "${PROJECTNAME}.csv",
+    "bom_export_filename": "HydroMix.csv",
     "bom_fmt_presets": [],
     "bom_fmt_settings": {
       "field_delimiter": ",",
@@ -865,7 +918,7 @@
         "uuid": "996e7a69-443b-4feb-9505-1512f377356d"
       }
     ],
-    "used_designators": "U1-3,U5-6,F2,D2-3,Q3-8,CS1-4,RL3-4,J1-3,J8-12,RG3-4,RS1-8,R1,R5-6,H1-4",
+    "used_designators": "G1-2,H1-4,R1,R5-6,RS1-8,RG3-4,J1-3,J8-12,RL3-4,CS1-4,Q3-8,D2-3,F2,U1-3,U5-6",
     "variants": []
   },
   "sheets": [
