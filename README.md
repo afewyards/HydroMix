@@ -7,9 +7,11 @@ regulating **autonomously** if the Zigbee link goes down.
 One repo, three parts: a custom KiCad PCB (ESP32-C6), ESP-IDF firmware with a
 host-testable control core, and a Zigbee2MQTT converter.
 
-> **Status:** Firmware v1 committed; pure-C control core passes host-side unit tests;
-> on-target bring-up per [`firmware/BENCH_CHECKLIST.md`](firmware/BENCH_CHECKLIST.md).
-> PCB rev A — placement complete, routing in progress. Personal project.
+> **Status:** Firmware **1.7.0** released and OTA-deployed (2026-08-11); pure-C control core
+> passes host-side unit tests; on-target bring-up of this board per
+> [`firmware/BENCH_CHECKLIST.md`](firmware/BENCH_CHECKLIST.md) once assembled.
+> PCB rev A — layout complete and **fab-ready** (4-layer, 100 % routed, DRC clean); boards
+> ordered 2026-08-12. Personal project.
 
 ![ValveController 3D render](pcb/art/board-3d-render.png)
 
@@ -47,7 +49,9 @@ Custom single-board design in KiCad (`pcb/`). Rev A highlights:
 |---|---|
 | MCU | **ESP32-C6-WROOM-1-N4** (RISC-V, 802.15.4 Zigbee radio, 4 MB flash) |
 | Power | 230 V AC → **Mean Well IRM-03-5** (5 V) → **TLV75733** LDO (3.3 V); USB-C 5 V is diode-OR'd in (B5819W) so the board bench-powers and flashes over USB-C with **no mains** |
+| Pump interface | **TPS61040** boost to 24 V, driving a **Wilo Para ST 15-7-50 iPWM2** circulator over its PWM/feedback interface |
 | Valve drive | 2× channel: **MOC3063S** zero-cross opto-triac → **Z0103MN** triac, switching the 230 V 3-point actuator; RC snubbers + X2 safety caps |
+| AUX outputs | 2× **CPC1035N** PhotoMOS channels (24 VAC) with **HCPL-354** loop-open/short detection |
 | Mains protection | Varistor (B72210S) + fuse |
 | Sensing | 5× **DS18B20** on dedicated 1-Wire connectors (4.7 k pull-ups) |
 | I/O | Tactile button, 8×8 LED matrix (**KWM-20881AGB** + **IS31FL3730** driver), **USB-C** — native USB-Serial-JTAG (power, flash, console, JTAG in one port) |
@@ -115,6 +119,7 @@ ValveController/
 │   └── test_host/              Unity unit tests
 ├── z2m/valvectl.mjs             Zigbee2MQTT external converter
 ├── docs/superpowers/           design spec + implementation plan
+├── analysis/                   design review reports (schematic, PCB layout)
 └── board.step                  assembled-board 3D export
 ```
 
@@ -131,6 +136,8 @@ convention in mind: the safe idle is **mid-travel**, not "closed."
 - [Design spec](docs/superpowers/specs/2026-07-13-firmware-design.md) — control theory, safety, Zigbee model
 - [Implementation plan](docs/superpowers/plans/2026-07-13-firmware.md)
 - [Bench checklist](firmware/BENCH_CHECKLIST.md)
+- [Design review — schematic, 2026-08-11](analysis/design_review_2026-08-11.md)
+- [Design review — PCB layout, 2026-08-12](analysis/design_review_2026-08-12_pcb.md) — fab-ready verdict; mains isolation verified against IEC 60664-1
 
 ---
 
