@@ -1,6 +1,6 @@
 {
   "schematic": "pcb/ValveController.kicad_sch",
-  "last_sync": "2026-08-11T08:37:30.798924+00:00",
+  "last_sync": "2026-08-12T14:53:13.905470+00:00",
   "parts": {
     "CL32A107MQVNNNE": {
       "manufacturer": "",
@@ -196,11 +196,11 @@
       "source": "schematic",
       "status": "ok",
       "references": [
+        "D11",
         "D8",
         "D9",
-        "D10",
-        "D11",
-        "D12"
+        "D12",
+        "D10"
       ],
       "size_bytes": 285361,
       "verification": "likely"
@@ -217,19 +217,19 @@
       "last_attempt": "2026-08-11T08:33:15.086586+00:00"
     },
     "https://www.digikey.com/en/products/detail/littelfuse-inc/46205000000/2515987": {
-      "file": ".pdf",
+      "file": "https_www.digikey.com_en_products_detail_littelfuse-inc_46205000000_2515987.pdf",
       "manufacturer": "",
       "description": "",
       "value": "46205000000",
       "datasheet_url": "https://datasheet.octopart.com/46205000000-Littelfuse-datasheet-32024637.pdf",
-      "downloaded_date": "2026-08-11T08:33:30.564454+00:00",
+      "downloaded_date": "2026-08-12T14:53:07.797165+00:00",
       "source": "schematic",
       "status": "ok",
       "references": [
         "F2"
       ],
       "size_bytes": 1008059,
-      "verification": "verified"
+      "verification": "unverified"
     },
     "https://www.digikey.com/en/products/detail/phoenix-contact/1770966/2192468": {
       "manufacturer": "",
@@ -640,6 +640,60 @@
       "status": "not_found",
       "error": "No LCSC results for 'HCPL-354-06AE'",
       "last_attempt": "2026-08-11T08:37:22.040059+00:00"
+    },
+    "CL05B104KO5NNNC": {
+      "file": "CL05B104KO5NNNC_CAP_CER_0.1UF_16V_X7R_0402.pdf",
+      "manufacturer": "Samsung Electro-Mechanics",
+      "description": "CAP CER 0.1UF 16V X7R 0402",
+      "value": "100nF",
+      "datasheet_url": "//mm.digikey.com/Volume0/opasdata/d220001/medias/docus/609/CL05B104KO5NNNC.pdf",
+      "downloaded_date": "2026-08-12T14:52:58.582240+00:00",
+      "source": "digikey",
+      "status": "ok",
+      "references": [
+        "C14",
+        "C20",
+        "C8",
+        "C17",
+        "C7",
+        "C16",
+        "C2"
+      ],
+      "size_bytes": 1428503,
+      "verification": "verified"
+    },
+    "C0805C106K3PACTU": {
+      "file": "C0805C106K3PACTU_CAP_CER_10UF_25V_X5R_0805.pdf",
+      "manufacturer": "KEMET",
+      "description": "CAP CER 10UF 25V X5R 0805",
+      "value": "10uF",
+      "datasheet_url": "https://yageogroup.com/content/datasheet/asset/file/KEM_C1006_X5R_SMD",
+      "downloaded_date": "2026-08-12T14:53:03.108039+00:00",
+      "source": "digikey",
+      "status": "ok",
+      "references": [
+        "C5",
+        "C6",
+        "C4"
+      ],
+      "size_bytes": 2796252,
+      "verification": "likely"
+    },
+    "RC0402FR-07470RL": {
+      "file": "RC0402FR-07470RL_RES_470_OHM_1%_1_16W_0402.pdf",
+      "manufacturer": "YAGEO",
+      "description": "RES 470 OHM 1% 1/16W 0402",
+      "value": "470",
+      "datasheet_url": "https://yageogroup.com/content/datasheet/asset/file/PYU-RC_GROUP_51_ROHS_L",
+      "downloaded_date": "2026-08-12T14:53:08.025163+00:00",
+      "source": "digikey",
+      "status": "ok",
+      "references": [
+        "RL4",
+        "RL3"
+      ],
+      "size_bytes": 542969,
+      "verification": "likely"
     }
   }
 }
