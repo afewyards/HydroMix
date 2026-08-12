@@ -11,6 +11,8 @@ host-testable control core, and a Zigbee2MQTT converter.
 > on-target bring-up per [`firmware/BENCH_CHECKLIST.md`](firmware/BENCH_CHECKLIST.md).
 > PCB rev A — placement complete, routing in progress. Personal project.
 
+![ValveController 3D render](pcb/art/board-3d-render.png)
+
 ## What it does
 
 A 3-way valve mixes **SOURCE** water (the hot or cold secondary side of a heat exchanger)
