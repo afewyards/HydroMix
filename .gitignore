@@ -32,3 +32,6 @@ firmware/.cache/
 
 # Claude worktrees
 .claude/worktrees/
+
+# Python
+__pycache__/
